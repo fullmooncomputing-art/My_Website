@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Website Disclaimer - Full Moon Computing</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .legal-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 3rem;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .legal-section {
+            margin-bottom: 2.5rem;
+        }
+        
+        .legal-section h2 {
+            color: #1a1a2e;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #ffd700;
+            padding-bottom: 0.5rem;
+        }
+        
+        .legal-section p,
+        .legal-section li {
+            color: #555;
+            line-height: 1.9;
+            margin-bottom: 1rem;
+        }
+        
+        .legal-section ul {
+            margin-left: 2rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .legal-section ul li {
+            margin-bottom: 0.8rem;
+        }
+        
+        .disclaimer-header {
+            background: linear-gradient(135deg, #f5576c 0%, #f093fb 100%);
+            color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        
+        .disclaimer-header h2 {
+            color: #fff;
+            margin-bottom: 0.5rem;
+            border: none;
+            padding: 0;
+        }
+        
+        .warning-box {
+            background: #fff3cd;
+            border-left: 4px solid #ffd700;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 5px;
+        }
+        
+        .warning-box p {
+            color: #856404;
+            margin: 0;
+            font-weight: 500;
+        }
+        
+        .info-box {
+            background: #d1ecf1;
+            border-left: 4px solid #0c5460;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border-radius: 5px;
+        }
+        
+        .info-box p {
+            color: #0c5460;
+            margin: 0;
+        }
+        
+        .contact-info {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin-top: 3rem;
+            text-align: center;
+        }
+        
+        .contact-info h3 {
+            color: #1a1a2e;
+            margin-bottom: 1rem;
+        }
+        
+        .acknowledgment-section {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            text-align: center;
+            margin-top: 3rem;
+        }
+        
+        .acknowledgment-section p {
+            color: #fff;
+            font-size: 1.1rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .action-btn {
+            padding: 15px 40px;
+            background: linear-gradient(135deg, #ffd700 0%, #ffed4e 100%);
+            color: #1a1a2e;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            transition: all 0.3s;
+            display: inline-block;
+            margin: 0 0.5rem;
+        }
+        
+        .action-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 215, 0, 0.4);
+        }
+        
+        .highlight {
+            color: #1a1a2e;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="moon-icon"></div>
+                Full Moon Computing
+            </a>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <button id="darkModeToggle" class="dark-mode-toggle">🌙</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Page Header -->
+    <section class="page-header">
+        <h1>Website Disclaimer</h1>
+        <p>Important Information About Our Services</p>
+    </section>
+
+    <!-- Disclaimer Content -->
+    <section style="padding: 80px 2rem; background: #f8f9fa;">
+        <div class="legal-container">
+            <div class="disclaimer-header">
+                <h2>📋 Please Read Carefully</h2>
+                <p>This disclaimer provides information about digital setup services offered by Full Moon Computing</p>
+            </div>
+
+            <div class="warning-box">
+                <p>⚠️ <strong>Important:</strong> By using this website or contacting us, you acknowledge that you have read and agree to this disclaimer.</p>
+            </div>
+
+            <div class="legal-section">
+                <h2>1. SERVICE NATURE</h2>
+                <p>We provide <span class="highlight">technical setup services only</span>, such as:</p>
+                <ul>
+                    <li>Digital menus and QR code generation</li>
+                    <li>Website setup and basic configuration</li>
+                    <li>Social media account setup and initial configuration</li>
+                    <li>Google review QR setup</li>
+                </ul>
+                
+                <div class="info-box">
+                    <p><strong>What We Do NOT Provide:</strong> We do not provide marketing services, promotional campaigns, advertising management, business consulting, or growth strategies.</p>
+                </div>
+            </div>
+
+            <div class="legal-section">
+                <h2>2. NO GUARANTEE</h2>
+                <p>We explicitly do not guarantee:</p>
+                <ul>
+                    <li><strong>Business growth</strong> - Your business success depends on multiple factors beyond digital setup</li>
+                    <li><strong>Increase in customers</strong> - Customer acquisition depends on your products, services, and marketing efforts</li>
+                    <li><strong>Higher sales</strong> - Sales results are influenced by market conditions, pricing, quality, and competition</li>
+                    <li><strong>Better online ratings</strong> - Reviews and ratings depend on customer experiences and satisfaction</li>
+                    <li><strong>Search engine rankings</strong> - Website visibility depends on ongoing SEO efforts and competition</li>
+                    <li><strong>Social media engagement</strong> - Social media success requires consistent content and community management</li>
+                </ul>
+                
+                <div class="warning-box">
+                    <p><strong>Reality Check:</strong> All business outcomes depend on multiple external factors beyond our control, including market conditions, competition, business location, product/service quality, customer service, pricing strategy, and your ongoing efforts.</p>
+                </div>
+            </div>
+
+            <div class="legal-section">
+                <h2>3. THIRD-PARTY PLATFORMS</h2>
+                <p>We are not responsible for actions, policies, or technical issues related to:</p>
+                <ul>
+                    <li><strong>Google</strong> - Including Google My Business, Google Maps, search rankings</li>
+                    <li><strong>Instagram</strong> - Account policies, algorithm changes, feature updates</li>
+                    <li><strong>Facebook</strong> - Business page policies, advertising policies, reach algorithms</li>
+                    <li><strong>YouTube</strong> - Video policies, monetization requirements, content guidelines</li>
+                    <li><strong>Any other third-party platforms</strong> - Each platform has its own terms and conditions</li>
+                </ul>
+                
+                <p><span class="highlight">Platform-specific issues:</span></p>
+                <ul>
+                    <li>Account suspensions or bans due to policy violations</li>
+                    <li>Algorithm changes affecting visibility or reach</li>
+                    <li>Platform downtime or technical glitches</li>
+                    <li>Changes in platform features or functionality</li>
+                    <li>Policy updates or new restrictions</li>
+                </ul>
+            </div>
+
+            <div class="legal-section">
+                <h2>4. CONTENT ACCURACY</h2>
+                <p>While we try to keep information accurate and up to date, we do not guarantee that all website content is always current or error-free. Information about services, pricing, and features may change without notice.</p>
+                <p>Clients are responsible for verifying all information before making decisions or commitments.</p>
+            </div>
+
+            <div class="legal-section">
+                <h2>5. CONTACT AND SUPPORT</h2>
+                <p>Support is limited to services purchased by the client:</p>
+                <ul>
+                    <li>Initial setup support is included with service purchase</li>
+                    <li>Basic troubleshooting during setup period is provided</li>
+                    <li>Free ongoing support is <strong>not included</strong> unless agreed in writing</li>
+                    <li>Additional support requests may incur charges</li>
+                    <li>Training on platform usage is client's responsibility</li>
+                </ul>
+                
+                <div class="info-box">
+                    <p><strong>Support Scope:</strong> We provide technical setup support only. We do not provide ongoing content creation, social media management, marketing advice, or business consulting.</p>
+                </div>
+            </div>
+
+            <div class="legal-section">
+                <h2>6. USER RESPONSIBILITY</h2>
+                <p>Clients are responsible for:</p>
+                <ul>
+                    <li>Maintaining their accounts and login credentials</li>
+                    <li>Complying with all platform terms of service</li>
+                    <li>Creating and publishing appropriate content</li>
+                    <li>Responding to customer inquiries and reviews</li>
+                    <li>Updating information as needed</li>
+                    <li>Following legal requirements for their business</li>
+                </ul>
+            </div>
+
+            <div class="legal-section">
+                <h2>7. NO ENDORSEMENT</h2>
+                <p>Mention of any third-party products, services, or companies on this website does not constitute endorsement. We are not responsible for the content, quality, or reliability of any external websites or services.</p>
+            </div>
+
+            <div class="legal-section">
+                <h2>8. CHANGES TO DISCLAIMER</h2>
+                <p>We reserve the right to modify this disclaimer at any time. Changes will be effective immediately upon posting to this website. Your continued use of our services after changes constitutes acceptance of the updated disclaimer.</p>
+            </div>
+
+            <div class="contact-info">
+                <h3>Questions About This Disclaimer?</h3>
+                <p><strong>Full Moon Computing</strong></p>
+                <p>Digital Setup Services for Food Businesses</p>
+                <p>Contact us through our website for clarification on any points in this disclaimer.</p>
+            </div>
+
+            <div class="acknowledgment-section">
+                <p><strong>By using this website or contacting us, you agree to this disclaimer.</strong></p>
+                <p>Make sure you have also read our Terms and Conditions before proceeding with services.</p>
+                <div>
+                    <a href="terms.html" class="action-btn">Read Terms & Conditions</a>
+                    <a href="contact.html" class="action-btn">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Full Moon Computing. All rights reserved.</p>
+        <p>Professional Web Services for Growing Businesses</p>
+        <p><a href="terms.html" style="color: #ffd700; text-decoration: none;">Terms & Conditions</a> | 
+           <a href="disclaimer.html" style="color: #ffd700; text-decoration: none;">Disclaimer</a></p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>

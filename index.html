@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Moon Computing - Home</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Terms Modal Styles */
+        .terms-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 10000;
+            overflow-y: auto;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .terms-modal.active {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        .terms-modal-content {
+            background: #fff;
+            max-width: 700px;
+            width: 100%;
+            border-radius: 20px;
+            padding: 3rem;
+            position: relative;
+            animation: slideUp 0.4s ease-out;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(50px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .terms-modal-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .terms-modal-header h2 {
+            color: #1a1a2e;
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .terms-modal-header p {
+            color: #666;
+            font-size: 1.1rem;
+        }
+
+        .terms-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .terms-modal-body {
+            margin-bottom: 2rem;
+        }
+
+        .terms-modal-body p {
+            color: #555;
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-size: 1.05rem;
+        }
+
+        .terms-notice {
+            background: #fff3cd;
+            border-left: 4px solid #ffd700;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 5px;
+        }
+
+        .terms-notice strong {
+            color: #856404;
+        }
+
+        .terms-links {
+            display: flex;
+            gap: 1rem;
+            margin: 1.5rem 0;
+            flex-wrap: wrap;
+        }
+
+        .terms-link {
+            flex: 1;
+            text-align: center;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+            text-decoration: none;
+            color: #1a1a2e;
+            font-weight: 600;
+            transition: all 0.3s;
+            border: 2px solid #e0e0e0;
+        }
+
+        .terms-link:hover {
+            background: #ffd700;
+            border-color: #ffd700;
+            transform: translateY(-3px);
+        }
+
+        .terms-modal-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .terms-accept-btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #fff;
+            border: none;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .terms-accept-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(26, 26, 46, 0.3);
+        }
+
+        .terms-decline-btn {
+            flex: 1;
+            padding: 1rem 2rem;
+            background: transparent;
+            color: #1a1a2e;
+            border: 2px solid #1a1a2e;
+            border-radius: 50px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .terms-decline-btn:hover {
+            background: #f8f9fa;
+        }
+
+        .footer-links {
+            margin-top: 1rem;
+        }
+
+        .footer-links a {
+            color: #ffd700;
+            text-decoration: none;
+            margin: 0 0.5rem;
+            transition: all 0.3s;
+        }
+
+        .footer-links a:hover {
+            text-decoration: underline;
+        }
+
+        @media (max-width: 600px) {
+            .terms-modal-content {
+                padding: 2rem 1.5rem;
+            }
+
+            .terms-modal-header h2 {
+                font-size: 1.5rem;
+            }
+
+            .terms-links {
+                flex-direction: column;
+            }
+
+            .terms-modal-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Terms and Conditions Modal -->
+    <div class="terms-modal" id="termsModal">
+        <div class="terms-modal-content">
+            <div class="terms-modal-header">
+                <div class="terms-icon">📋</div>
+                <h2>Welcome to Full Moon Computing</h2>
+                <p>Before you proceed, please review our policies</p>
+            </div>
+            
+            <div class="terms-modal-body">
+                <p>We provide <strong>digital setup services only</strong> for food businesses and small enterprises. Before using our website or services, you must read and accept our Terms & Conditions and Disclaimer.</p>
+                
+                <div class="terms-notice">
+                    <strong>⚠️ Important:</strong> We do not guarantee business growth, increased sales, or higher customer numbers. Our services are limited to technical setup only.
+                </div>
+
+                <p><strong>Please read the following documents:</strong></p>
+                
+                <div class="terms-links">
+                    <a href="terms.html" target="_blank" class="terms-link">
+                        📄 Terms & Conditions
+                    </a>
+                    <a href="disclaimer.html" target="_blank" class="terms-link">
+                        ⚠️ Website Disclaimer
+                    </a>
+                </div>
+
+                <p style="font-size: 0.95rem; color: #666;">
+                    By clicking "I Understand & Accept", you acknowledge that you have read, understood, and agree to be bound by our Terms and Conditions and Disclaimer.
+                </p>
+            </div>
+
+            <div class="terms-modal-actions">
+                <button class="terms-accept-btn" onclick="acceptTerms()">
+                    ✓ I Understand & Accept
+                </button>
+                <button class="terms-decline-btn" onclick="declineTerms()">
+                    ✗ I Decline
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="moon-icon"></div>
+                Full Moon Computing
+            </a>
+            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <button id="darkModeToggle" class="dark-mode-toggle">🌙</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">Home</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="stars" id="stars"></div>
+        <div class="hero-content">
+            <h1>Websites That Help Small Businesses Grow</h1>
+            <p>Professional web solutions that bring more customers and stronger online presence to your business</p>
+            <a href="contact.html" class="cta-button">Get Your Free Quote</a>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features">
+        <div class="container">
+            <h2 class="section-title">Why Choose Full Moon Computing?</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🚀</div>
+                    <h3>Fast & Modern</h3>
+                    <p>Lightning-fast websites with cutting-edge technology that keeps your business ahead of the competition.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Mobile-First Design</h3>
+                    <p>Beautiful, responsive designs that look perfect on every device, from phones to desktops.</p>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">💼</div>
+                    <h3>Business-Focused</h3>
+                    <p>We build websites that generate leads, increase sales, and grow your business online.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="container">
+            <h2>Ready to Transform Your Online Presence?</h2>
+            <p>Let's build something amazing together</p>
+            <a href="contact.html" class="cta-button">Start Your Project Today</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2026 Full Moon Computing. All rights reserved.</p>
+        <p>Professional Web Services for Growing Businesses</p>
+        <div class="footer-links">
+            <a href="terms.html">Terms & Conditions</a> | 
+            <a href="disclaimer.html">Disclaimer</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script>
+        // Terms Modal Logic
+        function checkTermsAcceptance() {
+            const termsAccepted = localStorage.getItem('termsAccepted');
+            if (!termsAccepted) {
+                document.getElementById('termsModal').classList.add('active');
+                document.body.style.overflow = 'hidden';
+            }
+        }
+
+        function acceptTerms() {
+            localStorage.setItem('termsAccepted', 'true');
+            localStorage.setItem('termsAcceptedDate', new Date().toISOString());
+            document.getElementById('termsModal').classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        function declineTerms() {
+            alert('You must accept the Terms & Conditions and Disclaimer to use this website.');
+            window.location.href = 'about:blank';
+        }
+
+        // Show terms modal on page load
+        window.addEventListener('load', function() {
+            setTimeout(checkTermsAcceptance, 500);
+        });
+
+        // Add click handler to all contact/CTA buttons to remind about terms
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctaButtons = document.querySelectorAll('.cta-button');
+            ctaButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    const termsAccepted = localStorage.getItem('termsAccepted');
+                    if (!termsAccepted) {
+                        e.preventDefault();
+                        alert('Please accept our Terms & Conditions first.');
+                        checkTermsAcceptance();
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
+
