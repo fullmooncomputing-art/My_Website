@@ -49,16 +49,16 @@ module.exports = async function handler(req, res) {
       return res.status(500).json({ error: 'Failed to save your message. Please try again.' });
     }
 
-    try {
-      const transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.GMAIL_USER,
-          pass: process.env.GMAIL_APP_PASSWORD,
-        },
-      });
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_APP_PASSWORD,
+      },
+    });
 
-      // Notification to owner
+    // Notification to owner
+    try {
       await transporter.sendMail({
         from: `"Full Moon Computing" <${process.env.GMAIL_USER}>`,
         to: process.env.GMAIL_USER,
@@ -76,8 +76,13 @@ module.exports = async function handler(req, res) {
           <p style="font-family:sans-serif;color:#999;font-size:0.85rem;margin-top:2rem;">Sent from fullmooncomputing.in contact form</p>
         `,
       });
+      console.log('Owner notification sent to:', process.env.GMAIL_USER);
+    } catch (e) {
+      console.error('Owner email error:', e.message);
+    }
 
-      // Auto-reply to the person who submitted the form
+    // Auto-reply to the person who submitted the form
+    try {
       await transporter.sendMail({
         from: `"Full Moon Computing" <${process.env.GMAIL_USER}>`,
         to: data.email,
@@ -158,9 +163,9 @@ module.exports = async function handler(req, res) {
           </html>
         `,
       });
-
+      console.log('Auto-reply sent to:', data.email);
     } catch (emailErr) {
-      console.error('Email error:', emailErr.message);
+      console.error('Auto-reply error:', emailErr.message);
     }
 
     return res.status(200).json({ success: true });
