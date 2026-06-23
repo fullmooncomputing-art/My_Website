@@ -52,23 +52,31 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
 // Animate elements on scroll
 function animateOnScroll() {
     const elements = document.querySelectorAll('.feature-card, .service-item, .portfolio-item, .mission-card, .step');
-    
+
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                entry.target.style.opacity = '1';
-                entry.target.style.transform = 'translateY(0)';
-            }
+            if (!entry.isIntersecting) return;
+            const el = entry.target;
+            el.style.transition = 'opacity 0.5s ease-out, transform 0.5s ease-out';
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+            el.addEventListener('transitionend', function cleanup() {
+                el.style.removeProperty('transition');
+                el.style.removeProperty('opacity');
+                el.style.removeProperty('transform');
+                el.removeEventListener('transitionend', cleanup);
+            });
+            observer.unobserve(el);
         });
-    }, {
-        threshold: 0.1
-    });
+    }, { threshold: 0.1, rootMargin: '0px 0px -30px 0px' });
 
     elements.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(30px)';
-        el.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-        observer.observe(el);
+        // Only hide elements that are below the viewport — avoids flicker on load
+        if (el.getBoundingClientRect().top >= window.innerHeight) {
+            el.style.opacity = '0';
+            el.style.transform = 'translateY(24px)';
+            observer.observe(el);
+        }
     });
 }
 
@@ -107,16 +115,19 @@ if (contactForm) {
 
 // Add parallax effect to hero section
 function parallaxEffect() {
-    const hero = document.querySelector('.hero');
-    if (!hero) return;
-    
+    const heroContent = document.querySelector('.hero-content');
+    if (!heroContent) return;
+
+    let ticking = false;
     window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const heroContent = document.querySelector('.hero-content');
-        if (heroContent) {
-            heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                heroContent.style.transform = `translateY(${window.scrollY * 0.25}px)`;
+                ticking = false;
+            });
+            ticking = true;
         }
-    });
+    }, { passive: true });
 }
 
 // Add hover effect to navigation
