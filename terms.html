@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terms and Conditions - Full Moon Computing</title>
+    <title>Terms & Conditions — Full Moon Computing</title>
+    <meta name="description" content="Read Full Moon Computing's terms and conditions for using our digital setup services.">
+    <meta name="author" content="Full Moon Computing">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="canonical" href="https://fullmooncomputing.in/terms">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="style.css">
     <style>
         .legal-container {
@@ -145,14 +151,16 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-nav">Skip to main content</a>
     <!-- Navigation -->
-    <nav>
+    <nav aria-label="Main navigation">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <div class="moon-icon"></div>
+                <div class="moon-icon" aria-hidden="true"></div>
                 Full Moon Computing
             </a>
-            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
+            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+            <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">🌙</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="services.html">Services</a></li>
@@ -164,7 +172,7 @@
     </nav>
 
     <!-- Page Header -->
-    <section class="page-header">
+    <section class="page-header" id="main-content">
         <h1>Terms and Conditions</h1>
         <p>Digital Setup Services Agreement</p>
     </section>

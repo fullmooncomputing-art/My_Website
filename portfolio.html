@@ -3,19 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portfolio - Full Moon Computing</title>
+    <title>Portfolio — Full Moon Computing</title>
+    <meta name="description" content="View our portfolio of successful web projects — restaurant websites, e-commerce stores, SaaS landing pages, and more.">
+    <meta name="author" content="Full Moon Computing">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fullmooncomputing.in/portfolio">
+    <meta property="og:site_name" content="Full Moon Computing">
+    <meta property="og:title" content="Portfolio — Full Moon Computing">
+    <meta property="og:description" content="View our portfolio of successful web projects — restaurant websites, e-commerce stores, SaaS landing pages, and more.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Portfolio — Full Moon Computing">
+    <meta name="twitter:description" content="View our portfolio of successful web projects for small businesses and startups.">
+    <link rel="canonical" href="https://fullmooncomputing.in/portfolio">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <a href="#main-content" class="skip-nav">Skip to main content</a>
     <!-- Navigation -->
-    <nav>
+    <nav aria-label="Main navigation">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <div class="moon-icon"></div>
+                <div class="moon-icon" aria-hidden="true"></div>
                 Full Moon Computing
             </a>
-            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
-            <button id="darkModeToggle" class="dark-mode-toggle">🌙</button>
+            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+            <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">🌙</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="services.html">Services</a></li>
@@ -27,7 +42,7 @@
     </nav>
 
     <!-- Page Header -->
-    <section class="page-header">
+    <section class="page-header" id="main-content">
         <div class="container">
             <h1>Our Work</h1>
             <p>Successful projects that drive real business results</p>

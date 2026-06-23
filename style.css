@@ -5,6 +5,32 @@
     box-sizing: border-box;
 }
 
+/* Skip navigation link for keyboard users */
+.skip-nav {
+    position: absolute;
+    top: -100px;
+    left: 1rem;
+    background: #ffd700;
+    color: #1a1a2e;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0 0 8px 8px;
+    font-weight: bold;
+    text-decoration: none;
+    z-index: 10001;
+    transition: top 0.2s;
+}
+
+.skip-nav:focus {
+    top: 0;
+}
+
+/* Keyboard focus styles */
+*:focus-visible {
+    outline: 3px solid #ffd700;
+    outline-offset: 3px;
+    border-radius: 3px;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;

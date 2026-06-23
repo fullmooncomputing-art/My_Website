@@ -19,7 +19,9 @@ function createStars() {
 // Toggle mobile menu
 function toggleMenu() {
     const navLinks = document.getElementById('navLinks');
-    navLinks.classList.toggle('active');
+    const menuBtn = document.querySelector('.mobile-menu-btn');
+    const isActive = navLinks.classList.toggle('active');
+    if (menuBtn) menuBtn.setAttribute('aria-expanded', isActive.toString());
 }
 
 // Close mobile menu when clicking outside
@@ -135,9 +137,11 @@ function navHoverEffect() {
 // Counter animation for statistics
 function animateCounters() {
     const counters = document.querySelectorAll('.trust-number');
-    
+
     counters.forEach(counter => {
         const target = counter.textContent;
+        // Skip values like "24/7" that aren't simple numbers
+        if (target.includes('/')) return;
         const isPercentage = target.includes('%');
         const isPlus = target.includes('+');
         const numericValue = parseInt(target.replace(/[^\d]/g, ''));

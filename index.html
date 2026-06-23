@@ -3,7 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Moon Computing - Home</title>
+    <title>Full Moon Computing — Web Design & Development for Small Businesses</title>
+    <meta name="description" content="Full Moon Computing provides professional web design, development, and e-commerce solutions for small businesses. Get your free quote today.">
+    <meta name="author" content="Full Moon Computing">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a1a2e">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://fullmooncomputing.in/">
+    <meta property="og:site_name" content="Full Moon Computing">
+    <meta property="og:title" content="Full Moon Computing — Professional Web Services">
+    <meta property="og:description" content="Professional web design, development, and e-commerce solutions for small businesses. Get your free quote today.">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Full Moon Computing — Professional Web Services">
+    <meta name="twitter:description" content="Professional web design, development, and e-commerce solutions for small businesses.">
+    <link rel="canonical" href="https://fullmooncomputing.in/">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
     <link rel="stylesheet" href="style.css">
     <style>
         /* Terms Modal Styles */
@@ -195,6 +209,7 @@
     </style>
 </head>
 <body>
+    <a href="#main-content" class="skip-nav">Skip to main content</a>
     <!-- Terms and Conditions Modal -->
     <div class="terms-modal" id="termsModal">
         <div class="terms-modal-content">
@@ -239,14 +254,14 @@
     </div>
 
     <!-- Navigation -->
-    <nav>
+    <nav aria-label="Main navigation">
         <div class="nav-container">
             <a href="index.html" class="logo">
-                <div class="moon-icon"></div>
+                <div class="moon-icon" aria-hidden="true"></div>
                 Full Moon Computing
             </a>
-            <button class="mobile-menu-btn" onclick="toggleMenu()">☰</button>
-            <button id="darkModeToggle" class="dark-mode-toggle">🌙</button>
+            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+            <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">🌙</button>
             <ul class="nav-links" id="navLinks">
                 <li><a href="index.html" class="active">Home</a></li>
                 <li><a href="services.html">Services</a></li>
@@ -258,7 +273,7 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
+    <section class="hero" id="main-content">
         <div class="stars" id="stars"></div>
         <div class="hero-content">
             <h1>Websites That Help Small Businesses Grow</h1>
