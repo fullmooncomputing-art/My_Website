@@ -15,3 +15,6 @@ create table contacts (
 create policy "Allow inserts" on contacts
 for insert to anon
 with check (true);
+
+-- Grant INSERT privilege to anon role
+GRANT INSERT ON public.contacts TO anon;
