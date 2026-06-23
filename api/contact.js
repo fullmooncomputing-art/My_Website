@@ -1,10 +1,4 @@
-const { createClient } = require('@supabase/supabase-js');
 const nodemailer = require('nodemailer');
-
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
 
 module.exports = async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -16,27 +10,42 @@ module.exports = async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  const { name, email, phone, service, message } = req.body;
+  const { name, email, phone, service, message } = req.body || {};
 
   if (!name || !email || !message) {
     return res.status(400).json({ error: 'Name, email, and message are required.' });
   }
 
   const sanitized = {
-    name: name.slice(0, 100),
-    email: email.slice(0, 200),
-    phone: (phone || '').slice(0, 20),
-    service: (service || '').slice(0, 50),
-    message: message.slice(0, 2000),
+    name: String(name).slice(0, 100),
+    email: String(email).slice(0, 200),
+    phone: String(phone || '').slice(0, 20),
+    service: String(service || '').slice(0, 50),
+    message: String(message).slice(0, 2000),
   };
 
-  const { error: dbError } = await supabase.from('contacts').insert([sanitized]);
+  // Save to Supabase via REST API (strip trailing /rest/v1 if present)
+  const supabaseUrl = (process.env.SUPABASE_URL || '').replace(/\/rest\/v1\/?$/, '');
+  const supabaseKey = process.env.SUPABASE_ANON_KEY;
 
-  if (dbError) {
-    console.error('Supabase error:', dbError);
+  const dbRes = await fetch(`${supabaseUrl}/rest/v1/contacts`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': supabaseKey,
+      'Authorization': `Bearer ${supabaseKey}`,
+      'Prefer': 'return=minimal',
+    },
+    body: JSON.stringify(sanitized),
+  });
+
+  if (!dbRes.ok) {
+    const err = await dbRes.text();
+    console.error('Supabase error:', dbRes.status, err);
     return res.status(500).json({ error: 'Failed to save your message. Please try again.' });
   }
 
+  // Send email notification
   try {
     const transporter = nodemailer.createTransport({
       service: 'gmail',
@@ -65,7 +74,7 @@ module.exports = async function handler(req, res) {
     });
   } catch (emailErr) {
     console.error('Email error:', emailErr);
-    // Don't fail the request — data is already saved to Supabase
+    // Don't fail the request — data is already saved
   }
 
   return res.status(200).json({ success: true });
