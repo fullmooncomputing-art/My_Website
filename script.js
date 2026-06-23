@@ -83,33 +83,48 @@ function animateOnScroll() {
 // Contact form submission
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
-    contactForm.addEventListener('submit', function(e) {
+    contactForm.addEventListener('submit', async function(e) {
         e.preventDefault();
-        
+
         const formMessage = document.getElementById('formMessage');
         const submitBtn = contactForm.querySelector('.submit-btn');
-        
-        // Disable submit button
+
         submitBtn.disabled = true;
         submitBtn.textContent = 'Sending...';
-        
-        // Simulate form submission (replace with actual API call)
-        setTimeout(() => {
-            formMessage.className = 'form-message success';
-            formMessage.textContent = 'Thank you for your message! We will get back to you within 24 hours.';
-            
-            // Reset form
-            contactForm.reset();
-            
-            // Re-enable submit button
+
+        const data = {
+            name: document.getElementById('name').value,
+            email: document.getElementById('email').value,
+            phone: document.getElementById('phone').value,
+            service: document.getElementById('service').value,
+            message: document.getElementById('message').value,
+        };
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data),
+            });
+
+            const result = await res.json();
+
+            if (res.ok) {
+                formMessage.className = 'form-message success';
+                formMessage.textContent = 'Thank you for your message! We will get back to you within 24 hours.';
+                contactForm.reset();
+            } else {
+                formMessage.className = 'form-message error';
+                formMessage.textContent = result.error || 'Something went wrong. Please try again.';
+            }
+        } catch (err) {
+            formMessage.className = 'form-message error';
+            formMessage.textContent = 'Something went wrong. Please try again.';
+        } finally {
             submitBtn.disabled = false;
             submitBtn.textContent = 'Send Message';
-            
-            // Hide message after 5 seconds
-            setTimeout(() => {
-                formMessage.style.display = 'none';
-            }, 5000);
-        }, 1500);
+            setTimeout(() => { formMessage.className = 'form-message'; }, 6000);
+        }
     });
 }
 
