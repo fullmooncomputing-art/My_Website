@@ -6,11 +6,6 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://fullmooncomputing.in/services</loc>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
     <loc>https://fullmooncomputing.in/portfolio</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
