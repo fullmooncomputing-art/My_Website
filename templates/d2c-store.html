@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verdé — D2C Online Store Template | Full Moon Computing</title>
+    <meta name="description" content="A live demo direct-to-consumer (D2C) online store template by Full Moon Computing. Online-only brand storefront with product grid, live cart, reviews and checkout.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#2f4032">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --forest: #2f4032;
+            --moss: #4d6b50;
+            --sage: #8aa68d;
+            --clay: #c97b5a;
+            --clay-dark: #b4664a;
+            --cream: #f4f0e8;
+            --paper: #fbfaf6;
+            --ink: #20281f;
+            --muted: #6e7568;
+            --line: #e4e0d4;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.65; }
+        a { text-decoration: none; color: inherit; }
+        h1, h2, h3, .serif { font-family: 'Fraunces', Georgia, serif; font-weight: 600; letter-spacing: -0.01em; }
+        .container { max-width: 1180px; margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 5.5rem 0; }
+        .center { text-align: center; }
+        .eyebrow { display: inline-block; color: var(--clay); font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.74rem; margin-bottom: 0.9rem; }
+        .section-title { font-size: 2.6rem; color: var(--forest); line-height: 1.1; }
+        .section-sub { color: var(--muted); max-width: 540px; margin: 0.9rem auto 0; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 14px 30px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; cursor: pointer; border: none; transition: all 0.25s; font-family: inherit; }
+        .btn-clay { background: var(--clay); color: #fff; }
+        .btn-clay:hover { background: var(--clay-dark); transform: translateY(-2px); box-shadow: 0 12px 26px rgba(201,123,90,0.35); }
+        .btn-dark { background: var(--forest); color: var(--cream); }
+        .btn-dark:hover { background: var(--moss); transform: translateY(-2px); }
+        .btn-outline { background: transparent; border: 1.5px solid var(--forest); color: var(--forest); }
+        .btn-outline:hover { background: var(--forest); color: var(--cream); }
+
+        /* Announcement */
+        .announce { background: var(--forest); color: var(--cream); text-align: center; font-size: 0.82rem; padding: 0.55rem 1rem; letter-spacing: 0.04em; }
+        .announce a { color: #e9c9b6; font-weight: 700; }
+        .announce a:hover { text-decoration: underline; }
+
+        /* Nav */
+        header.nav { position: sticky; top: 0; z-index: 200; background: rgba(251,250,246,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+        .nav-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; padding: 1.1rem 1.5rem; max-width: 1180px; margin: 0 auto; }
+        .nav-links { display: flex; gap: 1.8rem; list-style: none; }
+        .nav-links a { color: var(--ink); font-weight: 500; font-size: 0.9rem; }
+        .nav-links a:hover { color: var(--clay); }
+        .brand { font-family: 'Fraunces', serif; font-weight: 700; font-size: 1.6rem; color: var(--forest); text-align: center; letter-spacing: 0.02em; }
+        .brand .leaf { color: var(--moss); }
+        .nav-right { display: flex; justify-content: flex-end; align-items: center; gap: 1.2rem; }
+        .nav-right a, .nav-right button { color: var(--ink); font-weight: 500; font-size: 0.9rem; background: none; border: none; cursor: pointer; font-family: inherit; }
+        .cart-btn { position: relative; }
+        .cart-count { position: absolute; top: -10px; right: -12px; background: var(--clay); color: #fff; width: 20px; height: 20px; border-radius: 50%; display: grid; place-items: center; font-size: 0.72rem; font-weight: 700; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.4rem; cursor: pointer; }
+
+        /* Hero */
+        .hero { background: var(--cream); }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; align-items: center; min-height: 78vh; gap: 3rem; }
+        .hero-copy { padding: 4rem 0; }
+        .hero .pill { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 0.78rem; font-weight: 600; color: var(--moss); margin-bottom: 1.4rem; }
+        .hero h1 { font-size: 4rem; line-height: 1.02; color: var(--forest); margin-bottom: 1.3rem; }
+        .hero h1 em { font-style: italic; color: var(--clay); }
+        .hero p { font-size: 1.12rem; color: var(--muted); max-width: 440px; margin-bottom: 2rem; }
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+        .hero-rating { display: flex; align-items: center; gap: 0.6rem; margin-top: 1.8rem; font-size: 0.88rem; color: var(--muted); }
+        .hero-rating .stars { color: var(--clay); letter-spacing: 2px; }
+        .hero-visual { height: 100%; min-height: 78vh; display: flex; align-items: center; justify-content: center; position: relative; }
+        .product-hero { width: 78%; max-width: 420px; aspect-ratio: 4/5; border-radius: 220px 220px 28px 28px; background: linear-gradient(165deg, var(--moss), var(--forest)); display: grid; place-items: center; font-size: 8rem; box-shadow: 0 40px 80px rgba(47,64,50,0.35); position: relative; }
+        .product-hero::before { content: '🌿'; position: absolute; top: -18px; left: -10px; font-size: 3rem; transform: rotate(-20deg); }
+        .float-tag { position: absolute; background: #fff; border-radius: 14px; padding: 0.7rem 1rem; box-shadow: 0 14px 30px rgba(0,0,0,0.12); font-size: 0.82rem; }
+        .float-tag.t1 { top: 14%; right: 4%; }
+        .float-tag.t2 { bottom: 16%; left: 2%; }
+        .float-tag b { display: block; color: var(--forest); font-family: 'Fraunces', serif; }
+
+        /* Marquee trust */
+        .trust { background: var(--forest); color: var(--cream); }
+        .trust-row { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1.5rem; padding: 1.6rem 0; text-align: center; }
+        .trust-row div { font-size: 0.86rem; font-weight: 500; letter-spacing: 0.04em; }
+        .trust-row .ic { font-size: 1.1rem; margin-right: 0.4rem; }
+
+        /* Products */
+        .prod-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .card { background: #fff; border: 1px solid var(--line); border-radius: 20px; overflow: hidden; transition: transform 0.25s, box-shadow 0.25s; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 22px 44px rgba(0,0,0,0.08); }
+        .card .img { aspect-ratio: 1; display: grid; place-items: center; font-size: 3.4rem; position: relative; }
+        .p1 { background: linear-gradient(150deg,#dfeadd,#bcd2bd); }
+        .p2 { background: linear-gradient(150deg,#f3ddcf,#e9c3aa); }
+        .p3 { background: linear-gradient(150deg,#e7e2d3,#cfc6ad); }
+        .p4 { background: linear-gradient(150deg,#d8e5e6,#b3cdcf); }
+        .card .badge { position: absolute; top: 12px; left: 12px; background: var(--clay); color: #fff; font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em; padding: 4px 10px; border-radius: 999px; text-transform: uppercase; }
+        .card .body { padding: 1.2rem 1.3rem 1.4rem; }
+        .card .cat { font-size: 0.72rem; color: var(--sage); text-transform: uppercase; letter-spacing: 0.1em; font-weight: 600; }
+        .card h3 { font-size: 1.18rem; color: var(--forest); margin: 0.25rem 0 0.3rem; }
+        .card .stars { color: var(--clay); font-size: 0.82rem; letter-spacing: 1px; }
+        .card .stars span { color: var(--muted); margin-left: 0.3rem; }
+        .card .foot { display: flex; justify-content: space-between; align-items: center; margin-top: 1rem; }
+        .card .price { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.25rem; color: var(--forest); }
+        .card .price s { color: var(--muted); font-weight: 400; font-size: 0.85rem; margin-right: 0.3rem; }
+        .add-btn { background: var(--forest); color: var(--cream); border: none; padding: 9px 18px; border-radius: 999px; font-weight: 600; font-size: 0.82rem; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .add-btn:hover { background: var(--clay); }
+
+        /* Ritual / benefits */
+        .ritual { background: var(--cream); }
+        .ritual-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; margin-top: 3rem; }
+        .ritual-card { text-align: center; }
+        .ritual-card .ic { width: 64px; height: 64px; border-radius: 50%; background: #fff; display: grid; place-items: center; font-size: 1.7rem; margin: 0 auto 1.1rem; box-shadow: 0 10px 24px rgba(0,0,0,0.06); }
+        .ritual-card h4 { font-family: 'Fraunces', serif; font-size: 1.3rem; color: var(--forest); margin-bottom: 0.4rem; }
+        .ritual-card p { color: var(--muted); font-size: 0.92rem; }
+
+        /* Story split */
+        .story-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .story-img { aspect-ratio: 5/4; border-radius: 24px; background: linear-gradient(150deg, var(--sage), var(--moss)); display: grid; place-items: center; font-size: 6rem; box-shadow: 0 30px 60px rgba(47,64,50,0.2); }
+        .story-text h2 { font-size: 2.4rem; color: var(--forest); margin-bottom: 1.2rem; }
+        .story-text p { color: var(--muted); margin-bottom: 1.1rem; }
+        .story-stats { display: flex; gap: 2.5rem; margin-top: 1.8rem; }
+        .story-stats .num { font-family: 'Fraunces', serif; font-size: 2rem; color: var(--clay); font-weight: 700; }
+        .story-stats .lbl { font-size: 0.82rem; color: var(--muted); }
+
+        /* Reviews */
+        .reviews { background: var(--paper); }
+        .review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .review { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 1.8rem; }
+        .review .stars { color: var(--clay); letter-spacing: 2px; margin-bottom: 0.8rem; }
+        .review p { font-size: 0.95rem; color: var(--ink); margin-bottom: 1.2rem; }
+        .review .who { display: flex; align-items: center; gap: 0.7rem; }
+        .review .av { width: 38px; height: 38px; border-radius: 50%; background: var(--sage); color: #fff; display: grid; place-items: center; font-weight: 700; }
+        .review .who b { font-size: 0.88rem; display: block; }
+        .review .who span { font-size: 0.78rem; color: var(--muted); }
+        .review .verified { color: var(--moss); font-size: 0.74rem; font-weight: 600; }
+
+        /* Bundle CTA */
+        .bundle { background: var(--forest); color: var(--cream); border-radius: 28px; padding: 3.5rem; display: grid; grid-template-columns: 1.4fr 1fr; gap: 3rem; align-items: center; }
+        .bundle .eyebrow { color: #e9c9b6; }
+        .bundle h2 { font-size: 2.4rem; margin-bottom: 0.8rem; }
+        .bundle p { color: #cdd6c9; margin-bottom: 1.6rem; }
+        .bundle-box { background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 1.8rem; text-align: center; }
+        .bundle-box .save { color: #e9c9b6; font-weight: 700; font-size: 0.8rem; letter-spacing: 0.1em; text-transform: uppercase; }
+        .bundle-box .price { font-family: 'Fraunces', serif; font-size: 3rem; margin: 0.4rem 0; }
+        .bundle-box .price s { font-size: 1.3rem; color: #9fb0a0; }
+
+        /* Newsletter */
+        .news { background: var(--cream); text-align: center; }
+        .news-form { display: flex; gap: 0.6rem; max-width: 440px; margin: 1.8rem auto 0; }
+        .news-form input { flex: 1; padding: 14px 18px; border-radius: 999px; border: 1px solid var(--line); font-family: inherit; font-size: 0.92rem; background: #fff; }
+        .news-form input:focus { outline: none; border-color: var(--clay); }
+        .news-note { font-size: 0.8rem; color: var(--muted); margin-top: 0.9rem; }
+
+        /* Footer */
+        footer.site { background: var(--forest); color: #cdd6c9; padding: 4rem 0 2rem; }
+        .foot-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 2rem; }
+        footer.site .brand { color: var(--cream); text-align: left; margin-bottom: 0.8rem; }
+        footer.site p { font-size: 0.88rem; max-width: 280px; }
+        footer.site h5 { color: var(--cream); font-size: 0.92rem; margin-bottom: 0.9rem; font-weight: 600; }
+        footer.site ul { list-style: none; }
+        footer.site ul li { margin-bottom: 0.5rem; font-size: 0.88rem; }
+        footer.site ul li a:hover { color: #e9c9b6; }
+        .foot-bottom { border-top: 1px solid rgba(255,255,255,0.12); margin-top: 2.8rem; padding-top: 1.5rem; text-align: center; font-size: 0.82rem; }
+        .foot-bottom .credit a { color: #e9c9b6; font-weight: 700; }
+
+        /* Cart drawer */
+        .overlay { position: fixed; inset: 0; background: rgba(32,40,31,0.5); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 300; }
+        .overlay.open { opacity: 1; visibility: visible; }
+        .cart-drawer { position: fixed; top: 0; right: 0; height: 100%; width: 390px; max-width: 90vw; background: var(--paper); z-index: 400; transform: translateX(100%); transition: transform 0.35s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; box-shadow: -10px 0 40px rgba(0,0,0,0.2); }
+        .cart-drawer.open { transform: none; }
+        .cart-head { display: flex; justify-content: space-between; align-items: center; padding: 1.4rem; border-bottom: 1px solid var(--line); }
+        .cart-head h3 { font-size: 1.25rem; color: var(--forest); }
+        .cart-head button { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--muted); }
+        .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.4rem; }
+        .cart-empty { text-align: center; color: var(--muted); margin-top: 3rem; }
+        .cart-empty .ic { font-size: 3rem; }
+        .ci { display: flex; gap: 0.8rem; align-items: center; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
+        .ci .ic { width: 48px; height: 48px; border-radius: 12px; background: var(--cream); display: grid; place-items: center; font-size: 1.5rem; }
+        .ci .info { flex: 1; }
+        .ci .info b { font-size: 0.9rem; display: block; color: var(--forest); }
+        .ci .info span { font-size: 0.82rem; color: var(--muted); }
+        .ci .qty { display: flex; align-items: center; gap: 0.5rem; }
+        .ci .qty button { width: 26px; height: 26px; border-radius: 8px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 800; color: var(--clay); }
+        .cart-foot { padding: 1.3rem 1.4rem; border-top: 1px solid var(--line); }
+        .cart-foot .line { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--muted); }
+        .cart-foot .total { font-weight: 700; font-size: 1.2rem; color: var(--forest); font-family: 'Fraunces', serif; }
+        .cart-foot .btn-clay { width: 100%; justify-content: center; margin-top: 0.8rem; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(40px); background: var(--forest); color: var(--cream); padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; opacity: 0; transition: 0.3s; z-index: 500; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .nav-inner { grid-template-columns: auto 1fr auto; }
+            .brand { text-align: left; }
+            .menu-toggle { display: block; }
+            .nav-links.open { display: flex; flex-direction: column; position: absolute; top: 100%; left: 0; right: 0; background: var(--paper); padding: 1.3rem 1.5rem; gap: 1rem; border-bottom: 1px solid var(--line); }
+            .hero-grid, .story-grid, .bundle { grid-template-columns: 1fr; }
+            .hero-visual { min-height: auto; padding: 2rem 0 3rem; }
+            .prod-grid { grid-template-columns: 1fr 1fr; }
+            .ritual-grid, .review-grid, .foot-grid { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 3rem; }
+            .section-title { font-size: 2.1rem; }
+            .bundle { padding: 2.5rem; }
+        }
+        @media (max-width: 560px) {
+            .prod-grid { grid-template-columns: 1fr; }
+            .trust-row { gap: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Announcement -->
+    <div class="announce">
+        ✨ Online exclusive — this is a <strong>live demo D2C store template</strong> by Full Moon Computing ·
+        <a href="/contact">Launch your brand online →</a>
+    </div>
+
+    <!-- Nav -->
+    <header class="nav">
+        <div class="nav-inner">
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#shop">Shop</a></li>
+                <li><a href="#story">Our Story</a></li>
+                <li><a href="#reviews">Reviews</a></li>
+            </ul>
+            <button class="menu-toggle" aria-label="Menu" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+            <a href="#home" class="brand">Verd<span class="leaf">é</span></a>
+            <div class="nav-right">
+                <a href="#shop">Search</a>
+                <a href="#shop">Account</a>
+                <button class="cart-btn" onclick="openCart()">Cart<span class="cart-count" id="cartCount">0</span></button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="container hero-grid">
+            <div class="hero-copy">
+                <span class="pill">🌱 100% plant-based · made in small batches</span>
+                <h1>Skincare that <em>grows</em> on you.</h1>
+                <p>Clean, botanical formulas delivered straight to your door. No middlemen, no markups, no physical store — just better skin.</p>
+                <div class="hero-actions">
+                    <a href="#shop" class="btn btn-clay">Shop Bestsellers</a>
+                    <a href="#story" class="btn btn-outline">Our Story</a>
+                </div>
+                <div class="hero-rating">
+                    <span class="stars">★★★★★</span>
+                    <span><b>4.9/5</b> from 9,200+ verified buyers</span>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="product-hero">🧴
+                    <div class="float-tag t1">🌿 <b>Vegan</b> &amp; cruelty-free</div>
+                    <div class="float-tag t2">🚚 <b>Free shipping</b> over ₹699</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust -->
+    <section class="trust">
+        <div class="container trust-row">
+            <div><span class="ic">🌿</span>100% Vegan</div>
+            <div><span class="ic">🐰</span>Cruelty-Free</div>
+            <div><span class="ic">🧪</span>Dermatologist-Tested</div>
+            <div><span class="ic">♻️</span>Recyclable Packaging</div>
+            <div><span class="ic">🚚</span>Free Shipping ₹699+</div>
+        </div>
+    </section>
+
+    <!-- Shop -->
+    <section class="section" id="shop">
+        <div class="container">
+            <div class="center">
+                <span class="eyebrow">The Collection</span>
+                <h2 class="section-title">Bestsellers</h2>
+                <p class="section-sub">Loved by thousands. Shipped from our lab to your doorstep — never a store shelf in between.</p>
+            </div>
+            <div class="prod-grid">
+                <div class="card">
+                    <div class="img p1"><span class="badge">Bestseller</span>🧴</div>
+                    <div class="body">
+                        <div class="cat">Serum</div>
+                        <h3>Green Glow Serum</h3>
+                        <div class="stars">★★★★★ <span>(2,140)</span></div>
+                        <div class="foot"><div class="price"><s>₹899</s>₹649</div><button class="add-btn" onclick="addItem('Green Glow Serum','🧴',649)">Add</button></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="img p2">🫙</div>
+                    <div class="body">
+                        <div class="cat">Moisturiser</div>
+                        <h3>Clay Calm Cream</h3>
+                        <div class="stars">★★★★★ <span>(1,506)</span></div>
+                        <div class="foot"><div class="price">₹720</div><button class="add-btn" onclick="addItem('Clay Calm Cream','🫙',720)">Add</button></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="img p3"><span class="badge">New</span>🧼</div>
+                    <div class="body">
+                        <div class="cat">Cleanser</div>
+                        <h3>Oat Milk Cleanser</h3>
+                        <div class="stars">★★★★☆ <span>(884)</span></div>
+                        <div class="foot"><div class="price">₹490</div><button class="add-btn" onclick="addItem('Oat Milk Cleanser','🧼',490)">Add</button></div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="img p4">💧</div>
+                    <div class="body">
+                        <div class="cat">Toner</div>
+                        <h3>Rose Mist Toner</h3>
+                        <div class="stars">★★★★★ <span>(1,932)</span></div>
+                        <div class="foot"><div class="price"><s>₹560</s>₹420</div><button class="add-btn" onclick="addItem('Rose Mist Toner','💧',420)">Add</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Ritual -->
+    <section class="section ritual">
+        <div class="container center">
+            <span class="eyebrow">Why online-only works</span>
+            <h2 class="section-title">Direct to you, the way it should be</h2>
+            <div class="ritual-grid">
+                <div class="ritual-card"><div class="ic">🏷️</div><h4>Fairer Prices</h4><p>No retail middlemen or store rent means up to 40% better value on every bottle.</p></div>
+                <div class="ritual-card"><div class="ic">🧪</div><h4>Always Fresh</h4><p>Made in small batches and shipped within days — never sitting on a shelf for months.</p></div>
+                <div class="ritual-card"><div class="ic">💬</div><h4>A Real Relationship</h4><p>We hear from you directly, so the brand evolves around what you actually want.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Story -->
+    <section class="section" id="story">
+        <div class="container story-grid">
+            <div class="story-img">🌾</div>
+            <div class="story-text">
+                <span class="eyebrow">Our Story</span>
+                <h2>Born online, grown by community</h2>
+                <p>Verdé started in a tiny home lab with one belief: great skincare shouldn't cost the earth — or pass through five middlemen before it reaches you.</p>
+                <p>By selling directly, we put the savings back into better ingredients and into you. Every formula is shaped by thousands of reviews from people just like you.</p>
+                <div class="story-stats">
+                    <div><div class="num">9,200+</div><div class="lbl">5-star reviews</div></div>
+                    <div><div class="num">0</div><div class="lbl">Physical stores</div></div>
+                    <div><div class="num">48hr</div><div class="lbl">Avg. dispatch</div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="section reviews" id="reviews">
+        <div class="container center">
+            <span class="eyebrow">Real reviews</span>
+            <h2 class="section-title">Loved by the community</h2>
+            <div class="review-grid">
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"The Green Glow Serum cleared my skin in three weeks. Ordering online was effortless and it arrived in two days."</p>
+                    <div class="who"><div class="av">A</div><div><b>Ananya R.</b><span>Mumbai · <span class="verified">✓ Verified buyer</span></span></div></div>
+                </div>
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"Love that there's no store markup. Same quality I'd pay double for at a mall counter. The subscription saves me even more."</p>
+                    <div class="who"><div class="av">K</div><div><b>Karan M.</b><span>Bengaluru · <span class="verified">✓ Verified buyer</span></span></div></div>
+                </div>
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"Clean ingredients, beautiful packaging, and the team actually replied to my DM. This is how brands should work."</p>
+                    <div class="who"><div class="av">S</div><div><b>Sara P.</b><span>Delhi · <span class="verified">✓ Verified buyer</span></span></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bundle -->
+    <section class="section">
+        <div class="container">
+            <div class="bundle">
+                <div>
+                    <span class="eyebrow">Best value</span>
+                    <h2>The Full Ritual Kit</h2>
+                    <p>All four bestsellers in one box — cleanse, tone, treat and moisturise. Free shipping &amp; a free linen pouch included.</p>
+                    <button class="btn btn-clay" onclick="addItem('Full Ritual Kit','🎁',1799)">Add Bundle to Cart</button>
+                </div>
+                <div class="bundle-box">
+                    <div class="save">Save ₹480</div>
+                    <div class="price"><s>₹2,279</s> ₹1,799</div>
+                    <p style="color:#cdd6c9;font-size:0.85rem">4 full-size products · ships free</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter -->
+    <section class="section news">
+        <div class="container">
+            <span class="eyebrow">Join the list</span>
+            <h2 class="section-title">Get 10% off your first order</h2>
+            <p class="section-sub">Skincare tips, early access to drops, and members-only pricing.</p>
+            <form class="news-form" onsubmit="subscribe(event)">
+                <input type="email" placeholder="you@email.com" required>
+                <button type="submit" class="btn btn-dark">Subscribe</button>
+            </form>
+            <p class="news-note" id="newsNote">No spam, just good skin. Unsubscribe anytime.</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site">
+        <div class="container">
+            <div class="foot-grid">
+                <div>
+                    <a href="#home" class="brand">Verd<span style="color:#e9c9b6">é</span></a>
+                    <p>A direct-to-consumer skincare brand. Sold online only — better formulas, fairer prices, delivered to your door.</p>
+                </div>
+                <div><h5>Shop</h5><ul><li><a href="#">Serums</a></li><li><a href="#">Moisturisers</a></li><li><a href="#">Cleansers</a></li><li><a href="#">Bundles</a></li></ul></div>
+                <div><h5>Help</h5><ul><li><a href="#">Track Order</a></li><li><a href="#">Shipping</a></li><li><a href="#">Returns</a></li><li><a href="#">FAQs</a></li></ul></div>
+                <div><h5>Brand</h5><ul><li><a href="#">Our Story</a></li><li><a href="#">Ingredients</a></li><li><a href="#">Sustainability</a></li><li><a href="#">Contact</a></li></ul></div>
+            </div>
+            <div class="foot-bottom">
+                <p>© 2026 Verdé (fictional demo). All rights reserved.</p>
+                <p class="credit">Template designed &amp; built by <a href="/">Full Moon Computing</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart -->
+    <div class="overlay" id="overlay" onclick="closeCart()"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Your cart">
+        <div class="cart-head">
+            <h3>Your Bag</h3>
+            <button onclick="closeCart()" aria-label="Close">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty" id="cartEmpty"><div class="ic">🛍️</div><p>Your bag is empty.<br>Time to glow up.</p></div>
+        </div>
+        <div class="cart-foot" id="cartFoot" style="display:none">
+            <div class="line"><span>Subtotal</span><span id="subTotal">₹0</span></div>
+            <div class="line"><span>Shipping</span><span style="color:var(--moss);font-weight:700">FREE</span></div>
+            <div class="line total"><span>Total</span><span id="grandTotal">₹0</span></div>
+            <button class="btn btn-clay" onclick="checkout()">Checkout →</button>
+        </div>
+    </aside>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const cart = {};
+        const fmt = n => '₹' + n.toLocaleString('en-IN');
+
+        function addItem(name, ic, price) {
+            if (cart[name]) cart[name].qty++;
+            else cart[name] = { ic, price, qty: 1 };
+            render(); openCart(); toast(name + ' added to bag');
+        }
+        function changeQty(name, d) {
+            if (!cart[name]) return;
+            cart[name].qty += d;
+            if (cart[name].qty <= 0) delete cart[name];
+            render();
+        }
+        function render() {
+            const names = Object.keys(cart);
+            const count = names.reduce((s, n) => s + cart[n].qty, 0);
+            document.getElementById('cartCount').textContent = count;
+            const items = document.getElementById('cartItems');
+            const empty = document.getElementById('cartEmpty');
+            const foot = document.getElementById('cartFoot');
+            items.querySelectorAll('.ci').forEach(e => e.remove());
+            if (names.length === 0) { empty.style.display = 'block'; foot.style.display = 'none'; return; }
+            empty.style.display = 'none'; foot.style.display = 'block';
+            let sub = 0;
+            names.forEach(n => {
+                const it = cart[n]; sub += it.price * it.qty;
+                const row = document.createElement('div');
+                row.className = 'ci';
+                row.innerHTML = `<div class="ic">${it.ic}</div>
+                    <div class="info"><b>${n}</b><span>${fmt(it.price)}</span></div>
+                    <div class="qty"><button onclick="changeQty('${n}',-1)">−</button><b>${it.qty}</b><button onclick="changeQty('${n}',1)">+</button></div>`;
+                items.appendChild(row);
+            });
+            document.getElementById('subTotal').textContent = fmt(sub);
+            document.getElementById('grandTotal').textContent = fmt(sub);
+        }
+        function openCart() { document.getElementById('cartDrawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
+        function closeCart() { document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+        function checkout() {
+            if (Object.keys(cart).length === 0) return;
+            toast('✓ Demo only — a live store would take secure payment here!');
+            closeCart();
+        }
+        function subscribe(e) {
+            e.preventDefault();
+            document.getElementById('newsNote').textContent = '✓ You\'re in! Your 10% code would arrive by email on a live site.';
+            e.target.reset();
+        }
+        let toastTimer;
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+        }
+        document.querySelectorAll('#navLinks a').forEach(a =>
+            a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+    </script>
+</body>
+</html>
