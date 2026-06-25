@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blokly — No-Code Platform Template | Full Moon Computing</title>
+    <meta name="description" content="A live demo no-code platform (SaaS) website template by Full Moon Computing. Build apps without coding — with an interactive drag-to-build demo, pricing tiers and feature sections.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#0d0b1f">
+    <meta name="author" content="Full Moon Computing">
+    <meta name="copyright" content="© 2026 Full Moon Computing — fullmooncomputing.in. This template's design and code are the property of Full Moon Computing.">
+    <!--
+      ============================================================
+      © 2026 Full Moon Computing — https://fullmooncomputing.in
+      This is a demo template. Design and source code are the
+      property of Full Moon Computing. Unauthorised copying or
+      redistribution is prohibited. Want a site like this?
+      Contact us at https://fullmooncomputing.in/contact
+      ============================================================
+    -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@500;600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --night: #0d0b1f;
+            --night-2: #15122e;
+            --card: #1c1838;
+            --violet: #7c3aed;
+            --violet-2: #9d5cff;
+            --blue: #3b82f6;
+            --cyan: #22d3ee;
+            --mint: #10b981;
+            --pink: #ec4899;
+            --paper: #f7f7fb;
+            --ink: #16142a;
+            --muted: #6b6880;
+            --line: #e8e7f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Inter', system-ui, sans-serif; color: var(--ink); background: #fff; line-height: 1.6; }
+        a { text-decoration: none; color: inherit; }
+        h1, h2, h3, .display { font-family: 'Manrope', sans-serif; letter-spacing: -0.025em; }
+        .container { max-width: 1180px; margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 5.5rem 0; }
+        .center { text-align: center; }
+        .grad-text { background: linear-gradient(100deg, var(--cyan), var(--violet-2), var(--pink)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .eyebrow { display: inline-block; color: var(--violet); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.74rem; margin-bottom: 0.9rem; }
+        .section-title { font-family: 'Manrope'; font-size: 2.6rem; font-weight: 800; color: var(--ink); line-height: 1.12; }
+        .section-sub { color: var(--muted); max-width: 560px; margin: 0.9rem auto 0; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 13px 26px; border-radius: 12px; font-weight: 700; font-size: 0.92rem; cursor: pointer; border: none; transition: all 0.2s; font-family: 'Manrope', sans-serif; }
+        .btn-grad { background: linear-gradient(100deg, var(--violet), var(--blue)); color: #fff; box-shadow: 0 10px 24px rgba(124,58,237,0.35); }
+        .btn-grad:hover { transform: translateY(-2px); box-shadow: 0 16px 32px rgba(124,58,237,0.45); }
+        .btn-ghost { background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.14); }
+        .btn-dark { background: var(--ink); color: #fff; }
+        .btn-dark:hover { transform: translateY(-2px); }
+        .btn-light { background: var(--paper); color: var(--ink); border: 1px solid var(--line); }
+        .btn-light:hover { background: #fff; border-color: var(--violet); }
+
+        /* Demo bar */
+        .demo-bar { background: linear-gradient(100deg, var(--violet), var(--blue)); color: #fff; text-align: center; font-size: 0.84rem; padding: 0.55rem 1rem; }
+        .demo-bar a { color: #fff; font-weight: 800; text-decoration: underline; }
+
+        /* Nav */
+        header.nav { position: sticky; top: 0; z-index: 200; background: rgba(13,11,31,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.06); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.5rem; max-width: 1180px; margin: 0 auto; }
+        .brand { display: flex; align-items: center; gap: 0.55rem; color: #fff; font-family: 'Manrope'; font-weight: 800; font-size: 1.3rem; }
+        .brand .logo { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, var(--cyan), var(--violet)); display: grid; place-items: center; font-size: 0.95rem; }
+        .nav-links { display: flex; align-items: center; gap: 1.7rem; list-style: none; }
+        .nav-links a { color: #c5c2db; font-weight: 600; font-size: 0.9rem; transition: color 0.2s; }
+        .nav-links a:hover { color: #fff; }
+        .nav-cta { display: flex; align-items: center; gap: 0.8rem; }
+        .nav-login { color: #fff !important; }
+        .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+        /* Hero */
+        .hero { background:
+            radial-gradient(800px 400px at 15% -5%, rgba(124,58,237,0.4), transparent),
+            radial-gradient(700px 400px at 90% 0%, rgba(34,211,238,0.22), transparent),
+            var(--night);
+            color: #fff; padding: 4.5rem 0 5rem; overflow: hidden; }
+        .hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+        .hero .chip { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.16); border-radius: 999px; padding: 6px 14px; font-size: 0.78rem; font-weight: 600; color: #d7d4ec; margin-bottom: 1.4rem; }
+        .hero h1 { font-family: 'Manrope'; font-size: 3.5rem; font-weight: 800; line-height: 1.05; margin-bottom: 1.2rem; }
+        .hero p { color: #aaa6c6; font-size: 1.12rem; max-width: 460px; margin-bottom: 2rem; }
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .hero-sub { margin-top: 1.4rem; font-size: 0.84rem; color: #8a86a8; }
+        .hero-stats { display: flex; gap: 2.2rem; margin-top: 2.4rem; }
+        .hero-stats .num { font-family: 'Manrope'; font-size: 1.6rem; font-weight: 800; }
+        .hero-stats .lbl { font-size: 0.8rem; color: #8a86a8; }
+
+        /* Builder mock (hero) */
+        .builder { background: linear-gradient(160deg, var(--night-2), var(--card)); border: 1px solid rgba(255,255,255,0.1); border-radius: 20px; box-shadow: 0 30px 70px rgba(0,0,0,0.5); overflow: hidden; }
+        .builder-bar { display: flex; align-items: center; gap: 0.5rem; padding: 0.8rem 1rem; border-bottom: 1px solid rgba(255,255,255,0.08); }
+        .builder-bar .dot { width: 11px; height: 11px; border-radius: 50%; }
+        .builder-bar .dot:nth-child(1) { background: #ff5f57; }
+        .builder-bar .dot:nth-child(2) { background: #febc2e; }
+        .builder-bar .dot:nth-child(3) { background: #28c840; }
+        .builder-bar .url { margin-left: 0.6rem; font-size: 0.72rem; color: #8a86a8; background: rgba(255,255,255,0.05); padding: 3px 10px; border-radius: 6px; }
+        .builder-body { display: grid; grid-template-columns: 132px 1fr; min-height: 320px; }
+        .palette { border-right: 1px solid rgba(255,255,255,0.08); padding: 0.9rem; display: flex; flex-direction: column; gap: 0.5rem; }
+        .palette .ptitle { font-size: 0.66rem; text-transform: uppercase; letter-spacing: 0.1em; color: #6f6b8e; margin-bottom: 0.2rem; }
+        .pblock { display: flex; align-items: center; gap: 0.45rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.08); border-radius: 9px; padding: 8px 9px; font-size: 0.76rem; color: #d5d2ea; cursor: pointer; transition: all 0.15s; font-weight: 600; }
+        .pblock:hover { background: rgba(124,58,237,0.25); border-color: var(--violet-2); transform: translateX(2px); }
+        .canvas { padding: 1rem; position: relative; }
+        .canvas-hint { color: #6f6b8e; font-size: 0.78rem; text-align: center; margin-top: 5.5rem; }
+        .cv-block { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 0.7rem 0.8rem; margin-bottom: 0.55rem; color: #fff; font-size: 0.82rem; display: flex; align-items: center; gap: 0.5rem; animation: pop 0.25s ease; }
+        @keyframes pop { from { opacity: 0; transform: scale(0.95) translateY(6px); } to { opacity: 1; transform: none; } }
+        .cv-block.h { font-family: 'Manrope'; font-weight: 800; font-size: 1rem; background: transparent; border: none; padding: 0.2rem 0; }
+        .cv-block.btn-el { background: linear-gradient(100deg, var(--violet), var(--blue)); justify-content: center; font-weight: 700; border: none; }
+        .cv-block.img-el { height: 64px; background: linear-gradient(135deg, rgba(34,211,238,0.3), rgba(124,58,237,0.3)); justify-content: center; }
+        .cv-block.input-el { color: #8a86a8; }
+        .cv-toolbar { display: flex; gap: 0.5rem; padding: 0.7rem 1rem; border-top: 1px solid rgba(255,255,255,0.08); }
+        .cv-toolbar button { font-size: 0.74rem; padding: 6px 12px; border-radius: 8px; border: none; cursor: pointer; font-weight: 700; font-family: 'Manrope'; }
+        .cv-publish { background: var(--mint); color: #04231a; }
+        .cv-reset { background: rgba(255,255,255,0.08); color: #d5d2ea; }
+
+        /* Logos */
+        .logos { background: var(--night); color: #7d7a9c; padding: 1.6rem 0; }
+        .logos .row { display: flex; justify-content: center; gap: 2.5rem; flex-wrap: wrap; align-items: center; font-weight: 700; font-size: 0.92rem; font-family: 'Manrope'; }
+        .logos .row .lab { color: #6b688a; font-size: 0.74rem; letter-spacing: 0.1em; text-transform: uppercase; font-family: 'Inter'; font-weight: 600; }
+
+        /* Features */
+        .feat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .feat-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 2rem; transition: transform 0.2s, box-shadow 0.2s; }
+        .feat-card:hover { transform: translateY(-5px); box-shadow: 0 22px 44px rgba(20,18,42,0.08); }
+        .feat-card .ic { width: 50px; height: 50px; border-radius: 14px; display: grid; place-items: center; font-size: 1.5rem; margin-bottom: 1.1rem; }
+        .feat-card:nth-child(1) .ic { background: rgba(124,58,237,0.12); }
+        .feat-card:nth-child(2) .ic { background: rgba(59,130,246,0.12); }
+        .feat-card:nth-child(3) .ic { background: rgba(34,211,238,0.14); }
+        .feat-card:nth-child(4) .ic { background: rgba(16,185,129,0.12); }
+        .feat-card:nth-child(5) .ic { background: rgba(236,72,153,0.12); }
+        .feat-card:nth-child(6) .ic { background: rgba(124,58,237,0.12); }
+        .feat-card h4 { font-family: 'Manrope'; font-size: 1.15rem; margin-bottom: 0.4rem; }
+        .feat-card p { color: var(--muted); font-size: 0.92rem; }
+
+        /* How */
+        .how { background: var(--paper); }
+        .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .how-card { text-align: center; }
+        .how-card .n { width: 48px; height: 48px; border-radius: 14px; background: linear-gradient(135deg, var(--violet), var(--blue)); color: #fff; font-family: 'Manrope'; font-weight: 800; display: grid; place-items: center; margin: 0 auto 1.1rem; font-size: 1.2rem; }
+        .how-card h4 { font-family: 'Manrope'; font-size: 1.2rem; margin-bottom: 0.4rem; }
+        .how-card p { color: var(--muted); font-size: 0.92rem; max-width: 280px; margin: 0 auto; }
+
+        /* Interactive builder section */
+        .try { background: var(--night); color: #fff; }
+        .try .section-title { color: #fff; }
+        .try .section-sub { color: #aaa6c6; }
+        .try-wrap { max-width: 760px; margin: 2.5rem auto 0; }
+
+        /* Use cases */
+        .cases-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-top: 3rem; }
+        .case { background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 1.6rem; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .case:hover { transform: translateY(-4px); box-shadow: 0 16px 30px rgba(20,18,42,0.08); }
+        .case .ic { font-size: 2rem; }
+        .case h4 { font-family: 'Manrope'; font-size: 1rem; margin-top: 0.6rem; }
+        .case p { font-size: 0.82rem; color: var(--muted); margin-top: 0.2rem; }
+
+        /* Pricing */
+        .pricing { background: var(--paper); }
+        .bill-toggle { display: inline-flex; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px; margin: 1.8rem auto 0; gap: 4px; }
+        .bill-toggle button { border: none; background: none; padding: 9px 20px; border-radius: 999px; font-weight: 700; font-size: 0.86rem; cursor: pointer; color: var(--muted); font-family: 'Manrope'; transition: all 0.2s; }
+        .bill-toggle button.on { background: var(--ink); color: #fff; }
+        .bill-toggle .save { color: var(--mint); font-size: 0.72rem; margin-left: 0.3rem; }
+        .price-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem; align-items: stretch; }
+        .price-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 2.2rem; display: flex; flex-direction: column; position: relative; transition: transform 0.2s, box-shadow 0.2s; }
+        .price-card:hover { transform: translateY(-5px); box-shadow: 0 22px 44px rgba(20,18,42,0.1); }
+        .price-card.featured { border: 2px solid var(--violet); box-shadow: 0 22px 44px rgba(124,58,237,0.15); }
+        .price-card .tag { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: linear-gradient(100deg, var(--violet), var(--blue)); color: #fff; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.05em; padding: 5px 14px; border-radius: 999px; text-transform: uppercase; }
+        .price-card h3 { font-family: 'Manrope'; font-size: 1.3rem; }
+        .price-card .pdesc { color: var(--muted); font-size: 0.88rem; margin: 0.3rem 0 1.2rem; }
+        .price-card .amount { font-family: 'Manrope'; font-size: 2.8rem; font-weight: 800; line-height: 1; }
+        .price-card .amount small { font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+        .price-card ul { list-style: none; margin: 1.4rem 0; display: grid; gap: 0.6rem; }
+        .price-card ul li { font-size: 0.9rem; padding-left: 1.6rem; position: relative; }
+        .price-card ul li::before { content: '✓'; position: absolute; left: 0; color: var(--mint); font-weight: 800; }
+        .price-card .btn { width: 100%; justify-content: center; margin-top: auto; }
+
+        /* Testimonials */
+        .testi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .testi { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 1.8rem; }
+        .testi .stars { color: #f59e0b; margin-bottom: 0.8rem; }
+        .testi p { font-size: 0.93rem; margin-bottom: 1.2rem; }
+        .testi .who { display: flex; align-items: center; gap: 0.7rem; }
+        .testi .av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--violet), var(--cyan)); color: #fff; display: grid; place-items: center; font-weight: 700; font-family: 'Manrope'; }
+        .testi .who b { font-size: 0.88rem; display: block; }
+        .testi .who span { font-size: 0.78rem; color: var(--muted); }
+
+        /* CTA */
+        .cta-band { background: linear-gradient(110deg, var(--violet), var(--blue)); color: #fff; text-align: center; border-radius: 28px; padding: 3.8rem 2rem; }
+        .cta-band h2 { font-family: 'Manrope'; font-size: 2.4rem; font-weight: 800; }
+        .cta-band p { margin: 0.6rem 0 1.8rem; opacity: 0.95; }
+        .cta-band .btn-white { background: #fff; color: var(--violet); }
+
+        /* Footer */
+        footer.site { background: var(--night); color: #908cb0; padding: 3.5rem 0 2rem; }
+        .foot-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 2rem; }
+        footer.site .brand { margin-bottom: 0.9rem; }
+        footer.site p { font-size: 0.88rem; max-width: 280px; }
+        footer.site h5 { color: #fff; font-size: 0.92rem; margin-bottom: 0.9rem; font-family: 'Manrope'; }
+        footer.site ul { list-style: none; }
+        footer.site ul li { margin-bottom: 0.5rem; font-size: 0.88rem; }
+        footer.site ul li a:hover { color: var(--cyan); }
+        .foot-bottom { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 2.8rem; padding-top: 1.5rem; text-align: center; font-size: 0.82rem; }
+        .foot-bottom .credit a { color: var(--cyan); font-weight: 700; }
+
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(40px); background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; opacity: 0; transition: 0.3s; z-index: 500; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            .nav-links.open { display: flex; flex-direction: column; align-items: flex-start; position: absolute; top: 100%; left: 0; right: 0; background: var(--night); padding: 1.3rem 1.5rem; gap: 1rem; }
+            .hero-grid, .feat-grid, .how-grid, .price-grid, .testi-grid, .foot-grid { grid-template-columns: 1fr; }
+            .cases-grid { grid-template-columns: 1fr 1fr; }
+            .hero h1 { font-size: 2.6rem; }
+            .section-title { font-size: 2rem; }
+            .price-card.featured { order: -1; }
+        }
+        @media (max-width: 560px) {
+            .feat-grid { grid-template-columns: 1fr; }
+            .cases-grid { grid-template-columns: 1fr; }
+            .hero-stats { gap: 1.3rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo notice -->
+    <div class="demo-bar">
+        🧩 This is a <strong>live demo no-code platform template</strong> by Full Moon Computing —
+        <a href="/contact">Get a SaaS site like this →</a>
+    </div>
+
+    <!-- Nav -->
+    <header class="nav">
+        <div class="nav-inner">
+            <a href="#home" class="brand"><span class="logo">🧩</span> Blokly</a>
+            <button class="menu-toggle" aria-label="Menu" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#features">Features</a></li>
+                <li><a href="#try">Try it</a></li>
+                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="#cases">Use cases</a></li>
+                <li class="nav-cta">
+                    <a href="#" class="nav-login">Log in</a>
+                    <a href="#pricing" class="btn btn-grad" style="padding:9px 18px;">Start free</a>
+                </li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="container hero-grid">
+            <div>
+                <span class="chip">🧩 No code required · ship in minutes</span>
+                <h1>Build apps,<br><span class="grad-text">without writing code.</span></h1>
+                <p>Drag, drop, and launch. Blokly lets anyone turn an idea into a real web or mobile app — no developers, no deployment headaches.</p>
+                <div class="hero-actions">
+                    <a href="#pricing" class="btn btn-grad">Start building free</a>
+                    <a href="#try" class="btn btn-ghost">▶ Try the builder</a>
+                </div>
+                <p class="hero-sub">No credit card needed · Free forever plan</p>
+                <div class="hero-stats">
+                    <div><div class="num grad-text">2M+</div><div class="lbl">Apps built</div></div>
+                    <div><div class="num grad-text">120+</div><div class="lbl">Integrations</div></div>
+                    <div><div class="num grad-text">4.9★</div><div class="lbl">G2 rating</div></div>
+                </div>
+            </div>
+            <div class="builder">
+                <div class="builder-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">myapp.blokly.app</span></div>
+                <div class="builder-body">
+                    <div class="palette">
+                        <div class="ptitle">Components</div>
+                        <div class="pblock" onclick="addBlock('h')">📝 Heading</div>
+                        <div class="pblock" onclick="addBlock('text')">📄 Text</div>
+                        <div class="pblock" onclick="addBlock('img')">🖼️ Image</div>
+                        <div class="pblock" onclick="addBlock('input')">⌨️ Input</div>
+                        <div class="pblock" onclick="addBlock('btn')">🔘 Button</div>
+                    </div>
+                    <div class="canvas" id="heroCanvas">
+                        <div class="canvas-hint" id="heroHint">👆 Click a component<br>to add it to your app</div>
+                    </div>
+                </div>
+                <div class="cv-toolbar">
+                    <button class="cv-publish" onclick="publishHero()">🚀 Publish</button>
+                    <button class="cv-reset" onclick="resetHero()">Reset</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Logos -->
+    <section class="logos">
+        <div class="container row">
+            <span class="lab">Powering teams at</span>
+            <span>◆ Northwind</span>
+            <span>✦ Lumaworks</span>
+            <span>❖ Brightly</span>
+            <span>⬢ Corevault</span>
+            <span>✺ Pebble</span>
+        </div>
+    </section>
+
+    <!-- Features -->
+    <section class="section" id="features">
+        <div class="container center">
+            <span class="eyebrow">Everything included</span>
+            <h2 class="section-title">A whole dev team, in one canvas</h2>
+            <p class="section-sub">All the building blocks of a real app — without touching a line of code.</p>
+            <div class="feat-grid" style="text-align:left">
+                <div class="feat-card"><div class="ic">🧲</div><h4>Drag &amp; drop builder</h4><p>Assemble pages visually with snap-to-grid components and instant preview.</p></div>
+                <div class="feat-card"><div class="ic">🗄️</div><h4>Built-in database</h4><p>Store and relate your data with a spreadsheet-simple visual database.</p></div>
+                <div class="feat-card"><div class="ic">⚡</div><h4>Automations</h4><p>Trigger emails, updates and workflows with no-code "when this, then that" logic.</p></div>
+                <div class="feat-card"><div class="ic">🔌</div><h4>120+ integrations</h4><p>Connect payments, auth, sheets and APIs in a couple of clicks.</p></div>
+                <div class="feat-card"><div class="ic">📱</div><h4>Responsive by default</h4><p>Every app looks great on web, tablet and mobile — automatically.</p></div>
+                <div class="feat-card"><div class="ic">🚀</div><h4>One-click publish</h4><p>Go live on a free domain instantly, or connect your own in seconds.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How -->
+    <section class="section how">
+        <div class="container center">
+            <span class="eyebrow">How it works</span>
+            <h2 class="section-title">From idea to live app in 3 steps</h2>
+            <div class="how-grid">
+                <div class="how-card"><div class="n">1</div><h4>Pick a template</h4><p>Start from a blank canvas or one of 80+ ready-made app templates.</p></div>
+                <div class="how-card"><div class="n">2</div><h4>Drag &amp; customise</h4><p>Add components, wire up data, and style it to match your brand.</p></div>
+                <div class="how-card"><div class="n">3</div><h4>Publish &amp; share</h4><p>Hit publish and share a real, working app with a single link.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Try it (interactive) -->
+    <section class="section try" id="try">
+        <div class="container center">
+            <span class="eyebrow" style="color:var(--violet-2)">Try it yourself</span>
+            <h2 class="section-title">Build a mini app, right here</h2>
+            <p class="section-sub">Click components to drop them onto the canvas — no sign-up needed. This is the same builder, embedded live.</p>
+            <div class="try-wrap">
+                <div class="builder">
+                    <div class="builder-bar"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="url">demo.blokly.app/build</span></div>
+                    <div class="builder-body">
+                        <div class="palette">
+                            <div class="ptitle">Components</div>
+                            <div class="pblock" onclick="addBlock('h', true)">📝 Heading</div>
+                            <div class="pblock" onclick="addBlock('text', true)">📄 Text</div>
+                            <div class="pblock" onclick="addBlock('img', true)">🖼️ Image</div>
+                            <div class="pblock" onclick="addBlock('input', true)">⌨️ Input</div>
+                            <div class="pblock" onclick="addBlock('btn', true)">🔘 Button</div>
+                        </div>
+                        <div class="canvas" id="tryCanvas">
+                            <div class="canvas-hint" id="tryHint">👆 Start clicking components<br>to build your app</div>
+                        </div>
+                    </div>
+                    <div class="cv-toolbar">
+                        <button class="cv-publish" onclick="publishTry()">🚀 Publish app</button>
+                        <button class="cv-reset" onclick="resetTry()">Reset</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Use cases -->
+    <section class="section" id="cases">
+        <div class="container center">
+            <span class="eyebrow">Made for everyone</span>
+            <h2 class="section-title">What will you build?</h2>
+            <div class="cases-grid">
+                <div class="case"><div class="ic">📋</div><h4>Internal tools</h4><p>Dashboards &amp; admin panels</p></div>
+                <div class="case"><div class="ic">🛍️</div><h4>Online stores</h4><p>Sell without a developer</p></div>
+                <div class="case"><div class="ic">📅</div><h4>Booking apps</h4><p>Appointments &amp; events</p></div>
+                <div class="case"><div class="ic">🤝</div><h4>Client portals</h4><p>Secure customer logins</p></div>
+                <div class="case"><div class="ic">📝</div><h4>Forms &amp; surveys</h4><p>Collect &amp; route data</p></div>
+                <div class="case"><div class="ic">📊</div><h4>CRMs</h4><p>Track leads &amp; deals</p></div>
+                <div class="case"><div class="ic">🎓</div><h4>Course platforms</h4><p>Lessons &amp; memberships</p></div>
+                <div class="case"><div class="ic">📦</div><h4>Inventory</h4><p>Stock &amp; orders</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing -->
+    <section class="section pricing" id="pricing">
+        <div class="container center">
+            <span class="eyebrow">Pricing</span>
+            <h2 class="section-title">Start free, scale when ready</h2>
+            <p class="section-sub">No credit card to begin. Upgrade or downgrade anytime.</p>
+            <div class="bill-toggle" id="billToggle">
+                <button class="on" data-mult="1" data-per="mo">Monthly</button>
+                <button data-mult="10" data-per="yr">Yearly<span class="save">2 months free</span></button>
+            </div>
+            <div class="price-grid" style="text-align:left">
+                <div class="price-card">
+                    <h3>Free</h3>
+                    <p class="pdesc">For trying things out.</p>
+                    <div class="amount">₹<span class="amt" data-base="0">0</span><small>/<span class="per">mo</span></small></div>
+                    <ul><li>1 published app</li><li>Blokly subdomain</li><li>Core components</li><li>Community support</li></ul>
+                    <button class="btn btn-light" onclick="toast('✓ Demo only — this would start your free workspace.')">Get started</button>
+                </div>
+                <div class="price-card featured">
+                    <div class="tag">Most popular</div>
+                    <h3>Pro</h3>
+                    <p class="pdesc">For makers &amp; freelancers.</p>
+                    <div class="amount">₹<span class="amt" data-base="999">999</span><small>/<span class="per">mo</span></small></div>
+                    <ul><li>Unlimited apps</li><li>Custom domain</li><li>All integrations</li><li>Automations</li><li>Remove Blokly branding</li></ul>
+                    <button class="btn btn-grad" onclick="toast('✓ Demo only — this would start your Pro trial.')">Start Pro trial</button>
+                </div>
+                <div class="price-card">
+                    <h3>Business</h3>
+                    <p class="pdesc">For teams &amp; companies.</p>
+                    <div class="amount">₹<span class="amt" data-base="2999">2999</span><small>/<span class="per">mo</span></small></div>
+                    <ul><li>Everything in Pro</li><li>Team collaboration</li><li>Roles &amp; permissions</li><li>Priority support</li><li>SSO &amp; audit logs</li></ul>
+                    <button class="btn btn-light" onclick="toast('✓ Demo only — this would contact our sales team.')">Talk to sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials -->
+    <section class="section">
+        <div class="container center">
+            <span class="eyebrow">Loved by builders</span>
+            <h2 class="section-title">Trusted by 2 million makers</h2>
+            <div class="testi-grid">
+                <div class="testi" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"I launched my startup's MVP in a weekend without hiring a single developer. Blokly paid for itself in week one."</p>
+                    <div class="who"><div class="av">T</div><div><b>Tara V.</b><span>Founder, Lumaworks</span></div></div>
+                </div>
+                <div class="testi" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"Our ops team built the internal tool they'd been begging IT for. The drag-and-drop builder just clicks."</p>
+                    <div class="who"><div class="av">M</div><div><b>Marcus L.</b><span>COO, Brightly</span></div></div>
+                </div>
+                <div class="testi" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"I'm a designer, not a coder — and I shipped a real booking app for my studio. Genuinely magical."</p>
+                    <div class="who"><div class="av">A</div><div><b>Aditi R.</b><span>Studio owner</span></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section">
+        <div class="container">
+            <div class="cta-band">
+                <h2>Your idea deserves to be an app</h2>
+                <p>Start building free today — no code, no credit card, no limits on your imagination.</p>
+                <a href="#pricing" class="btn btn-white">🧩 Start building free</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site">
+        <div class="container">
+            <div class="foot-grid">
+                <div>
+                    <a href="#home" class="brand"><span class="logo">🧩</span> Blokly</a>
+                    <p>The no-code platform for building web &amp; mobile apps visually. Drag, drop, publish — no developers required.</p>
+                </div>
+                <div><h5>Product</h5><ul><li><a href="#features">Features</a></li><li><a href="#try">Builder</a></li><li><a href="#pricing">Pricing</a></li><li><a href="#">Templates</a></li></ul></div>
+                <div><h5>Resources</h5><ul><li><a href="#">Docs</a></li><li><a href="#">Tutorials</a></li><li><a href="#">Community</a></li><li><a href="#">Changelog</a></li></ul></div>
+                <div><h5>Company</h5><ul><li><a href="#">About</a></li><li><a href="#">Careers</a></li><li><a href="#">Blog</a></li><li><a href="#">Contact</a></li></ul></div>
+            </div>
+            <div class="foot-bottom">
+                <p>© 2026 Blokly (fictional demo). All rights reserved.</p>
+                <p class="credit">Template designed &amp; built by <a href="/">Full Moon Computing</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const BLOCKS = {
+            h:     { cls: 'cv-block h',        html: 'Welcome to my app' },
+            text:  { cls: 'cv-block',          html: 'Add your description here.' },
+            img:   { cls: 'cv-block img-el',   html: '🖼️' },
+            input: { cls: 'cv-block input-el', html: '⌨️ Type something…' },
+            btn:   { cls: 'cv-block btn-el',   html: 'Get started' }
+        };
+
+        function addBlock(type, isTry) {
+            const canvasId = isTry ? 'tryCanvas' : 'heroCanvas';
+            const hintId = isTry ? 'tryHint' : 'heroHint';
+            const canvas = document.getElementById(canvasId);
+            const hint = document.getElementById(hintId);
+            if (hint) hint.style.display = 'none';
+            const b = BLOCKS[type];
+            const el = document.createElement('div');
+            el.className = b.cls;
+            el.innerHTML = b.html;
+            canvas.appendChild(el);
+        }
+        function clearCanvas(canvasId, hintId) {
+            const canvas = document.getElementById(canvasId);
+            canvas.querySelectorAll('.cv-block').forEach(e => e.remove());
+            document.getElementById(hintId).style.display = 'block';
+        }
+        function resetHero() { clearCanvas('heroCanvas', 'heroHint'); }
+        function resetTry() { clearCanvas('tryCanvas', 'tryHint'); }
+        function publishHero() { flashPublish('heroCanvas'); }
+        function publishTry() { flashPublish('tryCanvas'); }
+        function flashPublish(canvasId) {
+            const has = document.getElementById(canvasId).querySelector('.cv-block');
+            if (!has) { toast('Add a component first, then publish 🙂'); return; }
+            toast('🚀 Demo only — your app would now be live at a real URL!');
+        }
+
+        // Pricing billing toggle
+        document.querySelectorAll('#billToggle button').forEach(b =>
+            b.addEventListener('click', () => {
+                document.querySelectorAll('#billToggle button').forEach(x => x.classList.remove('on'));
+                b.classList.add('on');
+                const mult = parseFloat(b.dataset.mult);
+                const per = b.dataset.per;
+                document.querySelectorAll('.price-card .amt').forEach(a => {
+                    a.textContent = (parseFloat(a.dataset.base) * mult).toLocaleString('en-IN');
+                });
+                document.querySelectorAll('.price-card .per').forEach(p => p.textContent = per);
+            }));
+
+        let toastTimer;
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+        }
+        document.querySelectorAll('#navLinks a').forEach(a =>
+            a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+    </script>
+</body>
+</html>
