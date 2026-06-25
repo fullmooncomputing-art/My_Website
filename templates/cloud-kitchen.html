@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraveCloud — Cloud Kitchen Website Template | Full Moon Computing</title>
+    <meta name="description" content="A live demo cloud-kitchen website template built by Full Moon Computing. Delivery-first, multi-brand ordering with live cart, offers and delivery tracking.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#15161b">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --ink: #15161b;
+            --ink-2: #1f2128;
+            --charcoal: #2a2d36;
+            --flame: #ff5722;
+            --flame-light: #ff7a4d;
+            --amber: #ffb300;
+            --paper: #f6f7f9;
+            --line: #e7e9ee;
+            --text: #2a2d36;
+            --muted: #71757f;
+            --green: #1faa59;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            color: var(--text);
+            background: var(--paper);
+            line-height: 1.6;
+        }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1180px; margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 5rem 0; }
+        .center { text-align: center; }
+        .eyebrow {
+            display: inline-block; color: var(--flame); font-weight: 700;
+            letter-spacing: 0.12em; text-transform: uppercase; font-size: 0.78rem; margin-bottom: 0.8rem;
+        }
+        .section-title { font-size: 2.4rem; font-weight: 800; color: var(--ink); line-height: 1.15; letter-spacing: -0.02em; }
+        .section-sub { color: var(--muted); max-width: 560px; margin: 0.8rem auto 0; }
+        .btn {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            padding: 13px 26px; border-radius: 12px; font-weight: 700; font-size: 0.92rem;
+            cursor: pointer; border: none; transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+            font-family: inherit;
+        }
+        .btn-flame { background: var(--flame); color: #fff; box-shadow: 0 8px 20px rgba(255,87,34,0.35); }
+        .btn-flame:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(255,87,34,0.45); }
+        .btn-ghost { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.18); }
+
+        /* Demo bar */
+        .demo-bar { background: var(--ink); color: #fff; text-align: center; font-size: 0.85rem; padding: 0.6rem 1rem; }
+        .demo-bar a { color: var(--amber); font-weight: 700; }
+        .demo-bar a:hover { text-decoration: underline; }
+
+        /* Nav */
+        header.nav { position: sticky; top: 0; z-index: 200; background: rgba(21,22,27,0.97); backdrop-filter: blur(8px); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.5rem; max-width: 1180px; margin: 0 auto; }
+        .brand { display: flex; align-items: center; gap: 0.55rem; color: #fff; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.02em; }
+        .brand .dot { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, var(--flame), var(--amber)); display: grid; place-items: center; font-size: 1rem; }
+        .brand b { color: var(--flame); }
+        .nav-links { display: flex; align-items: center; gap: 1.8rem; list-style: none; }
+        .nav-links a { color: #c7cad2; font-weight: 600; font-size: 0.9rem; transition: color 0.2s; }
+        .nav-links a:hover { color: #fff; }
+        .cart-btn { position: relative; background: var(--flame); color: #fff; padding: 9px 16px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; }
+        .cart-count { position: absolute; top: -8px; right: -8px; background: var(--amber); color: var(--ink); width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; font-size: 0.75rem; font-weight: 800; }
+        .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+        /* Hero */
+        .hero { background: radial-gradient(1100px 500px at 80% -10%, rgba(255,87,34,0.25), transparent), var(--ink); color: #fff; padding: 4.5rem 0 5rem; }
+        .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3rem; align-items: center; }
+        .badge-live { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(31,170,89,0.15); color: #5fe39a; padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1.3rem; }
+        .badge-live .pulse { width: 8px; height: 8px; border-radius: 50%; background: #2bd673; box-shadow: 0 0 0 0 rgba(43,214,115,0.7); animation: pulse 1.8s infinite; }
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(43,214,115,0.7); } 70% { box-shadow: 0 0 0 10px rgba(43,214,115,0); } 100% { box-shadow: 0 0 0 0 rgba(43,214,115,0); } }
+        .hero h1 { font-size: 3.4rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 1.2rem; }
+        .hero h1 em { color: var(--flame); font-style: normal; }
+        .hero p { color: #b6bac3; font-size: 1.1rem; max-width: 480px; margin-bottom: 1.8rem; }
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .hero-stats { display: flex; gap: 2.2rem; margin-top: 2.5rem; }
+        .hero-stats .num { font-size: 1.7rem; font-weight: 800; color: #fff; }
+        .hero-stats .lbl { font-size: 0.82rem; color: #8c909b; }
+        .hero-card {
+            background: linear-gradient(160deg, var(--ink-2), var(--charcoal));
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 22px; padding: 1.5rem;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+        }
+        .hero-card .track-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+        .hero-card .track-head b { color: #fff; font-size: 1.05rem; }
+        .hero-card .eta { color: var(--amber); font-weight: 800; font-size: 0.9rem; }
+        .track-steps { display: flex; align-items: center; }
+        .track-steps .step { flex: 1; text-align: center; }
+        .track-steps .ring { width: 38px; height: 38px; border-radius: 50%; margin: 0 auto 0.5rem; display: grid; place-items: center; font-size: 1.1rem; background: var(--charcoal); border: 2px solid rgba(255,255,255,0.12); }
+        .track-steps .step.done .ring { background: var(--green); border-color: var(--green); }
+        .track-steps .step.active .ring { background: var(--flame); border-color: var(--flame); animation: pulse 1.8s infinite; }
+        .track-steps .bar { height: 3px; flex: 0 0 auto; width: 100%; }
+        .track-steps .lbl { font-size: 0.7rem; color: #9aa0ac; }
+        .track-line { height: 3px; background: rgba(255,255,255,0.1); margin: -1.4rem 12% 1.2rem; border-radius: 3px; position: relative; }
+        .track-line::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; width: 62%; background: var(--green); border-radius: 3px; }
+
+        /* How it works */
+        .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .how-card { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 2rem; text-align: center; }
+        .how-card .n { width: 44px; height: 44px; border-radius: 12px; background: #fff3ee; color: var(--flame); font-weight: 800; display: grid; place-items: center; margin: 0 auto 1rem; font-size: 1.1rem; }
+        .how-card h4 { font-size: 1.1rem; margin-bottom: 0.4rem; }
+        .how-card p { color: var(--muted); font-size: 0.92rem; }
+
+        /* Brands */
+        .brands { background: #fff; }
+        .brand-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.2rem; margin-top: 3rem; }
+        .brand-chip { border: 1px solid var(--line); border-radius: 16px; padding: 1.6rem 1rem; text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .brand-chip:hover { transform: translateY(-4px); box-shadow: 0 16px 30px rgba(0,0,0,0.08); }
+        .brand-chip .ic { font-size: 2.4rem; }
+        .brand-chip h4 { margin-top: 0.6rem; font-size: 1.02rem; }
+        .brand-chip span { font-size: 0.82rem; color: var(--muted); }
+
+        /* Menu / dishes */
+        .filters { display: flex; gap: 0.6rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem; }
+        .chip { padding: 8px 18px; border-radius: 999px; border: 1px solid var(--line); background: #fff; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: all 0.2s; }
+        .chip.active, .chip:hover { background: var(--ink); color: #fff; border-color: var(--ink); }
+        .dish-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem; }
+        .dish { background: #fff; border: 1px solid var(--line); border-radius: 18px; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s; }
+        .dish:hover { transform: translateY(-4px); box-shadow: 0 18px 36px rgba(0,0,0,0.08); }
+        .dish .thumb { height: 150px; display: grid; place-items: center; font-size: 3.4rem; position: relative; }
+        .t1 { background: linear-gradient(135deg,#ff9a44,#ff5722); }
+        .t2 { background: linear-gradient(135deg,#ffd24d,#ff8a00); }
+        .t3 { background: linear-gradient(135deg,#7bd389,#1faa59); }
+        .t4 { background: linear-gradient(135deg,#ff6b6b,#c1121f); }
+        .t5 { background: linear-gradient(135deg,#b388ff,#7c4dff); }
+        .t6 { background: linear-gradient(135deg,#4dd0e1,#00838f); }
+        .veg-dot { position: absolute; top: 10px; left: 10px; width: 18px; height: 18px; border: 2px solid #fff; border-radius: 4px; display: grid; place-items: center; background: #fff; }
+        .veg-dot::after { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--green); }
+        .veg-dot.nonveg::after { background: #c1121f; }
+        .dish .body { padding: 1.1rem 1.2rem 1.3rem; }
+        .dish .row { display: flex; justify-content: space-between; align-items: start; gap: 0.6rem; }
+        .dish h4 { font-size: 1.05rem; }
+        .dish .rate { background: var(--green); color: #fff; font-size: 0.75rem; font-weight: 700; padding: 2px 7px; border-radius: 6px; white-space: nowrap; }
+        .dish .desc { color: var(--muted); font-size: 0.85rem; margin: 0.4rem 0 0.9rem; }
+        .dish .foot { display: flex; justify-content: space-between; align-items: center; }
+        .dish .price { font-weight: 800; font-size: 1.15rem; }
+        .dish .price s { color: var(--muted); font-weight: 500; font-size: 0.85rem; margin-right: 0.3rem; }
+        .add-btn { background: #fff; border: 1.5px solid var(--flame); color: var(--flame); font-weight: 800; padding: 7px 18px; border-radius: 10px; cursor: pointer; font-family: inherit; transition: all 0.2s; }
+        .add-btn:hover { background: var(--flame); color: #fff; }
+
+        /* Offers */
+        .offers { background: var(--ink); color: #fff; }
+        .offers .section-title { color: #fff; }
+        .offer-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .offer { border-radius: 18px; padding: 1.8rem; background: linear-gradient(150deg, var(--ink-2), var(--charcoal)); border: 1px dashed rgba(255,255,255,0.18); position: relative; }
+        .offer .code { display: inline-block; background: rgba(255,179,0,0.15); color: var(--amber); font-weight: 800; letter-spacing: 0.1em; padding: 5px 12px; border-radius: 8px; font-size: 0.82rem; margin-bottom: 0.9rem; }
+        .offer h4 { font-size: 1.3rem; margin-bottom: 0.3rem; }
+        .offer p { color: #aab0bb; font-size: 0.9rem; }
+
+        /* Delivery partners */
+        .partners { background: #fff; text-align: center; }
+        .partner-row { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2.2rem; }
+        .partner { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 0.9rem 1.6rem; font-weight: 700; color: var(--muted); }
+
+        /* CTA */
+        .cta { background: linear-gradient(135deg, var(--flame), var(--amber)); color: #fff; text-align: center; }
+        .cta h2 { font-size: 2.3rem; font-weight: 800; letter-spacing: -0.02em; }
+        .cta p { margin: 0.6rem 0 1.8rem; opacity: 0.95; }
+        .cta .btn-white { background: #fff; color: var(--flame); }
+
+        /* Footer */
+        footer.site { background: var(--ink); color: #b6bac3; padding: 3.5rem 0 2rem; }
+        .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 2rem; }
+        footer.site .brand { margin-bottom: 0.9rem; }
+        footer.site p { font-size: 0.88rem; max-width: 280px; }
+        footer.site h5 { color: #fff; font-size: 0.95rem; margin-bottom: 0.9rem; }
+        footer.site ul { list-style: none; }
+        footer.site ul li { margin-bottom: 0.5rem; font-size: 0.88rem; }
+        footer.site ul li a:hover { color: var(--flame); }
+        .foot-bottom { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 2.5rem; padding-top: 1.5rem; text-align: center; font-size: 0.82rem; }
+        .foot-bottom .credit a { color: var(--amber); font-weight: 700; }
+
+        /* Cart drawer */
+        .overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 300; }
+        .overlay.open { opacity: 1; visibility: visible; }
+        .cart-drawer { position: fixed; top: 0; right: 0; height: 100%; width: 380px; max-width: 90vw; background: #fff; z-index: 400; transform: translateX(100%); transition: transform 0.35s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; box-shadow: -10px 0 40px rgba(0,0,0,0.2); }
+        .cart-drawer.open { transform: none; }
+        .cart-head { display: flex; justify-content: space-between; align-items: center; padding: 1.3rem 1.4rem; border-bottom: 1px solid var(--line); }
+        .cart-head h3 { font-size: 1.2rem; }
+        .cart-head button { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--muted); }
+        .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.4rem; }
+        .cart-empty { text-align: center; color: var(--muted); margin-top: 3rem; }
+        .cart-empty .ic { font-size: 3rem; }
+        .ci { display: flex; gap: 0.8rem; align-items: center; padding: 0.8rem 0; border-bottom: 1px solid var(--line); }
+        .ci .ic { width: 44px; height: 44px; border-radius: 10px; background: var(--paper); display: grid; place-items: center; font-size: 1.4rem; }
+        .ci .info { flex: 1; }
+        .ci .info b { font-size: 0.92rem; display: block; }
+        .ci .info span { font-size: 0.82rem; color: var(--muted); }
+        .ci .qty { display: flex; align-items: center; gap: 0.5rem; }
+        .ci .qty button { width: 26px; height: 26px; border-radius: 7px; border: 1px solid var(--line); background: #fff; cursor: pointer; font-weight: 800; color: var(--flame); }
+        .cart-foot { padding: 1.2rem 1.4rem; border-top: 1px solid var(--line); }
+        .cart-foot .line { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--muted); }
+        .cart-foot .total { font-weight: 800; font-size: 1.15rem; color: var(--ink); }
+        .cart-foot .btn-flame { width: 100%; justify-content: center; margin-top: 0.8rem; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(40px); background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; opacity: 0; transition: 0.3s; z-index: 500; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 880px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            .nav-links.open { display: flex; flex-direction: column; align-items: flex-start; gap: 1.1rem; position: absolute; top: 100%; left: 0; right: 0; background: var(--ink); padding: 1.3rem 1.5rem; }
+            .hero-grid, .how-grid, .brand-grid, .dish-grid, .offer-grid, .foot-grid { grid-template-columns: 1fr; }
+            .brand-grid, .dish-grid { grid-template-columns: 1fr 1fr; }
+            .hero h1 { font-size: 2.5rem; }
+            .section-title { font-size: 1.9rem; }
+        }
+        @media (max-width: 560px) {
+            .brand-grid, .dish-grid { grid-template-columns: 1fr; }
+            .hero-stats { gap: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo notice -->
+    <div class="demo-bar">
+        ☁️ This is a <strong>live demo cloud-kitchen template</strong> by Full Moon Computing —
+        <a href="/contact">Get one for your kitchen →</a>
+    </div>
+
+    <!-- Nav -->
+    <header class="nav">
+        <div class="nav-inner">
+            <a href="#home" class="brand"><span class="dot">🔥</span> Crave<b>Cloud</b></a>
+            <button class="menu-toggle" aria-label="Menu" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#how">How it works</a></li>
+                <li><a href="#brands">Our Brands</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#offers">Offers</a></li>
+                <li><button class="cart-btn" onclick="openCart()">🛒 Cart<span class="cart-count" id="cartCount">0</span></button></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="container hero-grid">
+            <div>
+                <span class="badge-live"><span class="pulse"></span> Kitchen is open · now delivering</span>
+                <h1>Crave it. Tap it.<br><em>It's at your door.</em></h1>
+                <p>A delivery-first cloud kitchen running five virtual brands from one spotless kitchen. Order in seconds, track in real time.</p>
+                <div class="hero-actions">
+                    <a href="#menu" class="btn btn-flame">🍱 Order Now</a>
+                    <a href="#how" class="btn btn-ghost">How it works</a>
+                </div>
+                <div class="hero-stats">
+                    <div><div class="num">28<span style="font-size:1rem">min</span></div><div class="lbl">Avg. delivery</div></div>
+                    <div><div class="num">5</div><div class="lbl">Virtual brands</div></div>
+                    <div><div class="num">4.7★</div><div class="lbl">12k+ ratings</div></div>
+                </div>
+            </div>
+            <div class="hero-card">
+                <div class="track-head"><b>Order #CC-2048</b><span class="eta">ETA 12 min</span></div>
+                <div class="track-steps">
+                    <div class="step done"><div class="ring">✓</div><div class="lbl">Confirmed</div></div>
+                    <div class="step done"><div class="ring">👨‍🍳</div><div class="lbl">Cooking</div></div>
+                    <div class="step active"><div class="ring">🛵</div><div class="lbl">On the way</div></div>
+                    <div class="step"><div class="ring">🏠</div><div class="lbl">Delivered</div></div>
+                </div>
+                <div class="track-line"></div>
+                <div style="background:rgba(255,255,255,0.05);border-radius:14px;padding:0.9rem 1rem;color:#cfd3da;font-size:0.85rem;">
+                    🛵 <b style="color:#fff">Rahul</b> is on the way with your <b style="color:#fff">Spicy Tikka Bowl</b> &amp; 1 more item.
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how">
+        <div class="container center">
+            <span class="eyebrow">Simple as 1-2-3</span>
+            <h2 class="section-title">From craving to doorstep</h2>
+            <p class="section-sub">No waiting on hold, no confusing menus — just food you love, delivered fast.</p>
+            <div class="how-grid">
+                <div class="how-card"><div class="n">1</div><h4>Pick your brand</h4><p>Browse five kitchens in one place — biryani, burgers, bowls, desserts &amp; more.</p></div>
+                <div class="how-card"><div class="n">2</div><h4>Build your order</h4><p>Add to cart, apply an offer, and check out in under a minute.</p></div>
+                <div class="how-card"><div class="n">3</div><h4>Track live</h4><p>Watch your order go from wok to door with real-time tracking.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Brands -->
+    <section class="section brands" id="brands">
+        <div class="container center">
+            <span class="eyebrow">One kitchen, many cravings</span>
+            <h2 class="section-title">Our Virtual Brands</h2>
+            <p class="section-sub">Each brand has its own menu — all cooked fresh under one roof.</p>
+            <div class="brand-grid">
+                <div class="brand-chip"><div class="ic">🍛</div><h4>Biryani Baron</h4><span>Royal dum biryanis</span></div>
+                <div class="brand-chip"><div class="ic">🍔</div><h4>Patty Riot</h4><span>Smash burgers &amp; fries</span></div>
+                <div class="brand-chip"><div class="ic">🥗</div><h4>Bowl Theory</h4><span>Healthy power bowls</span></div>
+                <div class="brand-chip"><div class="ic">🍰</div><h4>Sugar Lab</h4><span>Desserts &amp; shakes</span></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu -->
+    <section class="section" id="menu" style="background:var(--paper)">
+        <div class="container">
+            <div class="center">
+                <span class="eyebrow">Trending now</span>
+                <h2 class="section-title">Most Loved Dishes</h2>
+            </div>
+            <div class="filters">
+                <button class="chip active">All</button>
+                <button class="chip">Biryani</button>
+                <button class="chip">Burgers</button>
+                <button class="chip">Bowls</button>
+                <button class="chip">Desserts</button>
+            </div>
+            <div class="dish-grid">
+                <div class="dish">
+                    <div class="thumb t1"><span class="veg-dot nonveg"></span>🍗</div>
+                    <div class="body">
+                        <div class="row"><h4>Chicken Dum Biryani</h4><span class="rate">4.8 ★</span></div>
+                        <p class="desc">Slow-cooked basmati, juicy chicken, secret spice mix.</p>
+                        <div class="foot"><div class="price"><s>₹320</s>₹249</div><button class="add-btn" onclick="addItem('Chicken Dum Biryani','🍗',249)">ADD +</button></div>
+                    </div>
+                </div>
+                <div class="dish">
+                    <div class="thumb t2"><span class="veg-dot"></span>🍔</div>
+                    <div class="body">
+                        <div class="row"><h4>Double Smash Burger</h4><span class="rate">4.7 ★</span></div>
+                        <p class="desc">Two cheesy patties, caramelised onion, house sauce.</p>
+                        <div class="foot"><div class="price"><s>₹260</s>₹199</div><button class="add-btn" onclick="addItem('Double Smash Burger','🍔',199)">ADD +</button></div>
+                    </div>
+                </div>
+                <div class="dish">
+                    <div class="thumb t3"><span class="veg-dot"></span>🥗</div>
+                    <div class="body">
+                        <div class="row"><h4>Spicy Tikka Bowl</h4><span class="rate">4.9 ★</span></div>
+                        <p class="desc">Quinoa, paneer tikka, greens &amp; mint drizzle.</p>
+                        <div class="foot"><div class="price">₹229</div><button class="add-btn" onclick="addItem('Spicy Tikka Bowl','🥗',229)">ADD +</button></div>
+                    </div>
+                </div>
+                <div class="dish">
+                    <div class="thumb t4"><span class="veg-dot nonveg"></span>🌶️</div>
+                    <div class="body">
+                        <div class="row"><h4>Fiery Wings (8 pc)</h4><span class="rate">4.6 ★</span></div>
+                        <p class="desc">Crispy wings tossed in our signature hot glaze.</p>
+                        <div class="foot"><div class="price"><s>₹240</s>₹189</div><button class="add-btn" onclick="addItem('Fiery Wings','🌶️',189)">ADD +</button></div>
+                    </div>
+                </div>
+                <div class="dish">
+                    <div class="thumb t5"><span class="veg-dot"></span>🍰</div>
+                    <div class="body">
+                        <div class="row"><h4>Molten Choco Lava</h4><span class="rate">4.9 ★</span></div>
+                        <p class="desc">Warm gooey centre with a scoop of vanilla.</p>
+                        <div class="foot"><div class="price">₹149</div><button class="add-btn" onclick="addItem('Molten Choco Lava','🍰',149)">ADD +</button></div>
+                    </div>
+                </div>
+                <div class="dish">
+                    <div class="thumb t6"><span class="veg-dot"></span>🥤</div>
+                    <div class="body">
+                        <div class="row"><h4>Cold Brew Shake</h4><span class="rate">4.5 ★</span></div>
+                        <p class="desc">Thick coffee shake topped with whipped cream.</p>
+                        <div class="foot"><div class="price">₹129</div><button class="add-btn" onclick="addItem('Cold Brew Shake','🥤',129)">ADD +</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Offers -->
+    <section class="section offers" id="offers">
+        <div class="container center">
+            <span class="eyebrow">Save more</span>
+            <h2 class="section-title">Today's Offers</h2>
+            <div class="offer-grid">
+                <div class="offer"><span class="code">CRAVE50</span><h4>50% OFF</h4><p>On your first order above ₹199. New customers only.</p></div>
+                <div class="offer"><span class="code">FREEDEL</span><h4>Free Delivery</h4><p>No delivery fee on all orders above ₹299 today.</p></div>
+                <div class="offer"><span class="code">COMBO99</span><h4>Burger + Fries ₹99</h4><p>Add the combo at checkout while stocks last.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Partners -->
+    <section class="section partners">
+        <div class="container">
+            <span class="eyebrow">Also available on</span>
+            <h2 class="section-title">Order however you like</h2>
+            <div class="partner-row">
+                <div class="partner">🛵 Swiggy</div>
+                <div class="partner">🍴 Zomato</div>
+                <div class="partner">📱 Our App</div>
+                <div class="partner">💬 WhatsApp</div>
+                <div class="partner">📞 Call &amp; Order</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section cta">
+        <div class="container">
+            <h2>Hungry yet?</h2>
+            <p>Your next favourite meal is just a few taps away.</p>
+            <a href="#menu" class="btn btn-white">🍱 Start Your Order</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site">
+        <div class="container">
+            <div class="foot-grid">
+                <div>
+                    <a href="#home" class="brand"><span class="dot">🔥</span> Crave<b>Cloud</b></a>
+                    <p>A delivery-only cloud kitchen serving five virtual brands. Fresh, fast, and made to crave.</p>
+                </div>
+                <div><h5>Brands</h5><ul><li><a href="#">Biryani Baron</a></li><li><a href="#">Patty Riot</a></li><li><a href="#">Bowl Theory</a></li><li><a href="#">Sugar Lab</a></li></ul></div>
+                <div><h5>Company</h5><ul><li><a href="#">About</a></li><li><a href="#">Partner with us</a></li><li><a href="#">Careers</a></li><li><a href="#">Contact</a></li></ul></div>
+                <div><h5>Support</h5><ul><li><a href="#">Track order</a></li><li><a href="#">FAQs</a></li><li><a href="#">Refunds</a></li><li><a href="#">Help centre</a></li></ul></div>
+            </div>
+            <div class="foot-bottom">
+                <p>© 2026 CraveCloud Kitchens (fictional demo). All rights reserved.</p>
+                <p class="credit">Template designed &amp; built by <a href="/">Full Moon Computing</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart -->
+    <div class="overlay" id="overlay" onclick="closeCart()"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Your cart">
+        <div class="cart-head">
+            <h3>Your Cart 🛒</h3>
+            <button onclick="closeCart()" aria-label="Close">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty" id="cartEmpty"><div class="ic">🍽️</div><p>Your cart is empty.<br>Add something delicious!</p></div>
+        </div>
+        <div class="cart-foot" id="cartFoot" style="display:none">
+            <div class="line"><span>Item total</span><span id="subTotal">₹0</span></div>
+            <div class="line"><span>Delivery</span><span style="color:var(--green);font-weight:700">FREE</span></div>
+            <div class="line total"><span>To pay</span><span id="grandTotal">₹0</span></div>
+            <button class="btn btn-flame" onclick="checkout()">Checkout →</button>
+        </div>
+    </aside>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        const cart = {};
+        const fmt = n => '₹' + n;
+
+        function addItem(name, ic, price) {
+            if (cart[name]) cart[name].qty++;
+            else cart[name] = { ic, price, qty: 1 };
+            render();
+            toast(name + ' added to cart');
+        }
+        function changeQty(name, d) {
+            if (!cart[name]) return;
+            cart[name].qty += d;
+            if (cart[name].qty <= 0) delete cart[name];
+            render();
+        }
+        function render() {
+            const names = Object.keys(cart);
+            const count = names.reduce((s, n) => s + cart[n].qty, 0);
+            document.getElementById('cartCount').textContent = count;
+            const items = document.getElementById('cartItems');
+            const empty = document.getElementById('cartEmpty');
+            const foot = document.getElementById('cartFoot');
+            items.querySelectorAll('.ci').forEach(e => e.remove());
+            if (names.length === 0) { empty.style.display = 'block'; foot.style.display = 'none'; return; }
+            empty.style.display = 'none'; foot.style.display = 'block';
+            let sub = 0;
+            names.forEach(n => {
+                const it = cart[n]; sub += it.price * it.qty;
+                const row = document.createElement('div');
+                row.className = 'ci';
+                row.innerHTML = `<div class="ic">${it.ic}</div>
+                    <div class="info"><b>${n}</b><span>${fmt(it.price)} each</span></div>
+                    <div class="qty"><button onclick="changeQty('${n}',-1)">−</button><b>${it.qty}</b><button onclick="changeQty('${n}',1)">+</button></div>`;
+                items.appendChild(row);
+            });
+            document.getElementById('subTotal').textContent = fmt(sub);
+            document.getElementById('grandTotal').textContent = fmt(sub);
+        }
+        function openCart() { document.getElementById('cartDrawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
+        function closeCart() { document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+        function checkout() {
+            if (Object.keys(cart).length === 0) return;
+            toast('✓ Demo only — a live site would take payment & start delivery!');
+            closeCart();
+        }
+        let toastTimer;
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2200);
+        }
+        // Filter chips (demo: visual only)
+        document.querySelectorAll('.chip').forEach(c =>
+            c.addEventListener('click', () => {
+                document.querySelectorAll('.chip').forEach(x => x.classList.remove('active'));
+                c.classList.add('active');
+            }));
+        document.querySelectorAll('#navLinks a').forEach(a =>
+            a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+    </script>
+</body>
+</html>
