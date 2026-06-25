@@ -1,2 +1,6 @@
 *.pdf
 *.zip
+
+# Local research / work-in-progress pages — not for deployment
+Indian_Vendors.html
+Indian_Services.html
