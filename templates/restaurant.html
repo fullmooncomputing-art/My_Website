@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saffron & Sage — Restaurant Website Template | Full Moon Computing</title>
+    <meta name="description" content="A live demo restaurant website template built by Full Moon Computing. See the kind of fast, modern, mobile-friendly sites we build for food businesses.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#2c1810">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --espresso: #2c1810;
+            --cocoa: #4a2c1a;
+            --gold: #c8a24a;
+            --gold-light: #e3c878;
+            --cream: #faf6ef;
+            --sand: #efe6d6;
+            --text: #3a2c22;
+            --muted: #7a6a5c;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            color: var(--text);
+            background: var(--cream);
+            line-height: 1.7;
+        }
+        h1, h2, h3, .display { font-family: 'Cormorant Garamond', serif; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1150px; margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 6rem 0; }
+        .eyebrow {
+            display: inline-block;
+            color: var(--gold);
+            letter-spacing: 0.25em;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        .section-title { font-size: 3rem; color: var(--espresso); line-height: 1.1; margin-bottom: 1rem; }
+        .center { text-align: center; }
+        .btn {
+            display: inline-block;
+            padding: 14px 36px;
+            border-radius: 2px;
+            font-weight: 500;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-gold { background: var(--gold); color: var(--espresso); }
+        .btn-gold:hover { background: var(--gold-light); transform: translateY(-2px); box-shadow: 0 10px 25px rgba(200,162,74,0.35); }
+        .btn-outline { background: transparent; border: 1px solid var(--gold); color: var(--gold); }
+        .btn-outline:hover { background: var(--gold); color: var(--espresso); }
+
+        /* Demo ribbon */
+        .demo-bar {
+            background: var(--espresso);
+            color: var(--cream);
+            text-align: center;
+            font-size: 0.85rem;
+            padding: 0.6rem 1rem;
+            letter-spacing: 0.03em;
+        }
+        .demo-bar a { color: var(--gold-light); font-weight: 600; }
+        .demo-bar a:hover { text-decoration: underline; }
+
+        /* Nav */
+        header.nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(44,24,16,0.96);
+            backdrop-filter: blur(6px);
+        }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 1.1rem 1.5rem; max-width: 1150px; margin: 0 auto; }
+        .brand { font-family: 'Cormorant Garamond', serif; font-size: 1.7rem; color: var(--cream); font-weight: 700; letter-spacing: 0.04em; }
+        .brand span { color: var(--gold); }
+        .nav-links { display: flex; gap: 2rem; list-style: none; }
+        .nav-links a { color: var(--sand); font-size: 0.9rem; letter-spacing: 0.05em; transition: color 0.25s; }
+        .nav-links a:hover { color: var(--gold); }
+        .nav-cta { color: var(--gold) !important; border: 1px solid var(--gold); padding: 6px 18px; border-radius: 2px; }
+        .nav-cta:hover { background: var(--gold); color: var(--espresso) !important; }
+        .menu-toggle { display: none; background: none; border: none; color: var(--cream); font-size: 1.6rem; cursor: pointer; }
+
+        /* Hero */
+        .hero {
+            min-height: 90vh;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: var(--cream);
+            background:
+                linear-gradient(rgba(28,15,8,0.62), rgba(28,15,8,0.78)),
+                url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Crect width='40' height='40' fill='%232c1810'/%3E%3Ccircle cx='20' cy='20' r='1.2' fill='%234a2c1a'/%3E%3C/svg%3E");
+            background-size: cover;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(circle at 50% 40%, rgba(200,162,74,0.18), transparent 60%);
+            pointer-events: none;
+        }
+        .hero-content { max-width: 760px; margin: 0 auto; position: relative; z-index: 1; padding: 2rem 1.5rem; }
+        .hero h1 { font-size: 4.5rem; line-height: 1.05; margin: 1rem 0 1.5rem; }
+        .hero p { font-size: 1.2rem; color: var(--sand); margin-bottom: 2.5rem; font-weight: 300; }
+        .hero-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+        /* Feature strip */
+        .strip { background: var(--espresso); color: var(--cream); }
+        .strip-grid { display: grid; grid-template-columns: repeat(3, 1fr); }
+        .strip-item { padding: 2.5rem 1.5rem; text-align: center; border-right: 1px solid rgba(255,255,255,0.08); }
+        .strip-item:last-child { border-right: none; }
+        .strip-item .ico { font-size: 1.8rem; margin-bottom: 0.6rem; }
+        .strip-item h4 { font-family: 'Poppins'; font-size: 0.95rem; letter-spacing: 0.05em; color: var(--gold-light); margin-bottom: 0.3rem; }
+        .strip-item p { font-size: 0.85rem; color: var(--sand); }
+
+        /* About */
+        .about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .about-img {
+            height: 440px;
+            border-radius: 4px;
+            background: linear-gradient(135deg, var(--cocoa), var(--espresso));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 7rem;
+            box-shadow: 0 25px 50px rgba(44,24,16,0.25);
+            border: 1px solid var(--sand);
+        }
+        .about-text p { color: var(--muted); margin-bottom: 1.2rem; }
+
+        /* Menu */
+        .menu { background: var(--sand); }
+        .menu-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem 4rem; margin-top: 3rem; }
+        .menu-item { border-bottom: 1px dashed #cbbba2; padding-bottom: 1.2rem; }
+        .menu-item-head { display: flex; justify-content: space-between; align-items: baseline; gap: 1rem; }
+        .menu-item-head h4 { font-family: 'Cormorant Garamond'; font-size: 1.5rem; color: var(--espresso); }
+        .menu-item-head .price { color: var(--gold); font-weight: 600; font-family: 'Cormorant Garamond'; font-size: 1.4rem; white-space: nowrap; }
+        .menu-item p { font-size: 0.9rem; color: var(--muted); margin-top: 0.2rem; }
+        .menu-item .dots { flex: 1; border-bottom: 1px dotted #bbab92; transform: translateY(-4px); }
+
+        /* Gallery */
+        .gallery-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 3rem; }
+        .gallery-cell {
+            aspect-ratio: 1;
+            border-radius: 3px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.5rem;
+            transition: transform 0.4s, filter 0.4s;
+            filter: saturate(0.9);
+        }
+        .gallery-cell:hover { transform: scale(1.04); filter: saturate(1.2); }
+        .g1 { background: linear-gradient(135deg, #6b4226, #8a5a33); }
+        .g2 { background: linear-gradient(135deg, #4a2c1a, #6b4226); }
+        .g3 { background: linear-gradient(135deg, #8a5a33, #c8a24a); }
+        .g4 { background: linear-gradient(135deg, #2c1810, #4a2c1a); }
+
+        /* Reservation */
+        .reserve { background: var(--espresso); color: var(--cream); }
+        .reserve .section-title { color: var(--cream); }
+        .reserve-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; margin-top: 2rem; }
+        .reserve-info p { color: var(--sand); margin-bottom: 1.2rem; }
+        .reserve-info .detail { display: flex; gap: 0.8rem; margin-bottom: 1rem; align-items: center; }
+        .reserve-info .detail .ico { color: var(--gold); font-size: 1.2rem; }
+        form.reserve-form { display: grid; gap: 1rem; }
+        .reserve-form .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        .reserve-form input, .reserve-form select {
+            width: 100%;
+            padding: 13px 15px;
+            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.06);
+            color: var(--cream);
+            border-radius: 2px;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+        .reserve-form input::placeholder { color: #b8a690; }
+        .reserve-form input:focus, .reserve-form select:focus { outline: none; border-color: var(--gold); }
+        .reserve-form option { color: var(--text); }
+        .form-note { font-size: 0.8rem; color: #b8a690; margin-top: 0.3rem; }
+
+        /* Footer */
+        footer.site {
+            background: #1c0f08;
+            color: var(--sand);
+            text-align: center;
+            padding: 3.5rem 1.5rem 2.5rem;
+        }
+        footer.site .brand { font-size: 2rem; display: block; margin-bottom: 0.8rem; }
+        footer.site .social { display: flex; gap: 1.5rem; justify-content: center; margin: 1.5rem 0; }
+        footer.site .social a { color: var(--gold-light); font-size: 0.85rem; letter-spacing: 0.08em; }
+        footer.site .social a:hover { color: var(--gold); }
+        footer.site .fineprint { font-size: 0.8rem; color: #8a7866; margin-top: 1.5rem; }
+        footer.site .credit { margin-top: 0.8rem; font-size: 0.8rem; }
+        footer.site .credit a { color: var(--gold); font-weight: 600; }
+
+        /* Reveal animation */
+        .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+        .reveal.in { opacity: 1; transform: none; }
+
+        @media (max-width: 860px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            .nav-links.open {
+                display: flex; flex-direction: column; gap: 1.2rem;
+                position: absolute; top: 100%; left: 0; right: 0;
+                background: var(--espresso); padding: 1.5rem;
+            }
+            .hero h1 { font-size: 3rem; }
+            .strip-grid { grid-template-columns: 1fr; }
+            .strip-item { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.08); }
+            .about-grid, .menu-grid, .reserve-grid { grid-template-columns: 1fr; gap: 2rem; }
+            .gallery-grid { grid-template-columns: repeat(2, 1fr); }
+            .section-title { font-size: 2.3rem; }
+            .section { padding: 4rem 0; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo notice -->
+    <div class="demo-bar">
+        🎨 This is a <strong>live demo template</strong> by Full Moon Computing —
+        <a href="/contact">Get a site like this for your business →</a>
+    </div>
+
+    <!-- Navigation -->
+    <header class="nav">
+        <div class="nav-inner">
+            <a href="#home" class="brand">Saffron <span>&amp;</span> Sage</a>
+            <button class="menu-toggle" aria-label="Toggle menu" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#about">About</a></li>
+                <li><a href="#menu">Menu</a></li>
+                <li><a href="#gallery">Gallery</a></li>
+                <li><a href="#reserve" class="nav-cta">Reserve</a></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="hero-content">
+            <span class="eyebrow">Modern Indian Kitchen · Since 1998</span>
+            <h1>Where Every Dish<br>Tells a Story</h1>
+            <p>Hand-picked spices, slow-cooked traditions, and a warm table waiting just for you in the heart of the city.</p>
+            <div class="hero-actions">
+                <a href="#reserve" class="btn btn-gold">Book a Table</a>
+                <a href="#menu" class="btn btn-outline">View Menu</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Feature strip -->
+    <section class="strip">
+        <div class="strip-grid">
+            <div class="strip-item"><div class="ico">🌿</div><h4>FARM FRESH</h4><p>Locally sourced produce, daily.</p></div>
+            <div class="strip-item"><div class="ico">👨‍🍳</div><h4>MASTER CHEFS</h4><p>Three generations of recipes.</p></div>
+            <div class="strip-item"><div class="ico">🕯️</div><h4>WARM AMBIENCE</h4><p>Cozy seating for every occasion.</p></div>
+        </div>
+    </section>
+
+    <!-- About -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="about-grid">
+                <div class="about-img reveal">🍛</div>
+                <div class="about-text reveal">
+                    <span class="eyebrow">Our Story</span>
+                    <h2 class="section-title">A Taste Rooted in Tradition</h2>
+                    <p>For over two decades, Saffron &amp; Sage has served dishes that bring families and friends together. We blend time-honoured techniques with the freshest seasonal ingredients.</p>
+                    <p>Every plate that leaves our kitchen carries the warmth of home and the craft of chefs who treat cooking as an art form.</p>
+                    <a href="#menu" class="btn btn-gold" style="margin-top:0.5rem;">Explore Our Menu</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Menu -->
+    <section class="section menu" id="menu">
+        <div class="container">
+            <div class="center reveal">
+                <span class="eyebrow">Signature Selection</span>
+                <h2 class="section-title">From Our Kitchen</h2>
+            </div>
+            <div class="menu-grid">
+                <div class="menu-item reveal">
+                    <div class="menu-item-head"><h4>Saffron Biryani</h4><span class="dots"></span><span class="price">₹420</span></div>
+                    <p>Fragrant basmati layered with saffron, slow-cooked spices and tender vegetables.</p>
+                </div>
+                <div class="menu-item reveal">
+                    <div class="menu-item-head"><h4>Butter Paneer</h4><span class="dots"></span><span class="price">₹360</span></div>
+                    <p>Cottage cheese in a silky tomato-cashew gravy, finished with cream.</p>
+                </div>
+                <div class="menu-item reveal">
+                    <div class="menu-item-head"><h4>Tandoori Platter</h4><span class="dots"></span><span class="price">₹540</span></div>
+                    <p>An assortment of clay-oven grilled delights with house chutneys.</p>
+                </div>
+                <div class="menu-item reveal">
+                    <div class="menu-item-head"><h4>Dal Sage Special</h4><span class="dots"></span><span class="price">₹290</span></div>
+                    <p>Black lentils simmered overnight with herbs and a hint of smoke.</p>
+                </div>
+                <div class="menu-item reveal">
+                    <div class="menu-item-head"><h4>Mango Kulfi</h4><span class="dots"></span><span class="price">₹180</span></div>
+                    <p>Traditional slow-churned ice cream with seasonal Alphonso mango.</p>
+                </div>
+                <div class="menu-item reveal">
+                    <div class="menu-item-head"><h4>Masala Chai</h4><span class="dots"></span><span class="price">₹90</span></div>
+                    <p>Brewed with whole spices and a splash of fresh milk.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Gallery -->
+    <section class="section" id="gallery">
+        <div class="container">
+            <div class="center reveal">
+                <span class="eyebrow">Moments</span>
+                <h2 class="section-title">A Glimpse Inside</h2>
+            </div>
+            <div class="gallery-grid">
+                <div class="gallery-cell g1 reveal">🍽️</div>
+                <div class="gallery-cell g2 reveal">🥘</div>
+                <div class="gallery-cell g3 reveal">🍷</div>
+                <div class="gallery-cell g4 reveal">🌶️</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reservation -->
+    <section class="section reserve" id="reserve">
+        <div class="container">
+            <div class="center reveal">
+                <span class="eyebrow">Join Us</span>
+                <h2 class="section-title">Reserve Your Table</h2>
+            </div>
+            <div class="reserve-grid">
+                <div class="reserve-info reveal">
+                    <p>We'd love to host you. Book ahead and let us prepare a memorable evening.</p>
+                    <div class="detail"><span class="ico">📍</span><span>42 Garden Lane, City Centre</span></div>
+                    <div class="detail"><span class="ico">🕐</span><span>Open daily · 12:00 PM – 11:00 PM</span></div>
+                    <div class="detail"><span class="ico">📞</span><span>+91 98765 43210</span></div>
+                </div>
+                <form class="reserve-form reveal" onsubmit="handleReserve(event)">
+                    <div class="row">
+                        <input type="text" placeholder="Your name" required>
+                        <input type="tel" placeholder="Phone" required>
+                    </div>
+                    <div class="row">
+                        <input type="date" required>
+                        <select required>
+                            <option value="">Guests</option>
+                            <option>1 – 2</option>
+                            <option>3 – 4</option>
+                            <option>5 – 6</option>
+                            <option>7+</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-gold">Request Reservation</button>
+                    <p class="form-note" id="reserveNote">Demo form — submissions are not stored. A real site would email you a confirmation.</p>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site">
+        <span class="brand">Saffron <span style="color:var(--gold)">&amp;</span> Sage</span>
+        <p>Where every dish tells a story.</p>
+        <div class="social">
+            <a href="#">Instagram</a>
+            <a href="#">Facebook</a>
+            <a href="#">Zomato</a>
+            <a href="#">Swiggy</a>
+        </div>
+        <p class="fineprint">© 2026 Saffron &amp; Sage (fictional demo). All rights reserved.</p>
+        <p class="credit">Template designed &amp; built by <a href="/">Full Moon Computing</a></p>
+    </footer>
+
+    <script>
+        // Scroll reveal
+        const obs = new IntersectionObserver((entries) => {
+            entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+        }, { threshold: 0.15 });
+        document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+
+        // Close mobile menu on link tap
+        document.querySelectorAll('#navLinks a').forEach(a =>
+            a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+
+        // Demo reservation handler
+        function handleReserve(e) {
+            e.preventDefault();
+            const note = document.getElementById('reserveNote');
+            note.textContent = '✓ Thanks! In a live site this would confirm your booking by email/SMS.';
+            note.style.color = '#e3c878';
+            e.target.querySelector('button').textContent = 'Reservation Requested';
+        }
+    </script>
+</body>
+</html>
