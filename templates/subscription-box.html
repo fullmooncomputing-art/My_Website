@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wildcrate — Subscription Box Template | Full Moon Computing</title>
+    <meta name="description" content="A live demo subscription box store template by Full Moon Computing. Curated boxes delivered periodically — pick a plan, choose your frequency, and get a fresh box each month.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#2b211a">
+    <meta name="author" content="Full Moon Computing">
+    <meta name="copyright" content="© 2026 Full Moon Computing — fullmooncomputing.in. This template's design and code are the property of Full Moon Computing.">
+    <!--
+      ============================================================
+      © 2026 Full Moon Computing — https://fullmooncomputing.in
+      This is a demo template. Design and source code are the
+      property of Full Moon Computing. Unauthorised copying or
+      redistribution is prohibited. Want a site like this?
+      Contact us at https://fullmooncomputing.in/contact
+      ============================================================
+    -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cocoa: #2b211a;
+            --cocoa-2: #3a2d23;
+            --terra: #d9694a;
+            --terra-2: #e8825f;
+            --ochre: #e0a458;
+            --sage: #7f9b72;
+            --blush: #f4e3d7;
+            --cream: #faf4ec;
+            --paper: #fbf7f1;
+            --text: #2e2620;
+            --muted: #7d7167;
+            --line: #ebe0d4;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'DM Sans', system-ui, sans-serif; color: var(--text); background: var(--paper); line-height: 1.65; }
+        a { text-decoration: none; color: inherit; }
+        h1, h2, h3, .serif { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; letter-spacing: 0; }
+        .container { max-width: 1160px; margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 5.5rem 0; }
+        .center { text-align: center; }
+        .eyebrow { display: inline-block; color: var(--terra); font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; font-size: 0.74rem; margin-bottom: 0.9rem; }
+        .section-title { font-family: 'DM Serif Display'; font-size: 2.9rem; color: var(--cocoa); line-height: 1.08; }
+        .section-sub { color: var(--muted); max-width: 560px; margin: 0.9rem auto 0; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 14px 30px; border-radius: 999px; font-weight: 700; font-size: 0.92rem; cursor: pointer; border: none; transition: all 0.25s; font-family: 'DM Sans', sans-serif; }
+        .btn-terra { background: var(--terra); color: #fff; }
+        .btn-terra:hover { background: var(--terra-2); transform: translateY(-2px); box-shadow: 0 12px 26px rgba(217,105,74,0.35); }
+        .btn-dark { background: var(--cocoa); color: var(--cream); }
+        .btn-dark:hover { background: var(--cocoa-2); transform: translateY(-2px); }
+        .btn-line { background: transparent; border: 1.5px solid var(--cocoa); color: var(--cocoa); }
+        .btn-line:hover { background: var(--cocoa); color: var(--cream); }
+        .btn-white { background: #fff; color: var(--terra); }
+
+        /* Demo bar */
+        .demo-bar { background: var(--cocoa); color: var(--cream); text-align: center; font-size: 0.84rem; padding: 0.55rem 1rem; }
+        .demo-bar a { color: var(--ochre); font-weight: 700; text-decoration: underline; }
+
+        /* Nav */
+        header.nav { position: sticky; top: 0; z-index: 200; background: rgba(251,247,241,0.92); backdrop-filter: blur(8px); border-bottom: 1px solid var(--line); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; max-width: 1160px; margin: 0 auto; }
+        .brand { display: flex; align-items: center; gap: 0.5rem; font-family: 'DM Serif Display'; font-size: 1.55rem; color: var(--cocoa); }
+        .brand .logo { width: 32px; height: 32px; border-radius: 10px; background: var(--terra); display: grid; place-items: center; font-size: 1rem; }
+        .nav-links { display: flex; align-items: center; gap: 1.7rem; list-style: none; }
+        .nav-links a { color: var(--text); font-weight: 600; font-size: 0.9rem; }
+        .nav-links a:hover { color: var(--terra); }
+        .cart-btn { position: relative; background: var(--cocoa); color: var(--cream); padding: 9px 18px; border-radius: 999px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; font-family: 'DM Sans'; }
+        .cart-count { position: absolute; top: -8px; right: -8px; background: var(--ochre); color: var(--cocoa); width: 21px; height: 21px; border-radius: 50%; display: grid; place-items: center; font-size: 0.74rem; font-weight: 800; }
+        .menu-toggle { display: none; background: none; border: none; font-size: 1.5rem; cursor: pointer; }
+
+        /* Hero */
+        .hero { background: var(--cream); overflow: hidden; }
+        .hero-grid { display: grid; grid-template-columns: 1.05fr 0.95fr; gap: 3rem; align-items: center; min-height: 80vh; }
+        .hero-copy { padding: 4rem 0; }
+        .hero .pill { display: inline-flex; align-items: center; gap: 0.5rem; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 14px; font-size: 0.78rem; font-weight: 600; color: var(--sage); margin-bottom: 1.4rem; }
+        .hero h1 { font-family: 'DM Serif Display'; font-size: 4rem; line-height: 1.02; color: var(--cocoa); margin-bottom: 1.3rem; }
+        .hero h1 em { font-style: italic; color: var(--terra); }
+        .hero p { font-size: 1.12rem; color: var(--muted); max-width: 440px; margin-bottom: 2rem; }
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+        .hero-rating { display: flex; align-items: center; gap: 0.6rem; margin-top: 1.8rem; font-size: 0.88rem; color: var(--muted); }
+        .hero-rating .stars { color: var(--ochre); letter-spacing: 2px; }
+
+        /* Hero box visual */
+        .box-visual { position: relative; display: grid; place-items: center; min-height: 80vh; }
+        .crate { width: 78%; max-width: 400px; aspect-ratio: 1; background: linear-gradient(160deg, var(--terra), var(--ochre)); border-radius: 28px; display: grid; place-items: center; box-shadow: 0 40px 80px rgba(217,105,74,0.35); position: relative; }
+        .crate .lid { position: absolute; top: -22px; left: 8%; right: 8%; height: 46px; background: var(--cocoa); border-radius: 14px; box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+        .crate .items { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.8rem; font-size: 2.6rem; }
+        .crate .items span { background: rgba(255,255,255,0.22); border-radius: 14px; width: 70px; height: 70px; display: grid; place-items: center; }
+        .float { position: absolute; background: #fff; color: var(--cocoa); border-radius: 14px; padding: 0.6rem 0.9rem; font-size: 0.8rem; font-weight: 700; box-shadow: 0 14px 30px rgba(0,0,0,0.18); }
+        .float.f1 { top: 8%; right: -2%; }
+        .float.f2 { bottom: 12%; left: -4%; background: var(--sage); color: #fff; }
+
+        /* Trust strip */
+        .trust { background: var(--cocoa); color: var(--cream); }
+        .trust-row { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1.2rem; padding: 1.5rem 0; text-align: center; }
+        .trust-row div { font-size: 0.86rem; font-weight: 500; }
+        .trust-row .ic { font-size: 1.05rem; margin-right: 0.4rem; }
+
+        /* How it works */
+        .how-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .how-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 2.2rem 2rem; text-align: center; }
+        .how-card .ic { width: 56px; height: 56px; border-radius: 16px; background: var(--blush); display: grid; place-items: center; font-size: 1.6rem; margin: 0 auto 1.1rem; }
+        .how-card h4 { font-family: 'DM Serif Display'; font-size: 1.4rem; color: var(--cocoa); margin-bottom: 0.4rem; }
+        .how-card p { color: var(--muted); font-size: 0.92rem; }
+
+        /* Plans */
+        .plans { background: var(--cream); }
+        .freq-toggle { display: inline-flex; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 5px; margin: 1.8rem auto 0; gap: 4px; }
+        .freq-toggle button { border: none; background: none; padding: 9px 20px; border-radius: 999px; font-weight: 700; font-size: 0.86rem; cursor: pointer; color: var(--muted); font-family: 'DM Sans'; transition: all 0.2s; }
+        .freq-toggle button.on { background: var(--cocoa); color: #fff; }
+        .freq-toggle .save { color: var(--sage); font-size: 0.72rem; margin-left: 0.3rem; }
+        .plan-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2.5rem; align-items: stretch; }
+        .plan { background: #fff; border: 1px solid var(--line); border-radius: 22px; padding: 2.2rem; display: flex; flex-direction: column; position: relative; transition: transform 0.2s, box-shadow 0.2s; }
+        .plan:hover { transform: translateY(-5px); box-shadow: 0 22px 44px rgba(43,33,26,0.1); }
+        .plan.featured { border: 2px solid var(--terra); box-shadow: 0 22px 44px rgba(217,105,74,0.15); }
+        .plan .tag { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--terra); color: #fff; font-size: 0.72rem; font-weight: 800; letter-spacing: 0.05em; padding: 5px 14px; border-radius: 999px; text-transform: uppercase; }
+        .plan .pic { font-size: 2.6rem; margin-bottom: 0.8rem; }
+        .plan h3 { font-family: 'DM Serif Display'; font-size: 1.7rem; color: var(--cocoa); }
+        .plan .desc { color: var(--muted); font-size: 0.9rem; margin: 0.4rem 0 1.2rem; }
+        .plan .price { font-family: 'DM Serif Display'; font-size: 2.6rem; color: var(--cocoa); line-height: 1; }
+        .plan .price small { font-family: 'DM Sans'; font-size: 0.9rem; color: var(--muted); font-weight: 600; }
+        .plan ul { list-style: none; margin: 1.4rem 0; display: grid; gap: 0.6rem; }
+        .plan ul li { font-size: 0.9rem; color: var(--text); padding-left: 1.6rem; position: relative; }
+        .plan ul li::before { content: '✓'; position: absolute; left: 0; color: var(--sage); font-weight: 800; }
+        .plan .btn { width: 100%; justify-content: center; margin-top: auto; }
+
+        /* Inside the box */
+        .inside { background: #fff; }
+        .inside-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+        .inside-img { aspect-ratio: 5/4; border-radius: 24px; background: linear-gradient(150deg, var(--blush), var(--ochre)); display: grid; place-items: center; gap: 1rem; box-shadow: 0 30px 60px rgba(224,164,88,0.25); }
+        .inside-img .grid4 { display: grid; grid-template-columns: repeat(2,1fr); gap: 1rem; font-size: 3rem; }
+        .inside-img .grid4 span { background: rgba(255,255,255,0.4); border-radius: 16px; width: 90px; height: 90px; display: grid; place-items: center; }
+        .inside-text h2 { font-family: 'DM Serif Display'; font-size: 2.5rem; color: var(--cocoa); margin-bottom: 1.1rem; }
+        .inside-text p { color: var(--muted); margin-bottom: 1.1rem; }
+        .inside-text .feat { display: flex; gap: 0.7rem; align-items: flex-start; margin-bottom: 0.9rem; }
+        .inside-text .feat .ic { color: var(--terra); font-size: 1.1rem; }
+        .inside-text .feat b { color: var(--cocoa); }
+
+        /* Reviews */
+        .reviews { background: var(--cream); }
+        .review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .review { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 1.8rem; }
+        .review .stars { color: var(--ochre); letter-spacing: 2px; margin-bottom: 0.8rem; }
+        .review p { font-size: 0.93rem; margin-bottom: 1.2rem; }
+        .review .who { display: flex; align-items: center; gap: 0.7rem; }
+        .review .av { width: 38px; height: 38px; border-radius: 50%; background: var(--sage); color: #fff; display: grid; place-items: center; font-weight: 700; }
+        .review .who b { font-size: 0.88rem; display: block; }
+        .review .who span { font-size: 0.78rem; color: var(--muted); }
+
+        /* FAQ */
+        .faq { background: #fff; }
+        .faq-list { max-width: 760px; margin: 2.5rem auto 0; }
+        .faq-item { border-bottom: 1px solid var(--line); }
+        .faq-q { width: 100%; text-align: left; background: none; border: none; padding: 1.3rem 0; font-size: 1.05rem; font-weight: 700; color: var(--cocoa); cursor: pointer; display: flex; justify-content: space-between; align-items: center; gap: 1rem; font-family: 'DM Sans'; }
+        .faq-q .pm { color: var(--terra); font-size: 1.4rem; transition: transform 0.25s; flex-shrink: 0; }
+        .faq-item.open .pm { transform: rotate(45deg); }
+        .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; color: var(--muted); font-size: 0.92rem; }
+        .faq-item.open .faq-a { max-height: 200px; padding-bottom: 1.3rem; }
+
+        /* CTA */
+        .cta { background: var(--cocoa); color: var(--cream); text-align: center; border-radius: 28px; padding: 3.8rem 2rem; }
+        .cta h2 { font-family: 'DM Serif Display'; font-size: 2.5rem; }
+        .cta p { margin: 0.6rem 0 1.8rem; color: #d8cbbf; }
+
+        /* Footer */
+        footer.site { background: var(--cocoa); color: #c4b5a8; padding: 3.5rem 0 2rem; }
+        .foot-grid { display: grid; grid-template-columns: 1.6fr 1fr 1fr 1fr; gap: 2rem; }
+        footer.site .brand { color: var(--cream); margin-bottom: 0.9rem; }
+        footer.site p { font-size: 0.88rem; max-width: 280px; }
+        footer.site h5 { color: var(--cream); font-size: 0.92rem; margin-bottom: 0.9rem; font-family: 'DM Sans'; font-weight: 700; }
+        footer.site ul { list-style: none; }
+        footer.site ul li { margin-bottom: 0.5rem; font-size: 0.88rem; }
+        footer.site ul li a:hover { color: var(--ochre); }
+        .foot-bottom { border-top: 1px solid rgba(255,255,255,0.1); margin-top: 2.8rem; padding-top: 1.5rem; text-align: center; font-size: 0.82rem; }
+        .foot-bottom .credit a { color: var(--ochre); font-weight: 700; }
+
+        /* Cart */
+        .overlay { position: fixed; inset: 0; background: rgba(43,33,26,0.55); opacity: 0; visibility: hidden; transition: 0.3s; z-index: 300; }
+        .overlay.open { opacity: 1; visibility: visible; }
+        .cart-drawer { position: fixed; top: 0; right: 0; height: 100%; width: 390px; max-width: 90vw; background: var(--paper); z-index: 400; transform: translateX(100%); transition: transform 0.35s cubic-bezier(.2,.8,.2,1); display: flex; flex-direction: column; box-shadow: -10px 0 40px rgba(0,0,0,0.25); }
+        .cart-drawer.open { transform: none; }
+        .cart-head { display: flex; justify-content: space-between; align-items: center; padding: 1.4rem; border-bottom: 1px solid var(--line); }
+        .cart-head h3 { font-family: 'DM Serif Display'; font-size: 1.3rem; color: var(--cocoa); }
+        .cart-head button { background: none; border: none; font-size: 1.4rem; cursor: pointer; color: var(--muted); }
+        .cart-items { flex: 1; overflow-y: auto; padding: 1rem 1.4rem; }
+        .cart-empty { text-align: center; color: var(--muted); margin-top: 3rem; }
+        .cart-empty .ic { font-size: 3rem; }
+        .ci { display: flex; gap: 0.8rem; align-items: center; padding: 0.9rem 0; border-bottom: 1px solid var(--line); }
+        .ci .ic { width: 48px; height: 48px; border-radius: 12px; background: var(--blush); display: grid; place-items: center; font-size: 1.5rem; }
+        .ci .info { flex: 1; }
+        .ci .info b { font-size: 0.9rem; display: block; color: var(--cocoa); }
+        .ci .info span { font-size: 0.8rem; color: var(--muted); }
+        .ci .rm { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 0.8rem; text-decoration: underline; }
+        .cart-foot { padding: 1.3rem 1.4rem; border-top: 1px solid var(--line); }
+        .cart-foot .line { display: flex; justify-content: space-between; margin-bottom: 0.5rem; font-size: 0.9rem; color: var(--muted); }
+        .cart-foot .total { font-family: 'DM Serif Display'; font-size: 1.3rem; color: var(--cocoa); }
+        .cart-foot .btn-terra { width: 100%; justify-content: center; margin-top: 0.8rem; }
+        .cart-foot .renew { font-size: 0.76rem; color: var(--muted); text-align: center; margin-top: 0.7rem; }
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(40px); background: var(--cocoa); color: var(--cream); padding: 12px 22px; border-radius: 999px; font-weight: 600; font-size: 0.9rem; opacity: 0; transition: 0.3s; z-index: 500; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 900px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            .nav-links.open { display: flex; flex-direction: column; align-items: flex-start; position: absolute; top: 100%; left: 0; right: 0; background: var(--paper); padding: 1.3rem 1.5rem; gap: 1rem; border-bottom: 1px solid var(--line); }
+            .hero-grid, .how-grid, .plan-grid, .inside-grid, .review-grid, .foot-grid { grid-template-columns: 1fr; }
+            .box-visual { min-height: auto; padding: 2rem 0 3rem; }
+            .plan.featured { order: -1; }
+            .hero h1 { font-size: 3rem; }
+            .section-title { font-size: 2.2rem; }
+        }
+        @media (max-width: 560px) {
+            .review-grid { grid-template-columns: 1fr; }
+            .trust-row { gap: 0.8rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Demo notice -->
+    <div class="demo-bar">
+        📦 This is a <strong>live demo subscription box template</strong> by Full Moon Computing —
+        <a href="/contact">Start your subscription brand →</a>
+    </div>
+
+    <!-- Nav -->
+    <header class="nav">
+        <div class="nav-inner">
+            <a href="#home" class="brand"><span class="logo">📦</span> Wildcrate</a>
+            <button class="menu-toggle" aria-label="Menu" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#how">How it works</a></li>
+                <li><a href="#plans">Plans</a></li>
+                <li><a href="#inside">Inside the box</a></li>
+                <li><a href="#faq">FAQ</a></li>
+                <li><button class="cart-btn" onclick="openCart()">🛒 Cart<span class="cart-count" id="cartCount">0</span></button></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="container hero-grid">
+            <div class="hero-copy">
+                <span class="pill">📦 A new curated box every month · cancel anytime</span>
+                <h1>A little <em>joy</em>,<br>delivered monthly.</h1>
+                <p>Hand-picked treats, self-care and lifestyle finds — curated by us, surprised by you. Pick a plan and a fresh box lands at your door, right on schedule.</p>
+                <div class="hero-actions">
+                    <a href="#plans" class="btn btn-terra">Choose Your Box</a>
+                    <a href="#inside" class="btn btn-line">Peek Inside</a>
+                </div>
+                <div class="hero-rating">
+                    <span class="stars">★★★★★</span>
+                    <span><b>4.9/5</b> from 14,000+ happy subscribers</span>
+                </div>
+            </div>
+            <div class="box-visual">
+                <div class="crate">
+                    <div class="lid"></div>
+                    <div class="items"><span>🕯️</span><span>🍫</span><span>🧴</span><span>📖</span></div>
+                    <div class="float f1">🔄 Renews monthly</div>
+                    <div class="float f2">⏸️ Pause anytime</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust -->
+    <section class="trust">
+        <div class="container trust-row">
+            <div><span class="ic">🚚</span>Free shipping</div>
+            <div><span class="ic">🔄</span>Skip or pause anytime</div>
+            <div><span class="ic">🎁</span>Worth 2× the price</div>
+            <div><span class="ic">❌</span>Cancel whenever</div>
+            <div><span class="ic">🌿</span>Ethically sourced</div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how">
+        <div class="container center">
+            <span class="eyebrow">How it works</span>
+            <h2 class="section-title">Three steps to monthly magic</h2>
+            <p class="section-sub">Set it up once and we'll handle the rest — a fresh curation arrives every cycle.</p>
+            <div class="how-grid">
+                <div class="how-card"><div class="ic">🎯</div><h4>Pick your plan</h4><p>Choose a box theme and how often you'd like it — monthly, every 2 months, or quarterly.</p></div>
+                <div class="how-card"><div class="ic">🎨</div><h4>We curate it</h4><p>Our team hand-selects a fresh set of products around each cycle's theme.</p></div>
+                <div class="how-card"><div class="ic">📦</div><h4>It arrives on schedule</h4><p>Your box ships automatically and renews itself — skip, pause or cancel anytime.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Plans -->
+    <section class="section plans" id="plans">
+        <div class="container center">
+            <span class="eyebrow">Subscriptions</span>
+            <h2 class="section-title">Choose your crate</h2>
+            <p class="section-sub">Every plan renews automatically. Switch, skip or cancel from your account whenever you like.</p>
+            <div class="freq-toggle" id="freqToggle">
+                <button class="on" data-mult="1" data-label="mo">Monthly</button>
+                <button data-mult="2.85" data-label="qtr">Quarterly<span class="save">save 5%</span></button>
+            </div>
+            <div class="plan-grid">
+                <div class="plan">
+                    <div class="pic">🌿</div>
+                    <h3>The Mini</h3>
+                    <p class="desc">A taster crate of 3–4 curated goodies.</p>
+                    <div class="price">₹<span class="amt" data-base="699">699</span><small>/<span class="per">mo</span></small></div>
+                    <ul><li>3–4 hand-picked items</li><li>New theme each cycle</li><li>Free shipping</li><li>Skip or pause anytime</li></ul>
+                    <button class="btn btn-line" onclick="subscribe('The Mini Box','🌿',699)">Subscribe</button>
+                </div>
+                <div class="plan featured">
+                    <div class="tag">Most popular</div>
+                    <div class="pic">🎁</div>
+                    <h3>The Signature</h3>
+                    <p class="desc">Our full crate of 6–8 premium finds.</p>
+                    <div class="price">₹<span class="amt" data-base="1199">1199</span><small>/<span class="per">mo</span></small></div>
+                    <ul><li>6–8 full-size items</li><li>Exclusive member perks</li><li>Early access to drops</li><li>Free shipping &amp; gift note</li></ul>
+                    <button class="btn btn-terra" onclick="subscribe('The Signature Box','🎁',1199)">Subscribe</button>
+                </div>
+                <div class="plan">
+                    <div class="pic">👑</div>
+                    <h3>The Grand</h3>
+                    <p class="desc">A deluxe crate of 10+ luxe products.</p>
+                    <div class="price">₹<span class="amt" data-base="1999">1999</span><small>/<span class="per">mo</span></small></div>
+                    <ul><li>10+ premium items</li><li>Limited-edition extras</li><li>Priority shipping</li><li>VIP concierge support</li></ul>
+                    <button class="btn btn-line" onclick="subscribe('The Grand Box','👑',1999)">Subscribe</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Inside the box -->
+    <section class="section inside" id="inside">
+        <div class="container inside-grid">
+            <div class="inside-img">
+                <div class="grid4"><span>🕯️</span><span>🍫</span><span>🧴</span><span>🧦</span></div>
+            </div>
+            <div class="inside-text">
+                <span class="eyebrow">This month's theme</span>
+                <h2>"Cosy Evenings" — November Crate</h2>
+                <p>Each crate is built around a seasonal theme and packed with full-size products from independent makers.</p>
+                <div class="feat"><span class="ic">🕯️</span><div><b>Soy candle</b> — hand-poured, amber &amp; oud.</div></div>
+                <div class="feat"><span class="ic">🍫</span><div><b>Artisan chocolate</b> — single-origin, 70% dark.</div></div>
+                <div class="feat"><span class="ic">🧴</span><div><b>Botanical hand balm</b> — shea &amp; calendula.</div></div>
+                <div class="feat"><span class="ic">🧦</span><div><b>Lounge socks</b> — organic combed cotton.</div></div>
+                <a href="#plans" class="btn btn-dark" style="margin-top:1rem;">Get This Box</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="section reviews">
+        <div class="container center">
+            <span class="eyebrow">Subscriber love</span>
+            <h2 class="section-title">14,000+ doorsteps delighted</h2>
+            <div class="review-grid">
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"It's the highlight of my month. Every box feels thoughtfully put together and there's always a surprise I end up loving."</p>
+                    <div class="who"><div class="av">P</div><div><b>Priya N.</b><span>Bengaluru · ✓ Subscriber</span></div></div>
+                </div>
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"Gifted the Signature box to my sister and we both got hooked. Pausing over holidays was one tap. So easy."</p>
+                    <div class="who"><div class="av">R</div><div><b>Rhea M.</b><span>Delhi · ✓ Subscriber</span></div></div>
+                </div>
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"Genuinely better value than buying the items separately, and discovering small brands is half the fun."</p>
+                    <div class="who"><div class="av">I</div><div><b>Imran S.</b><span>Hyderabad · ✓ Subscriber</span></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq" id="faq">
+        <div class="container center">
+            <span class="eyebrow">Questions</span>
+            <h2 class="section-title">Good to know</h2>
+            <div class="faq-list" style="text-align:left">
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">When is my box shipped? <span class="pm">+</span></button>
+                    <div class="faq-a">We curate and ship every cycle around the 1st. Your first box ships within a few days of subscribing, then renews automatically on schedule.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">Can I skip or cancel? <span class="pm">+</span></button>
+                    <div class="faq-a">Absolutely. Skip a cycle, pause, or cancel anytime from your account — no fees, no awkward phone calls.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">Can I gift a subscription? <span class="pm">+</span></button>
+                    <div class="faq-a">Yes! Choose a fixed-length gift plan at checkout and we'll include a personalised note in the first box.</div>
+                </div>
+                <div class="faq-item">
+                    <button class="faq-q" onclick="toggleFaq(this)">What if I don't like an item? <span class="pm">+</span></button>
+                    <div class="faq-a">Tell us in your account preferences and we'll tailor future curations to your taste.</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section">
+        <div class="container">
+            <div class="cta">
+                <h2>Give yourself something to look forward to</h2>
+                <p>Join thousands of subscribers who get a curated box of joy, delivered like clockwork.</p>
+                <a href="#plans" class="btn btn-white">📦 Start Your Subscription</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site">
+        <div class="container">
+            <div class="foot-grid">
+                <div>
+                    <a href="#home" class="brand"><span class="logo">📦</span> Wildcrate</a>
+                    <p>A subscription box brand delivering curated products on your schedule. Hand-picked, full-size, and renewed automatically — pause or cancel anytime.</p>
+                </div>
+                <div><h5>Boxes</h5><ul><li><a href="#">The Mini</a></li><li><a href="#">The Signature</a></li><li><a href="#">The Grand</a></li><li><a href="#">Gift a Box</a></li></ul></div>
+                <div><h5>Account</h5><ul><li><a href="#">Manage Subscription</a></li><li><a href="#">Skip / Pause</a></li><li><a href="#">Past Boxes</a></li><li><a href="#">Preferences</a></li></ul></div>
+                <div><h5>Support</h5><ul><li><a href="#">How it works</a></li><li><a href="#">Shipping</a></li><li><a href="#">FAQs</a></li><li><a href="#">Contact</a></li></ul></div>
+            </div>
+            <div class="foot-bottom">
+                <p>© 2026 Wildcrate (fictional demo). All rights reserved.</p>
+                <p class="credit">Template designed &amp; built by <a href="/">Full Moon Computing</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Cart -->
+    <div class="overlay" id="overlay" onclick="closeCart()"></div>
+    <aside class="cart-drawer" id="cartDrawer" aria-label="Your subscription">
+        <div class="cart-head">
+            <h3>Your Subscription</h3>
+            <button onclick="closeCart()" aria-label="Close">×</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <div class="cart-empty" id="cartEmpty"><div class="ic">📦</div><p>No plan selected yet.<br>Pick a crate to begin!</p></div>
+        </div>
+        <div class="cart-foot" id="cartFoot" style="display:none">
+            <div class="line"><span>Plan total</span><span id="subTotal">₹0</span></div>
+            <div class="line"><span>Shipping</span><span style="color:var(--sage);font-weight:700">FREE</span></div>
+            <div class="line total"><span>Due today</span><span id="grandTotal">₹0</span></div>
+            <button class="btn btn-terra" onclick="checkout()">Start Subscription →</button>
+            <p class="renew" id="renewNote">Renews automatically. Cancel anytime.</p>
+        </div>
+    </aside>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+        // Only one active subscription plan at a time
+        let plan = null;       // { name, ic, base }
+        let mult = 1;          // billing frequency multiplier
+        let perLabel = 'mo';
+        const fmt = n => '₹' + Math.round(n).toLocaleString('en-IN');
+
+        function subscribe(name, ic, base) {
+            plan = { name, ic, base };
+            render(); openCart(); toast(name + ' selected');
+        }
+        function removePlan() { plan = null; render(); }
+        function render() {
+            document.getElementById('cartCount').textContent = plan ? 1 : 0;
+            const items = document.getElementById('cartItems');
+            const empty = document.getElementById('cartEmpty');
+            const foot = document.getElementById('cartFoot');
+            items.querySelectorAll('.ci').forEach(e => e.remove());
+            if (!plan) { empty.style.display = 'block'; foot.style.display = 'none'; return; }
+            empty.style.display = 'none'; foot.style.display = 'block';
+            const total = plan.base * mult;
+            const cycle = perLabel === 'qtr' ? 'every 3 months' : 'every month';
+            const row = document.createElement('div');
+            row.className = 'ci';
+            row.innerHTML = `<div class="ic">${plan.ic}</div>
+                <div class="info"><b>${plan.name}</b><span>Billed ${cycle}</span></div>
+                <button class="rm" onclick="removePlan()">Remove</button>`;
+            items.appendChild(row);
+            document.getElementById('subTotal').textContent = fmt(total);
+            document.getElementById('grandTotal').textContent = fmt(total);
+            document.getElementById('renewNote').textContent = 'Renews ' + cycle + '. Cancel anytime.';
+        }
+
+        // Frequency toggle (updates plan card prices + cart)
+        document.querySelectorAll('#freqToggle button').forEach(b =>
+            b.addEventListener('click', () => {
+                document.querySelectorAll('#freqToggle button').forEach(x => x.classList.remove('on'));
+                b.classList.add('on');
+                mult = parseFloat(b.dataset.mult);
+                perLabel = b.dataset.label;
+                document.querySelectorAll('.plan .amt').forEach(a => {
+                    a.textContent = Math.round(parseFloat(a.dataset.base) * mult).toLocaleString('en-IN');
+                });
+                document.querySelectorAll('.plan .per').forEach(p => p.textContent = perLabel);
+                render();
+            }));
+
+        function openCart() { document.getElementById('cartDrawer').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
+        function closeCart() { document.getElementById('cartDrawer').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+        function checkout() {
+            if (!plan) return;
+            toast('✓ Demo only — a live site would set up recurring billing here!');
+            closeCart();
+        }
+        function toggleFaq(btn) { btn.parentElement.classList.toggle('open'); }
+        let toastTimer;
+        function toast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg; t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+        }
+        document.querySelectorAll('#navLinks a').forEach(a =>
+            a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+    </script>
+</body>
+</html>
