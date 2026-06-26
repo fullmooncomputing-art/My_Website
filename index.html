@@ -383,6 +383,7 @@
             const u = document.getElementById('adminUser').value.trim();
             const p = document.getElementById('adminPass').value;
             if (u === atob('U2F2YW4=') && p === atob('c2FtOTk5NTU=')) {
+                sessionStorage.setItem('fmc_admin_auth','granted');
                 document.getElementById('adminErr').style.color = '#4caf50';
                 document.getElementById('adminErr').textContent = '✓ Access granted...';
                 setTimeout(() => { window.location.href = '/Indian_Services_Platform'; }, 800);
