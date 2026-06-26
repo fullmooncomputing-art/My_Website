@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>India Local Services — Algorithm Platform</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg:#0a0a0f;--surface:#13131a;--surface2:#1a1a24;
+  --text:#f0f0f5;--text2:#8888a8;
+  --c1:#FF6B35;--c2:#E91E8C;--c3:#4CAF50;--c4:#2196F3;--c5:#00BCD4;
+  --c6:#9C27B0;--c7:#607D8B;--c8:#8BC34A;--c9:#FF9800;--c10:#00ACC1;
+  --c11:#F44336;--c12:#795548;--c13:#9E9E9E;
+}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+@keyframes slideUp{from{opacity:0;transform:translateY(40px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes scaleIn{from{opacity:0;transform:scale(0.85)}to{opacity:1;transform:scale(1)}}
+@keyframes ripple{to{transform:scale(5);opacity:0}}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(255,255,255,0.2)}50%{box-shadow:0 0 0 10px rgba(255,255,255,0)}}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+@keyframes glow{0%,100%{opacity:1}50%{opacity:0.6}}
+@keyframes stepIn{from{opacity:0;transform:translateX(-24px)}to{opacity:1;transform:translateX(0)}}
+@keyframes fillBar{from{width:0}to{width:100%}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* HEADER */
+.header{text-align:center;padding:40px 20px 28px;animation:slideUp .7s ease both;}
+.hflag{font-size:44px;display:block;animation:float 3s ease-in-out infinite;}
+.header h1{font-size:clamp(20px,4vw,38px);font-weight:800;background:linear-gradient(135deg,#fff 0%,#9090ff 50%,#ff6b35 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin:10px 0 6px;}
+.header p{color:var(--text2);font-size:12px;letter-spacing:2px;text-transform:uppercase;}
+.stats{display:flex;justify-content:center;gap:28px;margin-top:16px;flex-wrap:wrap;}
+.stat{text-align:center;animation:scaleIn .6s ease both;}
+.stat-n{font-size:26px;font-weight:800;color:#6c63ff;}
+.stat-l{font-size:10px;color:var(--text2);text-transform:uppercase;letter-spacing:1px;}
+
+/* LOADING */
+#loading{display:flex;flex-direction:column;align-items:center;justify-content:center;height:40vh;gap:16px;}
+.spinner{width:40px;height:40px;border:3px solid rgba(255,255,255,0.1);border-top-color:#6c63ff;border-radius:50%;animation:spin .8s linear infinite;}
+
+/* CONTAINER */
+.container{max-width:1400px;margin:0 auto;padding:0 20px 80px;}
+
+/* CATEGORY GRID */
+#cat-view{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:14px;margin-top:8px;}
+.cat-card{background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:14px;padding:22px 16px;cursor:pointer;position:relative;overflow:hidden;transition:transform .2s,box-shadow .2s,border-color .2s;animation:slideUp .6s ease both;}
+.cat-card:hover{transform:translateY(-6px);border-color:var(--cc);box-shadow:0 16px 40px -8px var(--cc-a);}
+.cat-card::after{content:'';position:absolute;bottom:0;left:0;height:3px;width:0;background:var(--cc);transition:width .4s ease;}
+.cat-card:hover::after{width:100%;}
+.cat-icon{font-size:38px;display:block;margin-bottom:10px;animation:glow 3s ease-in-out infinite;}
+.cat-name{font-size:12px;font-weight:700;line-height:1.35;color:var(--text);margin-bottom:6px;}
+.cat-count{font-size:11px;color:var(--cc);font-weight:600;}
+
+/* SERVICES VIEW */
+#svc-view{display:none;animation:fadeIn .35s ease both;}
+.back-btn{display:inline-flex;align-items:center;gap:8px;background:var(--surface);border:1px solid rgba(255,255,255,0.1);color:var(--text);padding:9px 18px;border-radius:9px;cursor:pointer;font-size:13px;font-weight:600;margin-bottom:20px;transition:all .2s;}
+.back-btn:hover{transform:translateX(-4px);background:var(--surface2);}
+.svc-header{display:flex;align-items:center;gap:14px;padding:20px;background:var(--surface);border-radius:14px;border-left:4px solid var(--cc-active);margin-bottom:24px;animation:slideUp .35s ease both;}
+.svc-header-icon{font-size:44px;}
+.svc-header h2{font-size:18px;font-weight:800;}
+.svc-header p{color:var(--text2);font-size:12px;margin-top:3px;}
+.svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;}
+.svc-btn{background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:11px;padding:14px;cursor:pointer;text-align:left;position:relative;overflow:hidden;transition:all .2s;color:var(--text);animation:scaleIn .4s ease both;}
+.svc-btn:hover{border-color:var(--cc-active);background:var(--surface2);transform:translateY(-3px) scale(1.02);box-shadow:0 8px 24px -6px var(--cc-active-a);}
+.svc-btn-icon{font-size:26px;display:block;margin-bottom:7px;}
+.svc-id{font-size:9px;color:var(--cc-active);font-weight:700;letter-spacing:1px;margin-bottom:3px;}
+.svc-name{font-size:12px;font-weight:600;line-height:1.35;}
+.svc-steps{font-size:10px;color:var(--text2);margin-top:5px;}
+
+/* RIPPLE */
+.rpl{position:absolute;border-radius:50%;background:rgba(255,255,255,0.18);width:8px;height:8px;animation:ripple .55s linear forwards;pointer-events:none;transform-origin:center;}
+
+/* MODAL */
+#flow-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(8px);z-index:100;overflow-y:auto;animation:fadeIn .25s ease both;}
+.flow-panel{background:var(--surface);max-width:700px;margin:32px auto;border-radius:18px;border:1px solid rgba(255,255,255,0.08);overflow:hidden;animation:scaleIn .35s ease both;}
+.flow-top{padding:22px 26px;background:var(--surface2);border-bottom:1px solid rgba(255,255,255,0.06);display:flex;justify-content:space-between;align-items:flex-start;gap:12px;}
+.flow-svc-id{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--fc);margin-bottom:3px;}
+.flow-title{font-size:20px;font-weight:800;}
+.flow-cat{font-size:11px;color:var(--text2);margin-top:3px;}
+.close-btn{background:rgba(255,255,255,0.08);border:none;color:var(--text);width:34px;height:34px;border-radius:9px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.close-btn:hover{background:rgba(255,255,255,0.18);transform:rotate(90deg);}
+.flow-inputs{padding:14px 26px;background:rgba(255,255,255,0.02);border-bottom:1px solid rgba(255,255,255,0.05);}
+.inp-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);margin-bottom:8px;}
+.inp-tags{display:flex;flex-wrap:wrap;gap:6px;}
+.inp-tag{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:20px;padding:3px 10px;font-size:11px;color:var(--text2);font-family:monospace;}
+.flow-ctrl{padding:14px 26px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,0.05);}
+.sim-btn{background:var(--fc);color:#fff;border:none;border-radius:9px;padding:9px 18px;font-size:12px;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:7px;transition:all .2s;animation:pulse 2s ease-in-out infinite;}
+.sim-btn:hover{transform:scale(1.05);filter:brightness(1.15);}
+.sim-btn:disabled{opacity:.55;cursor:not-allowed;animation:none;}
+.rst-btn{background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--text2);border-radius:9px;padding:9px 14px;font-size:12px;cursor:pointer;transition:all .2s;}
+.rst-btn:hover{background:var(--surface2);color:var(--text);}
+.prog-wrap{flex:1;height:5px;background:rgba(255,255,255,0.06);border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--fc);border-radius:3px;width:0;transition:width .5s ease;}
+
+/* STEPS */
+.flow-steps{padding:24px 26px;}
+.step{display:flex;gap:14px;opacity:0;transform:translateX(-20px);transition:opacity .4s ease,transform .4s ease;}
+.step.vis{opacity:1;transform:translateX(0);}
+.step-l{display:flex;flex-direction:column;align-items:center;width:38px;flex-shrink:0;}
+.step-dot{width:38px;height:38px;border-radius:50%;background:var(--surface2);border:2px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;font-size:17px;transition:all .4s;flex-shrink:0;}
+.step.vis .step-dot{border-color:var(--fc);background:rgba(255,255,255,0.07);box-shadow:0 0 14px rgba(255,255,255,0.1);}
+.step-line{width:2px;flex:1;min-height:20px;background:rgba(255,255,255,0.06);margin:3px 0;transition:background .4s;}
+.step.vis .step-line{background:var(--fc);opacity:.3;}
+.step-r{padding-bottom:22px;flex:1;}
+.step-phase{font-size:9px;font-weight:700;letter-spacing:2px;color:var(--fc);margin-bottom:3px;opacity:0;transition:opacity .4s ease .1s;}
+.step.vis .step-phase{opacity:1;}
+.step-title{font-size:14px;font-weight:700;margin-bottom:5px;}
+.step-detail{font-size:12px;color:var(--text2);line-height:1.6;font-family:monospace;background:rgba(255,255,255,0.03);padding:7px 11px;border-radius:7px;border-left:3px solid var(--fc);}
+
+/* SECTION */
+.sec-lbl{font-size:10px;text-transform:uppercase;letter-spacing:3px;color:var(--text2);margin:36px 0 18px;display:flex;align-items:center;gap:10px;}
+.sec-lbl::after{content:'';flex:1;height:1px;background:rgba(255,255,255,0.06);}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--bg);}
+::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:3px;}
+
+@media(max-width:600px){
+  .flow-panel{margin:0;border-radius:0;min-height:100vh;}
+  .svc-grid{grid-template-columns:repeat(2,1fr);}
+  #cat-view{grid-template-columns:repeat(2,1fr);}
+}
+</style>
+</head>
+<body>
+<div id="app">
+  <div class="header">
+    <span class="hflag">🇮🇳</span>
+    <h1>India Local Services Platform</h1>
+    <p>Algorithm-Powered Hyperlocal Engine</p>
+    <div class="stats">
+      <div class="stat"><div class="stat-n">13</div><div class="stat-l">Categories</div></div>
+      <div class="stat"><div class="stat-n">106</div><div class="stat-l">Services</div></div>
+      <div class="stat"><div class="stat-n">700+</div><div class="stat-l">Algorithm Steps</div></div>
+    </div>
+  </div>
+  <div class="container">
+    <div id="loading"><div class="spinner"></div><p style="color:var(--text2);font-size:13px;">Parsing algorithm data...</p></div>
+    <div id="cat-view" style="display:none"></div>
+    <div id="svc-view"></div>
+  </div>
+</div>
+
+<div id="flow-modal">
+  <div class="flow-panel">
+    <div class="flow-top">
+      <div class="flow-top-left">
+        <div class="flow-svc-id" id="f-id"></div>
+        <div class="flow-title" id="f-title"></div>
+        <div class="flow-cat" id="f-cat"></div>
+      </div>
+      <button class="close-btn" onclick="closeModal()">✕</button>
+    </div>
+    <div class="flow-inputs">
+      <div class="inp-label">Inputs</div>
+      <div class="inp-tags" id="f-inputs"></div>
+    </div>
+    <div class="flow-ctrl">
+      <button class="sim-btn" id="sim-btn" onclick="simulate()">▶ Simulate Flow</button>
+      <button class="rst-btn" onclick="resetFlow()">↺ Reset</button>
+      <div class="prog-wrap"><div class="prog-fill" id="prog"></div></div>
+    </div>
+    <div class="flow-steps" id="f-steps"></div>
+  </div>
+</div>
+
+<script>
+// ── CAT META ──────────────────────────────────────────────────────────────────
+const CAT_META = [
+  {n:"Household Repair & Maintenance", icon:"🔧", color:"#FF6B35"},
+  {n:"Personal Care & Grooming",       icon:"💄", color:"#E91E8C"},
+  {n:"Food & Beverage",                icon:"🍱", color:"#4CAF50"},
+  {n:"Transportation & Moving",        icon:"🚗", color:"#2196F3"},
+  {n:"Health & Wellness",              icon:"🏥", color:"#00BCD4"},
+  {n:"Clothing, Fabric & Leather",     icon:"🧵", color:"#9C27B0"},
+  {n:"Documentation & Paperwork",      icon:"📄", color:"#607D8B"},
+  {n:"Agricultural & Allied Services", icon:"🌾", color:"#8BC34A"},
+  {n:"Event, Religious & Cultural",    icon:"🎉", color:"#FF9800"},
+  {n:"Cleaning & Sanitation",          icon:"🧹", color:"#00ACC1"},
+  {n:"Financial & Legal",              icon:"💰", color:"#F44336"},
+  {n:"Artisan & Custom Work",          icon:"🎨", color:"#795548"},
+  {n:"Miscellaneous Niche Services",   icon:"🔑", color:"#9E9E9E"},
+];
+
+// ── SERVICE ICONS ─────────────────────────────────────────────────────────────
+const SVC_ICONS = {
+  "1.1":"⚡","1.2":"🔧","1.3":"🪵","1.4":"🖌️","1.5":"🧱","1.6":"⚙️","1.7":"❄️",
+  "1.8":"🫧","1.9":"📡","1.10":"📺","1.11":"💧","1.12":"🔥","1.13":"🔋",
+  "1.14":"🪟","1.15":"🪞",
+  "2.1":"💅","2.2":"👰","2.3":"💈","2.4":"🌿","2.5":"💆","2.6":"👂",
+  "3.1":"🥡","3.2":"🍽️","3.3":"🍴","3.4":"🥛","3.5":"🎂","3.6":"🍬","3.7":"🥜",
+  "4.1":"🛺","4.2":"🚛","4.3":"🚿","4.4":"🏍️","4.5":"🚲","4.6":"🔴",
+  "5.1":"🩺","5.2":"💉","5.3":"🩹","5.4":"🦴","5.5":"🐄","5.6":"🧬",
+  "5.7":"🧘","5.8":"🔬",
+  "6.1":"🪡","6.2":"✂️","6.3":"🥻","6.4":"🪢","6.5":"👟","6.6":"👜","6.7":"👡",
+  "7.1":"🖨️","7.2":"📚","7.3":"🪪","7.4":"📝","7.5":"🎫","7.6":"📋",
+  "7.7":"⚖️","7.8":"🏛️","7.9":"💳",
+  "8.1":"🚜","8.2":"🌾","8.3":"⚙️","8.4":"🌿","8.5":"🚁","8.6":"🚰",
+  "8.7":"🥛","8.8":"🌱",
+  "9.1":"⛺","9.2":"🍛","9.3":"🛕","9.4":"🌸","9.5":"🎺","9.6":"📸",
+  "9.7":"🔮","9.8":"🎈",
+  "10.1":"🏠","10.2":"🛋️","10.3":"🏢","10.4":"🪣","10.5":"🐛","10.6":"👕",
+  "10.7":"👔","10.8":"♻️",
+  "11.1":"🏦","11.2":"💰","11.3":"📋","11.4":"📊","11.5":"🏠","11.6":"📜",
+  "11.7":"💍",
+  "12.1":"💎","12.2":"🏺","12.3":"🧺","12.4":"🧶","12.5":"🧥","12.6":"🎨",
+  "12.7":"👜","12.8":"🌾","12.9":"🫙","12.10":"🌶️",
+  "13.1":"🔑","13.2":"⌚","13.3":"📱","13.4":"☂️","13.5":"🪖","13.6":"🔪",
+  "13.7":"🚗",
+};
+
+// ── PARSER ────────────────────────────────────────────────────────────────────
+function parseAlgorithmFile(text) {
+  const cats = [];
+  // split into category blocks
+  const catBlocks = text.split(/={10,}\nCATEGORY\s+\d+:/);
+  catBlocks.shift(); // remove header
+
+  catBlocks.forEach((block, ci) => {
+    if (ci >= 13) return; // skip cross-cutting section
+    const services = [];
+    // split into service blocks by "--- X.X NAME ---"
+    const svcParts = block.split(/\n---\s+(\d+\.\d+)\s+(.+?)\s+---/);
+    // svcParts[0] = preamble, then triplets: [id, name, content]
+    for (let i = 1; i < svcParts.length; i += 3) {
+      const id   = svcParts[i].trim();
+      const name = svcParts[i+1].trim();
+      const body = svcParts[i+2] || '';
+
+      // extract INPUT line
+      const inputMatch = body.match(/INPUT:\s*(.+?)(?=\nALGORITHM|\nINPUT|\n---|\n={5}|$)/s);
+      const inputRaw   = inputMatch ? inputMatch[1].replace(/\n\s+/g,' ').trim() : '';
+      // parse input params
+      const inputs = inputRaw.split(',').map(s=>s.trim()).filter(Boolean).slice(0,6);
+
+      // extract numbered steps  1. ... 2. ...
+      const stepMatches = [...body.matchAll(/^\s{1,4}(\d+)\.\s+(.+?)(?=\n\s{1,4}\d+\.|\n\n|\n---|\n={5}|$)/gms)];
+      const steps = stepMatches.map(m => {
+        const detail = m[2].replace(/\n\s+/g,' ').trim();
+        return {
+          num: parseInt(m[1]),
+          detail: detail,
+          title: detail.split(/[;:→]/)[0].trim().substring(0,60),
+          phase: guessPhase(detail),
+        };
+      });
+
+      if (name && steps.length > 0) {
+        services.push({id, name, inputs, steps});
+      }
+    }
+    cats.push({...CAT_META[ci], services});
+  });
+  return cats;
+}
+
+function guessPhase(detail) {
+  const d = detail.toLowerCase();
+  if (d.includes('upload') || d.includes('photo'))      return {label:'PHOTO',    icon:'📸'};
+  if (d.includes('payment') || d.includes('upi') || d.includes('pay'))  return {label:'PAYMENT',  icon:'💳'};
+  if (d.includes('otp') || d.includes('confirm') || d.includes('book')) return {label:'CONFIRM',  icon:'✅'};
+  if (d.includes('geo') || d.includes('match') || d.includes('nearby')) return {label:'MATCH',    icon:'🔍'};
+  if (d.includes('price') || d.includes('rate') || d.includes('cost') || d.includes('fare')) return {label:'PRICE', icon:'💰'};
+  if (d.includes('rank') || d.includes('sort') || d.includes('score'))  return {label:'RANK',     icon:'📊'};
+  if (d.includes('track') || d.includes('gps') || d.includes('locat')) return {label:'TRACK',    icon:'📍'};
+  if (d.includes('deliver') || d.includes('dispatch'))  return {label:'DELIVER',  icon:'🚚'};
+  if (d.includes('rating') || d.includes('review') || d.includes('feedback')) return {label:'RATE', icon:'⭐'};
+  if (d.includes('safety') || d.includes('emergency') || d.includes('sos')) return {label:'SAFETY', icon:'🛡️'};
+  if (d.includes('record') || d.includes('log') || d.includes('digital')) return {label:'RECORD',  icon:'📝'};
+  if (d.includes('remind') || d.includes('alert') || d.includes('notify')) return {label:'ALERT',  icon:'🔔'};
+  if (d.includes('subscri') || d.includes('mandate') || d.includes('auto-debit')) return {label:'SUBSCRIBE', icon:'📅'};
+  if (d.includes('select') || d.includes('choose') || d.includes('user')) return {label:'SELECT',  icon:'📋'};
+  if (d.includes('verify') || d.includes('kyc') || d.includes('aadhaar')) return {label:'VERIFY',  icon:'🛡️'};
+  return {label:'EXECUTE', icon:'⚙️'};
+}
+
+// ── STATE ─────────────────────────────────────────────────────────────────────
+let DATA = [];
+let activeCat = null;
+let activeFlow = null;
+let simTimer = null;
+
+// ── RENDER CATEGORIES ─────────────────────────────────────────────────────────
+function renderCats() {
+  const el = document.getElementById('cat-view');
+  el.innerHTML = '';
+  DATA.forEach((cat, ci) => {
+    const card = document.createElement('div');
+    card.className = 'cat-card';
+    card.style.cssText = `--cc:${cat.color};--cc-a:${cat.color}44;animation-delay:${ci*0.05}s`;
+    card.innerHTML = `
+      <span class="cat-icon">${cat.icon}</span>
+      <div class="cat-name">${cat.n}</div>
+      <div class="cat-count">${cat.services.length} services</div>`;
+    card.addEventListener('click', e => { addRipple(card,e); showServices(ci); });
+    el.appendChild(card);
+  });
+  document.getElementById('loading').style.display = 'none';
+  el.style.display = 'grid';
+}
+
+// ── SHOW SERVICES ─────────────────────────────────────────────────────────────
+function showServices(ci) {
+  activeCat = ci;
+  const cat = DATA[ci];
+  const cv = document.getElementById('cat-view');
+  const sv = document.getElementById('svc-view');
+  cv.style.display = 'none';
+  sv.style.display = 'block';
+  sv.style.cssText = `--cc-active:${cat.color};--cc-active-a:${cat.color}44`;
+
+  sv.innerHTML = `
+    <button class="back-btn" onclick="showCats()">← Back to Categories</button>
+    <div class="svc-header" style="--cc:${cat.color}">
+      <span class="svc-header-icon">${cat.icon}</span>
+      <div>
+        <h2>${cat.n}</h2>
+        <p>${cat.services.length} services — click any to see algorithm flow</p>
+      </div>
+    </div>
+    <div class="svc-grid" id="svc-grid"></div>`;
+
+  const grid = document.getElementById('svc-grid');
+  cat.services.forEach((svc, si) => {
+    const btn = document.createElement('button');
+    btn.className = 'svc-btn';
+    btn.style.animationDelay = `${si*0.04}s`;
+    btn.innerHTML = `
+      <span class="svc-btn-icon">${SVC_ICONS[svc.id]||'🔹'}</span>
+      <div class="svc-id">${svc.id}</div>
+      <div class="svc-name">${svc.name}</div>
+      <div class="svc-steps">${svc.steps.length} steps</div>`;
+    btn.addEventListener('click', e => { addRipple(btn,e); openFlow(ci, si); });
+    grid.appendChild(btn);
+  });
+}
+
+function showCats() {
+  document.getElementById('svc-view').style.display = 'none';
+  document.getElementById('cat-view').style.display = 'grid';
+}
+
+// ── FLOW MODAL ─────────────────────────────────────────────────────────────────
+function openFlow(ci, si) {
+  const cat = DATA[ci];
+  const svc = cat.services[si];
+  activeFlow = {ci, si, steps: svc.steps};
+
+  document.getElementById('flow-modal').style.display = 'block';
+  document.body.style.overflow = 'hidden';
+
+  const fc = cat.color;
+  document.querySelector('.flow-panel').style.cssText = `--fc:${fc}`;
+  document.getElementById('f-id').textContent    = svc.id;
+  document.getElementById('f-title').textContent = `${SVC_ICONS[svc.id]||''} ${svc.name}`;
+  document.getElementById('f-cat').textContent   = cat.n;
+
+  // inputs
+  const inpEl = document.getElementById('f-inputs');
+  inpEl.innerHTML = svc.inputs.length
+    ? svc.inputs.map(i=>`<span class="inp-tag">${i}</span>`).join('')
+    : '<span class="inp-tag">see steps below</span>';
+
+  // steps
+  const stepsEl = document.getElementById('f-steps');
+  stepsEl.innerHTML = svc.steps.map((s,i) => `
+    <div class="step" id="step-${i}">
+      <div class="step-l">
+        <div class="step-dot">${s.phase.icon}</div>
+        ${i < svc.steps.length-1 ? '<div class="step-line"></div>' : ''}
+      </div>
+      <div class="step-r">
+        <div class="step-phase">${s.phase.label}</div>
+        <div class="step-title">Step ${s.num}: ${s.title}</div>
+        <div class="step-detail">${s.detail}</div>
+      </div>
+    </div>`).join('');
+
+  resetFlow();
+}
+
+function closeModal() {
+  clearTimeout(simTimer);
+  document.getElementById('flow-modal').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+function resetFlow() {
+  clearTimeout(simTimer);
+  if (!activeFlow) return;
+  activeFlow.steps.forEach((_,i) => {
+    const el = document.getElementById(`step-${i}`);
+    if (el) el.classList.remove('vis');
+  });
+  document.getElementById('prog').style.width = '0';
+  const sb = document.getElementById('sim-btn');
+  sb.disabled = false;
+  sb.textContent = '';
+  sb.insertAdjacentHTML('beforeend','▶ Simulate Flow');
+}
+
+function simulate() {
+  const sb = document.getElementById('sim-btn');
+  sb.disabled = true;
+  sb.textContent = '⏳ Running...';
+  const total = activeFlow.steps.length;
+  let i = 0;
+
+  function next() {
+    if (i >= total) {
+      sb.textContent = '✓ Complete';
+      return;
+    }
+    const el = document.getElementById(`step-${i}`);
+    if (el) el.classList.add('vis');
+    document.getElementById('prog').style.width = `${Math.round(((i+1)/total)*100)}%`;
+    i++;
+    simTimer = setTimeout(next, 600);
+  }
+  next();
+}
+
+// ── RIPPLE ─────────────────────────────────────────────────────────────────────
+function addRipple(el, e) {
+  const r = el.getBoundingClientRect();
+  const rpl = document.createElement('span');
+  rpl.className = 'rpl';
+  rpl.style.left = `${e.clientX - r.left - 4}px`;
+  rpl.style.top  = `${e.clientY - r.top  - 4}px`;
+  el.appendChild(rpl);
+  setTimeout(() => rpl.remove(), 600);
+}
+
+// close modal on backdrop click
+document.getElementById('flow-modal').addEventListener('click', e => {
+  if (e.target === document.getElementById('flow-modal')) closeModal();
+});
+
+// ── INIT ──────────────────────────────────────────────────────────────────────
+fetch('Indian_Services_All_Algorithms.txt')
+  .then(r => r.text())
+  .then(text => {
+    DATA = parseAlgorithmFile(text);
+    renderCats();
+  })
+  .catch(() => {
+    document.getElementById('loading').innerHTML =
+      '<p style="color:#F44336;font-size:14px;">⚠️ Could not load algorithm file.<br>Make sure Indian_Services_All_Algorithms.txt is in the same folder.</p>';
+  });
+</script>
+</body>
+</html>
