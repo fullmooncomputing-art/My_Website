@@ -1,0 +1,249 @@
+================================================================================
+  THE HYPERLOCAL SERVICE MATCHING ALGORITHM
+  Core Engine for India's Local Services Digital Platform
+================================================================================
+
+PROBLEM:
+  Given a user request (any of 200+ micro-services across 13 clusters),
+  find, price, book, verify, and settle the best local vendor —
+  in any language, across any connectivity level, for any Indian region.
+
+================================================================================
+ALGORITHM: HyperlocalServiceMatcher
+================================================================================
+
+INPUT:
+  user_request = {
+    raw_input       : voice / text / missed-call / WhatsApp message
+    location        : GPS coords OR pin code OR village name
+    language        : auto-detected (12 Indian languages supported)
+    urgency         : EMERGENCY | SAME_DAY | SCHEDULED | SUBSCRIPTION
+    budget_hint     : optional (extracted from input or inferred)
+    time_preference : optional
+  }
+
+OUTPUT:
+  result = {
+    ranked_vendors  : ordered list of matched vendors
+    price_estimate  : range for top match
+    booking_slot    : confirmed time window
+    trust_score     : vendor reliability score
+    payment_method  : UPI | cash | UPI-mandate
+  }
+
+================================================================================
+PHASE 1 — REQUEST PARSING
+================================================================================
+
+STEP 1.1  LANGUAGE NORMALIZATION
+  detected_lang = detect_language(raw_input)          // e.g. Hindi, Gujarati
+  normalized    = translate_to_canonical(raw_input)   // internal English/key
+
+STEP 1.2  SERVICE CLASSIFICATION
+  cluster_id, service_code = classify(normalized)
+  // Maps input to one of 13 clusters and ~200 service codes
+  // Uses keyword match first; falls back to NLP intent model
+  // Example: "paani ka pipe tod gaya" → cluster=1, service_code=PLUMBER
+
+STEP 1.3  PARAMETER EXTRACTION
+  Extract from normalized input:
+    urgency         = detect_urgency_signal(normalized)
+    budget_range    = extract_price_mention(normalized) OR null
+    time_preference = extract_time(normalized)          OR DEFAULT
+    special_flags   = [photo_needed, subscription, custom_order, ...]
+
+================================================================================
+PHASE 2 — VENDOR POOL GENERATION
+================================================================================
+
+STEP 2.1  GEO-RADIUS SEARCH
+  radius = 2 km                        // start tight
+  LOOP:
+    vendor_pool = query_active_vendors(location, radius, service_code)
+    IF len(vendor_pool) >= MIN_POOL (5):  BREAK
+    IF len(vendor_pool) > 0 AND urgency == EMERGENCY: BREAK
+    radius = radius * 2                  // expand: 2 → 4 → 8 km
+    IF radius > MAX_RADIUS (25 km):      BREAK with partial pool
+
+STEP 2.2  HARD FILTERS (eliminate disqualified vendors)
+  REMOVE vendor IF:
+    kyc_verified        == False
+    service_code        NOT IN vendor.skills
+    availability        has no slot within user's time_preference window
+    active_blacklist    == True
+
+================================================================================
+PHASE 3 — TRUST SCORING
+================================================================================
+
+For each vendor v in vendor_pool:
+
+  trust_score(v) =
+      0.35 * normalize(v.avg_rating, 1, 5)        // customer ratings
+    + 0.25 * v.job_completion_rate                 // jobs completed / accepted
+    + 0.20 * v.kyc_level                           // 0.5=Aadhaar, 1.0=police+skill
+    + 0.15 * (1 - normalize(v.avg_response_min, 0, 60))  // faster = higher
+    + 0.05 * v.repeat_customer_rate                // loyalty signal
+
+  // trust_score is in [0, 1]; threshold for display = 0.40
+
+NOTE: New vendors (< 5 jobs) get a NEWCOMER BOOST of +0.10 for first 30 days
+      to break cold-start problem.
+
+================================================================================
+PHASE 4 — DYNAMIC PRICING
+================================================================================
+
+For each vendor v:
+
+  base_price    = SKU_price_table[service_code]    // fixed city-tier price
+  distance_fee  = max(0, (distance_km - 2) * RATE_PER_KM)
+  surge_factor  = compute_surge(service_code, current_hour, day_of_week)
+                  // surge_factor in [1.0, 2.5]; capped at 2.5x
+  custom_delta  = compute_custom_additions(special_flags)
+                  // e.g. photo_upload adds diagnostic fee; AC brand premium
+
+  estimated_price(v) = (base_price + distance_fee + custom_delta) * surge_factor
+
+================================================================================
+PHASE 5 — VENDOR RANKING
+================================================================================
+
+For each vendor v in filtered pool:
+
+  availability_score(v) = score_slot_match(v.next_free_slot, user.time_preference)
+                          // 1.0 = exact match, 0.0 = > 24 hrs away
+
+  price_competitiveness(v) = 1 - normalize(estimated_price(v),
+                                           pool_min_price, pool_max_price)
+
+  personal_affinity(v)  = IF user has booked v before: 0.15 ELSE 0.0
+                          // re-booking preference bonus
+
+  rank_score(v) =
+      0.40 * trust_score(v)
+    + 0.30 * price_competitiveness(v)
+    + 0.20 * availability_score(v)
+    + 0.10 * personal_affinity(v)
+
+  IF urgency == EMERGENCY:
+    rank_score(v) = 0.15 * trust_score(v)
+                  + 0.10 * price_competitiveness(v)
+                  + 0.70 * availability_score(v)   // speed dominates
+                  + 0.05 * personal_affinity(v)
+
+SORT vendor_pool BY rank_score DESCENDING
+RETURN top 3 vendors to user interface
+
+================================================================================
+PHASE 6 — BOOKING & PAYMENT PRE-AUTH
+================================================================================
+
+STEP 6.1  SLOT HOLD
+  RESERVE vendor[0].next_slot for 5 minutes (optimistic lock)
+  IF user does not confirm within 5 min → release slot, try vendor[1]
+
+STEP 6.2  OTP GENERATION
+  booking_otp = generate_6digit_otp()     // sent to both user and vendor
+  // Vendor must enter OTP to START job (start-time proof)
+  // User must enter OTP to CLOSE job (completion proof)
+
+STEP 6.3  PAYMENT PRE-AUTHORIZATION
+  IF payment == UPI:
+    create UPI collect request for estimated_price
+    hold funds in escrow until job_closed
+  IF payment == SUBSCRIPTION (UPI mandate):
+    setup recurring debit for agreed frequency
+  IF payment == CASH:
+    generate digital invoice stub; collect on delivery
+
+================================================================================
+PHASE 7 — LIVE EXECUTION TRACKING
+================================================================================
+
+WHILE job_status != CLOSED:
+
+  POLL vendor GPS every 30 sec → share live link with user
+  IF vendor_no_show after (slot_time + 15 min):
+    trigger_auto_reassign() → re-run Phase 5 with vendor[0] removed
+    notify user with ETA of replacement
+
+  ON job_started (vendor enters start OTP):
+    job_start_timestamp = now()
+    for time-based jobs: start billing clock
+
+  ON job_completed (user enters close OTP):
+    photo_proof    = vendor.upload_photo()    // mandatory for some service_codes
+    job_end_time   = now()
+    final_price    = compute_final(base + time_overrun_if_any)
+    release_escrow(final_price → vendor, remainder → user_refund)
+    generate_digital_invoice(GST_if_applicable)
+
+================================================================================
+PHASE 8 — POST-SERVICE FEEDBACK LOOP
+================================================================================
+
+STEP 8.1  RATING COLLECTION
+  Send rating prompt to user after 1 hour
+  rating, text_review = collect_feedback()
+  IF rating < 3: flag for manual review + offer partial refund if warranted
+
+STEP 8.2  TRUST SCORE UPDATE
+  v.avg_rating      = rolling_average(v.all_ratings + rating)
+  v.completion_rate = completed_jobs / accepted_jobs    // recompute
+  v.trust_score     = recompute_trust_score(v)          // Phase 3 formula
+
+STEP 8.3  PLATFORM LEARNING
+  log_event(service_code, location, time, price, trust_score, rating)
+  IF new_service_code detected in request parsing with no match:
+    queue for human review → add to service taxonomy
+
+================================================================================
+OFFLINE / LOW-CONNECTIVITY FALLBACK
+================================================================================
+
+IF user has no smartphone:
+  missed_call_to = route_number → IVR in user's language
+  IVR runs simplified Phase 1-3 via keypad input
+  Reads back top vendor name + price + ETA
+  Confirms booking via "press 1"
+  OTP delivered via SMS
+
+IF vendor has no smartphone:
+  Call-centre agent relays booking details by voice
+  Vendor confirms via IVR keypress
+  GPS tracking replaced by scheduled check-in calls
+
+================================================================================
+ASSISTED ACCESS (CSC/VLE KIOSK)
+================================================================================
+
+Village-level operator runs same algorithm on behalf of user:
+  operator_fee  = flat Rs. 10-20 per booking (built into platform fee)
+  operator_app  = same as vendor app but with "book for customer" mode
+  customer_auth = Aadhaar OTP or fingerprint via micro-ATM device
+
+================================================================================
+COMPLEXITY & PERFORMANCE TARGETS
+================================================================================
+
+  Phase 1 (parsing)       < 300 ms    (on-device NLP for common phrases)
+  Phase 2-4 (match+price) < 800 ms    (indexed geo-query + cached SKU table)
+  Phase 5 (ranking)       < 200 ms    (in-memory sort of <= 50 vendors)
+  Phase 6 (booking)       < 500 ms    (OTP + UPI collect API call)
+  TOTAL end-to-end target < 2 seconds on 4G; < 8 seconds on 2G
+
+================================================================================
+KEY INVARIANTS (must never be violated)
+================================================================================
+
+  1. No vendor reaches a customer without KYC verification.
+  2. Funds are held in escrow; never transferred until close-OTP confirmed.
+  3. User location is never shared with vendor until booking is confirmed.
+  4. Every job produces a digital record (timestamp, OTP log, photo, invoice).
+  5. Algorithm weights are publicly auditable to build vendor trust.
+  6. Surge factor is always shown to user BEFORE confirmation — no surprises.
+
+================================================================================
+END OF ALGORITHM
+================================================================================
