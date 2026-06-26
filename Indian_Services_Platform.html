@@ -308,8 +308,7 @@ function showServices(ci) {
   const cv = document.getElementById('cat-view');
   const sv = document.getElementById('svc-view');
   cv.style.display = 'none';
-  sv.style.display = 'block';
-  sv.style.cssText = `--cc-active:${cat.color};--cc-active-a:${cat.color}44`;
+  sv.style.cssText = `display:block;--cc-active:${cat.color};--cc-active-a:${cat.color}44`;
 
   sv.innerHTML = `
     <button class="back-btn" onclick="showCats()">← Back to Categories</button>
