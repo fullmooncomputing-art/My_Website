@@ -325,8 +325,35 @@
             <h2>Ready to Transform Your Online Presence?</h2>
             <p>Let's build something amazing together</p>
             <a href="contact.html" class="cta-button">Start Your Project Today</a>
+            <div style="margin-top:1.5rem;">
+                <button onclick="openAdminLogin()" style="background:transparent;border:1px solid rgba(255,255,255,0.3);color:rgba(255,255,255,0.6);padding:0.5rem 1.2rem;border-radius:50px;font-size:0.8rem;cursor:pointer;transition:all 0.3s;" onmouseover="this.style.borderColor='rgba(255,255,255,0.8)';this.style.color='#fff'" onmouseout="this.style.borderColor='rgba(255,255,255,0.3)';this.style.color='rgba(255,255,255,0.6)'">🔐 Admin</button>
+            </div>
         </div>
     </section>
+
+    <!-- Admin Login Modal -->
+    <div id="adminModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.85);z-index:99999;display:none;align-items:center;justify-content:center;">
+        <div style="background:#1a1a2e;border:1px solid rgba(255,215,0,0.3);border-radius:20px;padding:2.5rem;width:90%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,0.5);animation:slideUp 0.3s ease;">
+            <div style="text-align:center;margin-bottom:1.5rem;">
+                <div style="font-size:2.5rem;margin-bottom:0.5rem;">🔐</div>
+                <h2 style="color:#ffd700;font-size:1.4rem;margin-bottom:0.3rem;">Admin Access</h2>
+                <p style="color:rgba(255,255,255,0.5);font-size:0.85rem;">Enter your credentials to continue</p>
+            </div>
+            <div style="margin-bottom:1rem;">
+                <label style="color:rgba(255,255,255,0.7);font-size:0.85rem;display:block;margin-bottom:0.4rem;">Username</label>
+                <input id="adminUser" type="text" placeholder="Enter username" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;" onfocus="this.style.borderColor='#ffd700'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'">
+            </div>
+            <div style="margin-bottom:0.5rem;">
+                <label style="color:rgba(255,255,255,0.7);font-size:0.85rem;display:block;margin-bottom:0.4rem;">Password</label>
+                <input id="adminPass" type="password" placeholder="Enter password" style="width:100%;padding:0.75rem 1rem;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.15);border-radius:10px;color:#fff;font-size:0.95rem;outline:none;" onfocus="this.style.borderColor='#ffd700'" onblur="this.style.borderColor='rgba(255,255,255,0.15)'" onkeydown="if(event.key==='Enter')doAdminLogin()">
+            </div>
+            <div id="adminErr" style="color:#ff6b6b;font-size:0.82rem;margin-bottom:0.8rem;min-height:1.2rem;text-align:center;"></div>
+            <div style="display:flex;gap:0.75rem;">
+                <button onclick="doAdminLogin()" style="flex:1;padding:0.8rem;background:linear-gradient(135deg,#ffd700,#ffaa00);color:#1a1a2e;border:none;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;transition:all 0.2s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">Login →</button>
+                <button onclick="closeAdminLogin()" style="padding:0.8rem 1.2rem;background:transparent;color:rgba(255,255,255,0.5);border:1px solid rgba(255,255,255,0.15);border-radius:10px;cursor:pointer;font-size:0.9rem;">Cancel</button>
+            </div>
+        </div>
+    </div>
 
     <!-- Footer -->
     <footer>
@@ -339,6 +366,36 @@
     </footer>
 
     <script src="script.js"></script>
+    <script>
+        function openAdminLogin() {
+            document.getElementById('adminModal').style.display = 'flex';
+            document.getElementById('adminUser').value = '';
+            document.getElementById('adminPass').value = '';
+            document.getElementById('adminErr').textContent = '';
+            document.body.style.overflow = 'hidden';
+            setTimeout(() => document.getElementById('adminUser').focus(), 100);
+        }
+        function closeAdminLogin() {
+            document.getElementById('adminModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+        function doAdminLogin() {
+            const u = document.getElementById('adminUser').value.trim();
+            const p = document.getElementById('adminPass').value;
+            if (u === atob('U2F2YW4=') && p === atob('c2FtOTk5NTU=')) {
+                document.getElementById('adminErr').style.color = '#4caf50';
+                document.getElementById('adminErr').textContent = '✓ Access granted...';
+                setTimeout(() => { window.location.href = '/Indian_Services_Platform'; }, 800);
+            } else {
+                document.getElementById('adminErr').textContent = '✗ Invalid username or password';
+                document.getElementById('adminPass').value = '';
+                document.getElementById('adminPass').focus();
+            }
+        }
+        document.getElementById('adminModal').addEventListener('click', function(e) {
+            if (e.target === this) closeAdminLogin();
+        });
+    </script>
     <script>
         // Terms Modal Logic
         function checkTermsAcceptance() {
