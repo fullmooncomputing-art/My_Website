@@ -1,0 +1,1331 @@
+================================================================================
+  COMPLETE SUB-SERVICE ALGORITHMS — ALL 13 CATEGORIES
+  India Hyperlocal Services Digital Platform
+================================================================================
+
+================================================================================
+CATEGORY 1: HOUSEHOLD REPAIR & MAINTENANCE
+================================================================================
+
+--- 1.1 ELECTRICIAN ---
+INPUT:  job_type (fan/switch/wiring/socket/MCB), location, urgency
+ALGORITHM:
+  1. User selects job_type from menu → system maps to complexity tier (T1/T2/T3)
+  2. base_price = price_table[job_type][city_tier]
+  3. visit_fee  = flat Rs. 50-100 added always
+  4. IF urgency == EMERGENCY: surge = 1.5x
+  5. Geo-query electricians within 3km with verified_license == True
+  6. Rank by trust_score + availability
+  7. Confirm booking → send OTP to both
+  8. Electrician enters start-OTP on arrival; end-OTP on completion
+  9. Parts used: electrician logs each part → auto-adds to invoice
+ 10. Payment: UPI or cash; digital invoice with part breakdown
+
+--- 1.2 PLUMBER ---
+INPUT:  issue_type (leak/tap/commode/geyser/pipe_burst), photo_of_problem, location
+ALGORITHM:
+  1. User selects issue_type; prompt to upload photo
+  2. Photo sent to matched plumber for remote quote BEFORE booking
+  3. Plumber responds with quote within 15 min; user accepts/rejects
+  4. IF user accepts: slot booked; deposit = 20% of quote
+  5. On-site: if additional work found, plumber requests quote revision via app
+  6. User approves revision OR disputes → escalate to platform agent
+  7. End-OTP confirms job; balance payment released from escrow
+
+--- 1.3 CARPENTER ---
+INPUT:  furniture_type, problem_description, photo, dimensions (optional)
+ALGORITHM:
+  1. User uploads photo + describes issue (broken joint, hinge, polish)
+  2. System suggests: repair vs. full-refurbish option with price difference
+  3. Carpenter views photo, sends per-hour or per-job quote
+  4. IF per-job: fixed price locked at booking
+     IF per-hour: clock starts at start-OTP, stops at end-OTP
+  5. Wood/material cost added separately; carpenter photographs materials bought
+  6. Completion photo uploaded → user confirms → payment released
+
+--- 1.4 PAINTER ---
+INPUT:  room_count, room_dimensions (L x W x H), paint_type, surface_condition
+ALGORITHM:
+  1. User enters dimensions → system calculates total sq.ft.
+  2. Paint type selection: distemper / emulsion / enamel / texture
+  3. surface_condition: new plaster / old repaint / damaged (adds labour)
+  4. auto_estimate = sq_ft * rate_per_sqft[paint_type] + primer_cost
+  5. Colour visualisation tool: user picks shade → rendered preview
+  6. Painter confirms estimate or adjusts after site visit
+  7. Work split into days; each day requires end-of-day photo upload
+  8. Final payment on completion photo approval
+
+--- 1.5 MASON ---
+INPUT:  job_description, photos, location, urgency
+ALGORITHM:
+  1. User posts job: tile repair / plaster patch / wall crack / boundary wall
+  2. Platform opens bidding for 2 hours; local masons submit quotes
+  3. Bids ranked by: trust_score * 0.5 + price_competitiveness * 0.5
+  4. User picks from top 3 bids; advance = 30%
+  5. Material procurement: mason logs cement/sand/tile purchase with photos
+  6. Daily progress photos mandatory for jobs > 1 day
+  7. Punch-list: user marks incomplete items before final payment
+
+--- 1.6 WELDER ---
+INPUT:  item_type (gate/grill/railing/tank), photos, material_preference
+ALGORITHM:
+  1. User uploads photos of item + specifies new fabrication vs. repair
+  2. Welder with portable kit geo-matched within 5km
+  3. Welder quotes: material cost (iron/SS) + labour separately
+  4. IF fabrication: design approval photo before cutting starts
+  5. Site visit for measurement; quote revision if dimensions change
+  6. Completion: structural integrity photo + user sign-off via app
+
+--- 1.7 AC REPAIR & SERVICING ---
+INPUT:  brand, model, symptom (not_cooling/noise/leaking/no_start), service_type
+ALGORITHM:
+  1. service_type = annual_service | repair | gas_refill | installation
+  2. IF annual_service: subscription model → auto-reminder every 6 months
+  3. IF repair: symptom checklist narrows to fault category
+     fault_map = {not_cooling → gas/coil, noise → fan/motor, leaking → drain}
+  4. Technician verifies OEM authorisation for premium brands
+  5. Spare part needed? → technician checks availability; user approves part cost
+  6. OTP start/stop; gas refill quantity logged in app
+  7. Subscription AMC: track service history per unit per household
+
+--- 1.8 WASHING MACHINE REPAIR ---
+INPUT:  brand, model_number, symptom, machine_type (top/front_load)
+ALGORITHM:
+  1. Brand + model lookup → known fault database suggests likely cause
+  2. Symptom checklist: not_spinning / leaking / error_code / not_heating
+  3. IF error_code: user types code → system maps to fault + estimated cost
+  4. Technician confirmed as OEM-authorised or multi-brand certified
+  5. Spare part pre-check: technician carries common spares for top brands
+  6. Repair completed → test cycle run → user confirms before payment
+
+--- 1.9 MICROWAVE / INDUCTION REPAIR ---
+INPUT:  appliance_type, brand, symptom
+ALGORITHM:
+  1. Appliance type determines technician skill-set filter
+  2. Self-diagnosis tree shown to user BEFORE booking:
+     not_heating → magnetron | turntable_not_rotating → motor | sparks → coating
+  3. IF self-diagnosis resolves issue (e.g. child lock): no booking needed → free
+  4. Else: book technician; bring appliance to workshop OR home visit option
+  5. Workshop option: pickup + drop included; 3-day TAT with progress SMS
+
+--- 1.10 TV REPAIR ---
+INPUT:  tv_type (LED/LCD/OLED), issue_category, brand, screen_size
+ALGORITHM:
+  1. Issue pre-classification:
+     set_top_box_issue vs. display_issue vs. remote_issue vs. no_signal
+  2. Remote issue → platform sends replacement directly; no technician needed
+  3. No signal → app runs signal diagnostic checklist; may resolve without visit
+  4. Display/board issue → technician visit; screen replacement quote upfront
+  5. Carry-in option for large repairs; doorstep for minor issues
+  6. Warranty check: system flags if device is under manufacturer warranty
+
+--- 1.11 WATER PURIFIER SERVICING ---
+INPUT:  brand, model, last_service_date, service_type (filter_change/membrane/full)
+ALGORITHM:
+  1. AMC model: user signs up → platform tracks filter life based on usage days
+  2. Auto-reminder at 85% filter life; push notification to user
+  3. Technician visits with pre-packed filter kit for that model
+  4. Service log updated: date, technician ID, parts replaced, TDS reading before/after
+  5. Pay-per-service: user books on demand; no subscription required
+  6. Filter disposed of by technician; eco-disposal certificate generated
+
+--- 1.12 GAS STOVE & CHIMNEY REPAIR ---
+INPUT:  appliance (gas_stove/chimney), issue_type, burner_count (stove)
+ALGORITHM:
+  1. Gas stove: issue menu → burner_not_lighting / regulator_leak / knob_broken
+     Safety check: IF regulator_leak → flag as EMERGENCY; surge + priority dispatch
+  2. Chimney: issue menu → not_sucking / noisy / oil_dripping / filter_clogged
+  3. Chimney deep-clean listed as fixed-price SKU; no quote needed
+  4. Technician carries standard nozzles, igniters, regulator stock
+  5. Post-repair: flame test photo uploaded for gas stove jobs
+  6. Same-day guarantee for gas stove emergencies; premium surcharge applied
+
+--- 1.13 INVERTER & UPS SERVICING ---
+INPUT:  brand, battery_count, last_service_date, issue (not_charging/low_backup/alarm)
+ALGORITHM:
+  1. Scheduled maintenance: quarterly reminder auto-generated on registration
+  2. Services: battery_water_topup | terminal_cleaning | load_test | replacement
+  3. Battery water top-up → fixed low-cost SKU; 15-min job
+  4. Load test result logged: backup_hours measured → recommendation if < threshold
+  5. Battery replacement: old battery buyback amount shown; deducted from new cost
+  6. UPS for computers: downtime minimised; technician brings replacement unit
+
+--- 1.14 MOSQUITO NET INSTALLATION ---
+INPUT:  window_count, window_dimensions, material (fibreglass/aluminium/SS), frame_type
+ALGORITHM:
+  1. Guided AR measurement: user points camera at window → app auto-calculates W x H
+  2. Material selection with price difference shown
+  3. Frame type: fixed / sliding / magnetic / velcro
+  4. Quote = (area * material_rate) + (window_count * installation_fee)
+  5. Fabrication TAT: 2-3 days; installation on delivery day
+  6. Post-install: each window photographed; user confirms fit before payment
+
+--- 1.15 GLASS PANE REPLACEMENT ---
+INPUT:  glass_type, exact_dimensions (L x W), thickness, location (window/door/table)
+ALGORITHM:
+  1. User enters dimensions + uploads photo of frame with reference object for scale
+  2. Thickness options: 4mm / 5mm / 8mm / toughened; price auto-calculated
+  3. Platform queries nearby glass shops for stock availability
+  4. Fastest-available shop selected; cutting + delivery + installation bundled
+  5. Fragile item insurance: Rs. 50 add-on covers breakage during transit
+  6. Installation: old glass removed safely; disposal fee included in quote
+
+================================================================================
+CATEGORY 2: PERSONAL CARE & GROOMING
+================================================================================
+
+--- 2.1 LADIES' PARLOUR AT HOME ---
+INPUT:  services_needed (threading/waxing/facial/cleanup), skin_type, product_brand_pref
+ALGORITHM:
+  1. Service multi-select with individual prices shown; bundle discount auto-applied
+  2. Beautician profile includes: skill tags, portfolio photos, product brands carried
+  3. User can specify brand preference (Lotus / VLCC / Shahnaz / Gold)
+  4. Slot booking: 60-min blocks; system calculates duration from services selected
+  5. Safety: beautician shares live location from 30 min before slot
+  6. Post-service: before/after photos (with consent) → portfolio; rating collected
+
+--- 2.2 HOME-VISIT BEAUTICIAN (BRIDAL / PARTY) ---
+INPUT:  event_type, event_date, services (makeup/saree_draping/hair), trial_needed
+ALGORITHM:
+  1. Event date selected → platform shows available bridal specialists
+  2. Portfolio gallery: real client photos, not stock images; verified tag
+  3. Trial session booking: 50% of final makeup price, adjustable to full booking
+  4. Video call consultation: discuss skin tone, lehenga colour, reference photos
+  5. Package builder: makeup + hair + saree draping + touch-up kit = bundle price
+  6. Advance payment: 40% on booking; balance on event day after satisfaction check
+  7. Cancellation policy: > 7 days = full refund; < 3 days = 50% forfeiture
+
+--- 2.3 MEN'S SALON AT HOME ---
+INPUT:  services (haircut/beard_trim/shave/head_massage/facial), barber_preference
+ALGORITHM:
+  1. Service selection with duration estimate shown
+  2. Geo-tagged barbers within 2km; rating + photo + years_experience displayed
+  3. "Express haircut" (20 min, basic) vs. "Full grooming" (60 min, all services)
+  4. Barber carries sterilised kit (confirmed via kit-photo upload before visit)
+  5. Hair style selection: user uploads reference photo; barber confirms feasibility
+  6. Payment after service; no advance for single visits
+
+--- 2.4 MEHENDI ARTIST BOOKING ---
+INPUT:  design_style (Arabic/Rajasthani/Bridal/Indo-Arabic), coverage, event_date
+ALGORITHM:
+  1. Design catalogue: artist uploads 20+ designs per style category
+  2. Coverage pricing: per_hand / per_feet / full_arm / bridal_full (both hands+feet)
+  3. Festive season (Eid, Karva Chauth, Teej): advance booking opens 30 days early
+  4. Custom design: user uploads reference image; artist quotes separately
+  5. Duration estimate shown per coverage type
+  6. Post-mehendi: drying time advisory sent; artist leaves drying cone provided
+
+--- 2.5 SPA / MASSAGE AT HOME ---
+INPUT:  massage_type (relaxation/Ayurvedic/deep_tissue/sports), duration, oil_type
+ALGORITHM:
+  1. Therapist must hold certification (VLCC / Ayurvedic diploma / NSDC); verified badge
+  2. Gender filter: user selects therapist gender (mandatory safety feature)
+  3. Oil type: coconut / sesame / lavender / Ayurvedic herbal; displayed with benefits
+  4. Duration options: 30 min / 60 min / 90 min; price scales linearly
+  5. Safety protocol:
+     - Therapist shares live location to emergency contact of user
+     - Mandatory OTP sharing: user's friend/family receives booking details
+     - SOS button active during entire session
+  6. Post-session: hydration advisory; follow-up session discount offered
+
+--- 2.6 EAR PIERCING ---
+INPUT:  age_group (infant/child/adult), piercing_type, material (gold/silver/steel)
+ALGORITHM:
+  1. Age group determines equipment: gun (adult) vs. needle (infant/sensitive)
+  2. Professional carries sterilisation certificate (shown in profile)
+  3. Material selection: hypoallergenic options flagged for sensitive skin
+  4. For infants: parent consent confirmation required in app (checkbox + OTP)
+  5. After-care instructions delivered via WhatsApp immediately after service
+  6. 7-day follow-up check ping: user reports any infection; escalate to doctor if needed
+
+================================================================================
+CATEGORY 3: FOOD & BEVERAGE
+================================================================================
+
+--- 3.1 TIFFIN SERVICE ---
+INPUT:  meal_type (veg/non-veg), roti_count, subscription_period, delivery_time
+ALGORITHM:
+  1. Home chef registers: uploads daily menu, availability calendar, kitchen photo
+  2. FSSAI certificate check (mandatory for commercial kitchens; advisory for home)
+  3. Customer subscribes: weekly / monthly; choose roti count + extras
+  4. Auto-debit via UPI AutoPay mandate on subscription start
+  5. Daily menu published by chef by 8am; customer notified
+  6. Pause feature: customer can pause up to 5 days/month; credits carry forward
+  7. Delivery: chef's own delivery OR integrated with local delivery boy pool
+  8. Chef ledger: auto-calculates daily earnings; GST invoice if above threshold
+
+--- 3.2 LOCAL MESS / FOOD PLATE ---
+INPUT:  meal_time (lunch/dinner), date, portion_size, pickup_or_delivery
+ALGORITHM:
+  1. Mess owner publishes menu for each meal slot by 9am (lunch) / 4pm (dinner)
+  2. Fixed plates available: limited quantity; counter decrements on each booking
+  3. IF quantity == 0: show "sold out"; offer nearby mess alternative
+  4. Booking generates token number with QR code
+  5. Pickup: user scans QR at mess counter; contactless handoff
+  6. Delivery: token linked to delivery boy; GPS tracking to doorstep
+  7. Rate: per-plate price locked at booking; no surge for advance bookings
+
+--- 3.3 CATERING (SMALL FUNCTIONS) ---
+INPUT:  event_type, guest_count, cuisine, service_type (buffet/sit-down), staff_needed
+ALGORITHM:
+  1. Package builder:
+     a. Select dishes per category (starter/main/dessert) from caterer's menu
+     b. System calculates per-plate cost = dish_costs / guest_count + overhead
+  2. Staff count auto-suggested: 1 server per 25 guests (buffet) / 15 (sit-down)
+  3. Real-time quote generated; caterer confirms within 2 hours
+  4. Advance payment: 30% on booking; balance 24hrs before event
+  5. Logistics checklist pushed to caterer: utensils, gas cylinders, staff list
+  6. On event day: caterer checks in via app; guest count confirmed for final billing
+  7. Leftover food management: NGO donation option shown post-event
+
+--- 3.4 HOME DAIRY DELIVERY ---
+INPUT:  milk_type (cow/buffalo/mixed), quantity_litres, delivery_slot (morning/evening)
+ALGORITHM:
+  1. Milkman registers: dairy license, cattle count, milk quality certificate
+  2. Customer subscribes: quantity + slot; UPI AutoPay mandate setup
+  3. Daily: customer can alter quantity via WhatsApp chatbot by 9pm for next morning
+  4. Pause: tap-to-pause up to 7 days; ledger auto-adjusts
+  5. Digital ledger: running balance visible to both customer and milkman
+  6. Monthly settlement: auto-calculated; UPI collect sent to customer
+  7. Quality complaint: customer rates each delivery; 3 consecutive low ratings → review
+  8. Holiday calendar: milkman marks unavailable dates; customer notified in advance
+
+--- 3.5 HOME BAKER ---
+INPUT:  product_type (cake/cookies/bread/pastry), customisation, quantity, delivery_date
+ALGORITHM:
+  1. Baker's Instagram-style storefront: product photos, price per unit/kg, lead time
+  2. Custom cake order:
+     a. User uploads reference photo
+     b. Selects: flavour / eggless / fondant vs. cream / size (kg)
+     c. Personalised message (max 30 chars)
+  3. Baker confirms feasibility within 4 hours; sends design sketch photo
+  4. Advance: 50% on confirmation; balance on delivery
+  5. Delivery date must be ≥ baker's stated lead time (2-5 days)
+  6. Packaging: baker selects box type; fragile label auto-generated
+  7. Delivery: baker's own or platform logistics; temperature-advisory attached
+
+--- 3.6 SWEET SHOP / HALWAI CUSTOM ORDERS ---
+INPUT:  occasion, sweets_list, quantity_kg_per_item, packaging_type, delivery_date
+ALGORITHM:
+  1. Festive / wedding order flow:
+     a. Item list with per-kg price; bulk discount auto-applied above 5kg
+     b. Box packing: choose box size, colour, ribbon, personalised message
+  2. Order minimum: Rs. 500 for delivery orders
+  3. Advance: 40% for orders > Rs. 2000
+  4. Production tracking: halwai marks "in preparation" → "packed" → "out for delivery"
+  5. Shelf-life advisory: sent with order (consume within X days)
+  6. Bulk wedding orders: multiple delivery slots across event days; coordinator assigned
+
+--- 3.7 NAMKEEN / SNACK MAKER BULK ORDER ---
+INPUT:  items_selected, quantity_per_item_kg, delivery_address, occasion
+ALGORITHM:
+  1. Festive combo pack builder: pre-set combos OR custom item + quantity selection
+  2. Price updates dynamically as items are added
+  3. Minimum order for delivery: 2 kg aggregate
+  4. Packing: vacuum-sealed or tin (option); price difference shown
+  5. Freshness guarantee: made-to-order; production starts only after payment
+  6. Production TAT: 1-3 days based on quantity
+  7. Delivery: local courier or self-pickup with 10% discount for pickup
+
+================================================================================
+CATEGORY 4: TRANSPORTATION & MOVING
+================================================================================
+
+--- 4.1 SHARED AUTO / E-RICKSHAW / GRAMIN SEWA ---
+INPUT:  route_id OR origin+destination, seat_count, travel_date_time
+ALGORITHM:
+  1. Route registry: all fixed routes in district registered with stops, fare, frequency
+  2. User selects route → sees live vehicle location + seat availability
+  3. Seat booking: reserve 1-4 seats; digital pass generated (QR)
+  4. Pass types: single / daily / weekly / monthly; pricing tiered
+  5. Driver confirms boarding via QR scan; seat count decremented
+  6. Missed-call booking: call route number → IVR confirms next available seat
+  7. Payment: UPI on app; cash to driver with digital receipt via SMS
+  8. Live ETA: updated every 2 min; push notification when vehicle is 5 min away
+
+--- 4.2 SMALL GOODS SHIFTING (TEMPO / PICKUP) ---
+INPUT:  pickup_location, drop_location, item_description, item_photos, floor_info
+ALGORITHM:
+  1. User enters pickup + drop; system calculates distance
+  2. Item type selection: furniture / boxes / appliances / mixed
+  3. Floor info: pickup_floor + drop_floor; staircase vs. lift; labour charge added
+  4. Photo upload of load: driver reviews before accepting to avoid disputes
+  5. Instant fare = base_fare + (distance * per_km_rate) + labour_charges
+  6. Multiple nearby vehicle owners shown: truck / tempo / pickup sorted by capacity
+  7. GPS tracking link shared with user on booking confirmation
+  8. Loading photo + unloading photo mandatory; damage claim window = 24 hrs post-delivery
+
+--- 4.3 BIKE / CAR WASH AT DOORSTEP ---
+INPUT:  vehicle_type, wash_type (basic/foam/full_detail), add_ons, time_slot
+ALGORITHM:
+  1. Vehicle type determines base price: two-wheeler / sedan / SUV / van
+  2. Wash type menu: basic rinse / foam wash / interior vacuum / full detailing
+  3. Add-ons: wax polish / tyre dressing / engine cleaning (each priced separately)
+  4. Slot booking: 30-min or 60-min window depending on wash type
+  5. Pre-wash photo: operator uploads before starting (documents pre-existing scratches)
+  6. Post-wash photo: uploaded before marking complete; user approves via app
+  7. Water usage: operator carries tank; eco-wash option uses 80% less water
+  8. Subscription: weekly/monthly wash plans at discounted rate via UPI mandate
+
+--- 4.4 TWO-WHEELER MECHANIC AT HOME ---
+INPUT:  vehicle_make_model, symptom, urgency
+ALGORITHM:
+  1. Symptom selection tree:
+     self_start_issue → battery/motor | chain_loose → adjustment
+     tyre_flat → puncture_repair | brake_issue → pad/cable
+     engine_noise → diagnostic required
+  2. Common symptoms → fixed-price SKU shown immediately
+  3. Diagnostic required: mechanic visits with OBD scanner for modern bikes
+  4. Mechanic carries standard spare parts inventory (listed in profile)
+  5. Part needed but not in stock: mechanic fetches from nearby shop; part photo + receipt uploaded
+  6. Test ride: mechanic rides 200m; user confirms resolution before payment
+  7. Warranty on labour: 7 days; on parts: as per part manufacturer
+
+--- 4.5 CYCLE REPAIR AT HOME ---
+INPUT:  issue_type (puncture/brake/gear/chain/saddle), cycle_type
+ALGORITHM:
+  1. Simple drop-down issue selection; flat visit fee + part cost transparent upfront
+  2. Puncture repair: fixed price inclusive; no part cost ambiguity
+  3. Gear tuning / brake adjustment: labour-only; no parts needed in most cases
+  4. Repairman carries: tube patches, brake cables, chain links, lubricant
+  5. Service completes in < 30 min typically; real-time updates not needed
+  6. Kids' cycle: age-appropriate safety check included at no extra cost
+  7. Rating after service; loyalty: 5th repair free on platform
+
+--- 4.6 LPG CYLINDER DELIVERY BOOKING ---
+INPUT:  agency_name, consumer_id, cylinder_type (14.2kg/5kg/commercial), refill_needed
+ALGORITHM:
+  1. User registers consumer ID + agency; platform integrates with agency's system
+  2. One-tap "Book Refill" → request sent to agency with consumer ID
+  3. Subsidy tracking: platform shows how many subsidised refills remain for the year
+  4. Delivery slot: agency confirms date/time window (half-day slots)
+  5. OTP-based delivery confirmation: delivery agent enters OTP; consumer confirms receipt
+  6. Empty cylinder exchange: mandatory; app flags if no empty returned
+  7. Emergency cylinder: platform connects to nearest stockist; higher price shown transparently
+  8. Payment: already linked via BHIM/UPI at agency; or cash to delivery agent with digital receipt
+
+================================================================================
+CATEGORY 5: HEALTH & WELLNESS
+================================================================================
+
+--- 5.1 LOCAL RMP / INFORMAL DOCTOR CONSULTATION ---
+INPUT:  symptoms, patient_age, language, urgency, consultation_type (audio/video)
+ALGORITHM:
+  1. Symptoms entered in vernacular voice or text
+  2. Symptom triage: platform flags RED symptoms (chest pain, unconscious, bleeding)
+     → redirect to emergency services; do NOT match RMP for RED flags
+  3. For non-emergency: match RMP/compounder within locality
+  4. Consultation via video/audio call in patient's language
+  5. Prescription: generated in app (drug name, dosage, days); shared on WhatsApp
+  6. Digital health record: maintained per patient; accessible in future consultations
+  7. Fee: UPI after consultation; platform holds until patient confirms received care
+  8. Referral: RMP can issue in-app referral to higher facility with record attached
+
+--- 5.2 INJECTION / IV DRIP AT HOME ---
+INPUT:  prescription_photo, drug_name, dosage, patient_details, urgency
+ALGORITHM:
+  1. MANDATORY: prescription upload verified before job is dispatched
+  2. Drug validation: system cross-checks drug name against scheduled drug list
+     → Schedule H drugs require doctor verification before nurse accepts
+  3. Nurse/compounder accepts job; navigates to patient location
+  4. On arrival: vein condition photo (IV) or injection site photo logged
+  5. Drug administered: photo of ampoule/vial with batch number uploaded
+  6. Digital record: drug name, batch, dose, time, administrator ID — immutable log
+  7. Post-procedure: 30-min observation window; nurse confirms patient stable before leaving
+  8. Follow-up alert: platform pings patient in 2 hours for wellbeing check
+
+--- 5.3 WOUND DRESSING & STITCHING ---
+INPUT:  wound_type, wound_photo, patient_age, tetanus_status
+ALGORITHM:
+  1. User uploads wound photo for preliminary assessment
+  2. Platform nurse triages from photo: minor (dress at home) vs. needs_stitching vs. hospital_referral
+  3. Nurse visits with sterile dressing kit; gloves + mask mandatory (photo proof on arrival)
+  4. Dressing procedure logged: wound size, dressing type, next_change_date
+  5. Stitching: only qualified nurse/compounder certified for minor suturing
+  6. Auto-scheduled follow-up: next dressing change appointment booked immediately
+  7. Tetanus status: if unknown → nurse advises and can administer TT injection (add-on service)
+  8. Progress photos at each visit; healing tracked in timeline view
+
+--- 5.4 PHYSIOTHERAPY / BONE SETTING AT HOME ---
+INPUT:  ailment (back_pain/sprain/fracture_rehab/sports_injury), session_count, patient_age
+ALGORITHM:
+  1. Ailment selection → platform suggests session package (minimum 5 sessions for most conditions)
+  2. Therapist profile: qualification, AIPT/IAP membership, experience years
+  3. Initial assessment session (paid): therapist evaluates and creates treatment plan
+  4. Session plan pushed to patient app with exercises between sessions
+  5. Exercise videos (vernacular narration) sent via app for home practice
+  6. Each session logged: techniques used, patient feedback, pain_score (1-10)
+  7. Progress chart: pain_score tracked across sessions; visible to patient and therapist
+  8. Bone setter (traditional): listed separately; folk_practitioner tag with disclaimer shown
+
+--- 5.5 VETERINARY FIRST AID FOR CATTLE ---
+INPUT:  animal_type, animal_count, symptoms, farm_location, urgency
+ALGORITHM:
+  1. Farmer uploads: symptom description + animal photo
+  2. Symptom triage by platform vet (async within 30 min):
+     bloat → emergency dispatch | fever → schedule visit | wound → nurse visit
+  3. Nearby pashu doctor (govt. or private) matched by location
+  4. Doctor navigates to farm using GPS; ETA shared with farmer
+  5. Treatment record: drug administered, dosage, diagnosis, next visit date
+  6. Digital payment to private vet; govt. vet fees tracked for subsidy reconciliation
+  7. Herd management: farmer can register all animals; treatment history per animal maintained
+
+--- 5.6 ANIMAL ARTIFICIAL INSEMINATION ---
+INPUT:  cattle_breed, heat_cycle_date, animal_tag_id, semen_breed_preference
+ALGORITHM:
+  1. Heat cycle tracking: farmer logs onset → system calculates optimal insemination window (12-18 hrs)
+  2. Alert sent to nearest AI technician with animal location + breed preference
+  3. Technician accepts and navigates within the insemination window
+  4. Procedure logged: technician ID, semen batch number, breed, timestamp
+  5. Outcome tracking: 21-day heat cycle check reminder sent to farmer
+  6. IF no heat signs at day 21 → mark as potentially pregnant; schedule vet confirmation
+  7. Success record maintained per animal: conception rate history
+  8. Semen inventory: platform aggregates demand → bulk procurement for technicians
+
+--- 5.7 YOGA CLASS BOOKING ---
+INPUT:  yoga_style (Hatha/Ashtanga/Pranayama/Yin), session_type (group/individual), location_pref
+ALGORITHM:
+  1. Trainer profile: style tags, certification body, years_teaching, location (park/rooftop/community_hall)
+  2. Group class: fixed slots; seat counter; max group size set by trainer
+  3. Individual: book any available slot; trainer confirms
+  4. Location: trainer's location or user's home (home visit = premium)
+  5. Package booking: 8-session / 16-session packages at discounted rate; non-refundable
+  6. Live location shared by trainer 15 min before session start
+  7. Session attendance: QR check-in at location; marks attendance for package tracking
+  8. Substitute trainer: if original trainer cancels < 2 hrs → platform arranges substitute OR full refund
+
+--- 5.8 HOME SAMPLE COLLECTION ---
+INPUT:  test_package (or individual tests), patient_name, age, fasting_status, preferred_time
+ALGORITHM:
+  1. Test catalogue: individual tests + pre-set health packages (basic/comprehensive/diabetes/cardiac)
+  2. Fasting check: system shows which tests require fasting and advises on timing
+  3. Phlebotomist matched: certified (NABL partner lab), within 5km
+  4. Preferred time slot; early morning slots prioritised for fasting tests
+  5. On arrival: barcode label generated per sample; patient ID linked
+  6. Sample chain of custody: phlebotomist scans barcode at pickup; lab scans on receipt
+  7. Report delivery: pushed to app + WhatsApp PDF within TAT (24-48 hrs)
+  8. Abnormal value alert: platform flags values outside reference range; suggests follow-up
+
+================================================================================
+CATEGORY 6: CLOTHING, FABRIC & LEATHER
+================================================================================
+
+--- 6.1 TAILOR CUSTOM STITCHING ---
+INPUT:  garment_type, fabric_pickup_needed, design_reference, measurements_or_video
+ALGORITHM:
+  1. Garment type: shirt / kurta / blouse / salwar / trouser / lehenga / coat
+  2. Design selection: from tailor's catalogue OR user uploads reference photo
+  3. Measurement flow:
+     Option A: user has measurements → enter in guided form
+     Option B: measurement via video call → tailor guides user with measuring tape
+     Option C: tailor visits for in-person measurement (add-on fee)
+  4. Fabric pickup: tailor or platform logistics collects fabric from user
+  5. TAT: 5-7 days; tailor updates status (cutting / stitching / finishing)
+  6. Try-on visit OR delivery with alteration window of 3 days included
+  7. Payment: advance 30% on order; balance on delivery after satisfaction
+
+--- 6.2 ALTERATIONS & MENDING ---
+INPUT:  garment_type, alteration_description, photos_with_pin_marks, urgency
+ALGORITHM:
+  1. User marks alteration points with pins on garment; photographs each point
+  2. Photos reviewed by tailor; tailor gives fixed price per alteration type
+  3. Alteration price table: hem_shorten / waist_in / zip_replace / patch / button
+  4. Platform pickup and drop; 2-day TAT for basic alterations
+  5. URGENT (same-day): 2x price; availability based on tailor's current queue
+  6. Before/after photos: tailor photographs garment before starting; and after completion
+
+--- 6.3 SAREE FALL ATTACHING & BEADING ---
+INPUT:  fall_colour, beading_type (plain/decorative/zari), saree_count, urgency
+ALGORITHM:
+  1. Fall colour selection: colour wheel with closest-match fabric swatches shown
+  2. Beading type: plain fall / lace fall / decorative border / matching zari work
+  3. Bulk order: per-saree price decreases above 5 sarees
+  4. Platform pickup; TAT: 1-2 days per saree; festive season TAT extended
+  5. Quality check: each fall inspected for even stitching; photo sent to customer
+  6. Delivery with option to return if colour doesn't match (replacement fall free)
+
+--- 6.4 EMBROIDERY / ZARI / STONE WORK ---
+INPUT:  work_type (embroidery/zari/stone/mirror), design_reference, fabric_type, area_sq_inch
+ALGORITHM:
+  1. User uploads design reference; artisan reviews and responds with quote
+  2. Quote breakdown: labour per sq.inch + material (thread/zari/stones) separately
+  3. Design digital proof: artisan draws digital sketch on template; user approves
+  4. Progress photos: shared at 25%, 50%, 75% completion for large orders
+  5. Material quality: artisan specifies thread brand / stone grade; user can upgrade
+  6. TAT depends on area and complexity; displayed as range at quote stage
+  7. Payment: 30% advance; 40% at 50% progress confirmation; 30% on completion
+
+--- 6.5 SHOE REPAIR / CHAPPAL SOLE ---
+INPUT:  footwear_type, issue_type (sole_detached/heel_broken/stitching/sole_replacement), photo
+ALGORITHM:
+  1. User photographs damaged area; issue auto-classified from photo (or manual selection)
+  2. Sole type options: rubber / micro / PU / leather; price differs; durability shown
+  3. Specialist cobbler matched; pickup + drop logistics
+  4. TAT: 1-2 days for standard repairs
+  5. Waterproofing add-on: offered at checkout for leather footwear
+  6. Irreparable assessment: cobbler flags if repair cost > 60% of new footwear value
+
+--- 6.6 LEATHER BAG / BELT STITCHING ---
+INPUT:  item_type (bag/belt/wallet/jacket), damage_area, leather_type, photos
+ALGORITHM:
+  1. Specialist leather artisan (separate from cobbler) required for bags/jackets
+  2. Damage assessment: handle_broken / zip_replace / lining_torn / stitching / conditioning
+  3. Zip replacement: brand-compatible zip sourced; user approves cost before ordering
+  4. Leather conditioning: included as add-on; extends item life; flat price
+  5. High-value items (branded bags): platform offers collection via trusted courier with insurance
+  6. Completion: artisan photographs all repaired areas; before/after comparison sent to user
+
+--- 6.7 CUSTOM LEATHER SANDAL MAKING ---
+INPUT:  foot_measurements (via paper outline photo), style_reference, leather_type, colour
+ALGORITHM:
+  1. Measurement method: user places foot on A4 paper, draws outline, photographs with ruler
+  2. System extracts: length, width, arch measurements from photo using AI
+  3. Style selection: Kolhapuri / Juttis / open-toe / closed-toe / diabetic-friendly
+  4. Leather grade and colour selection with price shown
+  5. Craftsperson makes sample (1 sandal); sends photo for approval before completing pair
+  6. TAT: 7-10 days; delivery via tracked courier with padding
+  7. Fit guarantee: free adjustment if fit issue reported within 7 days
+
+================================================================================
+CATEGORY 7: DOCUMENTATION & PAPERWORK
+================================================================================
+
+--- 7.1 PHOTOCOPY & PRINTOUT PICKUP / DROP ---
+INPUT:  document_file OR physical_document_pickup, pages, colour, binding_needed
+ALGORITHM:
+  1. Digital: user uploads PDF/image → agent prints; no pickup needed
+  2. Physical: user requests agent pickup; agent collects, prints, delivers
+  3. Options: B&W / colour; single-sided / double-sided; A4 / A3 / legal
+  4. Real-time tracking: agent pickup confirmed → printing → out for delivery
+  5. Sensitive document protocol: agent signs NDA-equivalent in profile; documents deleted post-print
+  6. Payment: per-page rate displayed before confirmation; UPI on delivery
+
+--- 7.2 SPIRAL / HARD-BOUND BINDING ---
+INPUT:  document_PDF, page_count, cover_type, spine_text, copies
+ALGORITHM:
+  1. User uploads PDF; system counts pages; auto-calculates price
+  2. Cover options: transparent front / printed cover / leatherette / hard board
+  3. Spine text: entered by user (max 40 chars); shown in preview
+  4. Colour selection for spiral/binding strip
+  5. TAT: same day if submitted before 2pm; next day otherwise
+  6. Bulk orders (> 5 copies): 15% discount auto-applied; TAT extended proportionally
+  7. Doorstep delivery; large format binding (A3) available at select centres
+
+--- 7.3 LAMINATION & PASSPORT PHOTO ---
+INPUT: (Passport Photo) selfie_photo, document_standard (Indian_passport/visa/Aadhaar)
+       (Lamination) document_size, lamination_type (glossy/matte), quantity
+ALGORITHM:
+  PASSPORT PHOTO:
+  1. User takes selfie against white/light-blue wall
+  2. AI crops to exact spec: 35x45mm (Indian passport) or as per selected standard
+  3. Background correction applied; brightness normalised
+  4. User previews and approves; 6 prints dispatched (standard requirement)
+  5. Digital copy also sent to email/WhatsApp
+
+  LAMINATION:
+  1. Document size input: credit-card / A5 / A4 / custom
+  2. Pouch lamination vs. thermal roll; price differs
+  3. Pickup + lamination + delivery; fragile items cushion-packed
+
+--- 7.4 DIGITAL FORM FILLING ---
+INPUT:  form_type (Aadhaar_update/PAN/exam_form/ration_card), user_documents
+ALGORITHM:
+  1. Form catalogue: government + private forms listed with description + required documents
+  2. Document upload by user (Aadhaar, photo, proof)
+  3. Agent shares screen via video call; user watches and confirms each field
+  4. e-Sign via Aadhaar OTP: platform redirects to DigiLocker/eSign gateway
+  5. Submission confirmation: reference number stored in app; status tracking enabled
+  6. Agent cannot download user documents; view-only session; audit log maintained
+  7. Error warranty: if form rejected due to agent error → re-filing free of charge
+
+--- 7.5 BUS / TRAIN / FLIGHT TICKET BOOKING AGENT ---
+INPUT:  journey_details (origin/destination/date/class), passenger_details, budget
+ALGORITHM:
+  1. Agent uses white-label IRCTC / RedBus / flight aggregator API
+  2. Customer shares journey details via call, chat, or voice message
+  3. Agent displays available options to customer on screen-share or reads aloud
+  4. Customer confirms choice; agent books with customer's payment (UPI collect sent)
+  5. Ticket (PDF/PNR) sent immediately to customer's WhatsApp/email
+  6. Agent fee: flat Rs. 30-50 per booking; shown upfront
+  7. Tatkal / urgent booking: premium agent fee; priority queue
+  8. Cancellation: agent assists with refund process; status tracked in app
+
+--- 7.6 CV TYPING & DESIGN ---
+INPUT:  personal_details (voice/text), experience, skills, language_preference, template
+ALGORITHM:
+  1. User fills guided form in vernacular voice: name / education / experience / skills
+  2. AI transcribes + translates to English (or Hindi as preferred)
+  3. Template selection: 5 pre-designed templates shown; user picks
+  4. Auto-formatted CV generated (PDF + Word)
+  5. Human agent reviews for grammar and formatting errors
+  6. User gets preview; requests edits if needed (2 revision rounds included)
+  7. Final CV delivered via WhatsApp + email; stored in user's account
+  8. LinkedIn profile update service offered as add-on
+
+--- 7.7 AFFIDAVIT DRAFTING & NOTARY BOOKING ---
+INPUT:  affidavit_type (address_proof/name_change/income/marriage), personal_details
+ALGORITHM:
+  1. Questionnaire-based: user answers purpose-specific questions
+  2. Draft auto-generated using legal templates for each affidavit type
+  3. User reviews draft; agent can edit on request
+  4. e-Stamp integration: system fetches correct stamp value by state law; user pays online
+  5. Notary options:
+     Option A: doorstep notary visit (home visit fee added)
+     Option B: user visits nearby empanelled notary (address + directions shown)
+  6. Digital notary register: notary logs execution in app; reference number issued
+  7. Certified copy: scanned + uploaded to user's DigiLocker-linked storage
+
+--- 7.8 GOVERNMENT SCHEME APPLICATION ---
+INPUT:  user_profile (age/income/occupation/caste/state), scheme_interest (optional)
+ALGORITHM:
+  1. Eligibility engine: user answers 8-10 profile questions
+  2. System cross-matches against scheme database (PM Kisan, Ujjwala, Ayushman, etc.)
+  3. Output: list of eligible schemes with benefit amounts + application process
+  4. One-click "Apply with agent": agent assigned; document checklist sent to user
+  5. Document upload; agent processes on designated portal
+  6. Application status tracking: agent updates status; user notified at each stage
+  7. Success: benefit credit tracked; user notified when first credit received
+  8. Agent success fee: platform charges only on successful scheme enrollment
+
+--- 7.9 MONEY TRANSFER / CSP DOORSTEP ---
+INPUT:  transaction_type (deposit/withdrawal/transfer/Aadhaar_Pay), amount, beneficiary
+ALGORITHM:
+  1. Agent registered as BC (Business Correspondent) with bank; verified and bonded
+  2. Customer requests doorstep visit; agent arrives with:
+     micro-ATM device + fingerprint scanner + cash float
+  3. Aadhaar Pay: customer places finger; bank authenticates; debit instant
+  4. Cash deposit: agent accepts cash; credits customer account; digital receipt issued
+  5. Withdrawal: agent pays cash from float; debit confirmed on device
+  6. Transfer: IMPS/NEFT via agent device; beneficiary details verified before confirmation
+  7. Transaction limit: as per RBI BC guidelines (displayed in app)
+  8. Dispute resolution: all transactions logged with timestamp + geo-tag; auditable
+
+================================================================================
+CATEGORY 8: AGRICULTURAL & ALLIED SERVICES
+================================================================================
+
+--- 8.1 TRACTOR & TROLLEY BOOKING ---
+INPUT:  implement_needed (plough/rotavator/harrow/trolley), field_location, area_acres, date
+ALGORITHM:
+  1. Equipment owner registers: tractor model, GPS fitted, available implements, rate_card
+  2. Farmer selects implement; system shows available tractors within 15km
+  3. Pricing: per_hour OR per_acre; both shown for farmer to compare
+  4. Booking with advance token (Rs. 200-500); balance after work completion
+  5. GPS tracking: farmer monitors tractor movement on field map
+  6. Area calculation: GPS track auto-calculates actual area covered → basis for billing
+  7. Fuel cost: if farmer supplies fuel → deducted from rate; option available
+  8. Seasonal demand: queue management; farmer can book up to 7 days ahead
+
+--- 8.2 COMBINE HARVESTER RENTAL ---
+INPUT:  crop_type (wheat/paddy/soybean), field_area_acres, harvest_date_window, location
+ALGORITHM:
+  1. Harvester owner registers: machine model, capacity (acres/day), GPS
+  2. Advance booking: opens 30 days before harvest season; first-come queue
+  3. Token amount: Rs. 1000-2000 to hold slot; refundable if owner cancels
+  4. Real-time tracking during season: farmer sees harvester location on map
+  5. Billing: per_acre rate; GPS-calculated actual area prevents disputes
+  6. Multi-field queue: harvester moves field to field in optimised route (platform calculates)
+  7. Breakdown protocol: owner notifies platform → substitute matched from pool
+
+--- 8.3 THRESHING MACHINE RENTAL ---
+INPUT:  crop_type, quantity_quintals_estimated, location, preferred_date
+ALGORITHM:
+  1. Operator lists threshing machine: crop types supported, capacity (qtl/hr), rate
+  2. Farmer books operator + machine per hour
+  3. Fuel: farmer provides diesel; quantity estimate shown based on hours booked
+  4. Queue booking: operator manages calendar; farmer sees available slots
+  5. On-site: timer starts when machine operational; stops when crop fully threshed
+  6. Output photo: threshed grain pile photographed for record
+  7. Payment: per-hour rate × actual hours; UPI on completion
+
+--- 8.4 CHAFF-CUTTER SERVICE ---
+INPUT:  fodder_type (sugarcane/wheat_straw/corn), quantity_kg, location, date
+ALGORITHM:
+  1. Operator with tractor-powered chaff-cutter geo-matched
+  2. Fodder quantity entered; time estimate calculated (capacity per hour shown)
+  3. Cutting length preference: 1-2cm / 2-3cm (for cattle type)
+  4. On-site: operator brings equipment; farmer loads fodder
+  5. Safety check: operator confirms guards in place (mandatory checkbox before start)
+  6. Payment: per-quintal OR per-hour; agreed at booking; no ambiguity
+
+--- 8.5 PESTICIDE SPRAYER SERVICE ---
+INPUT:  crop_type, field_area_acres, pest_type (optional), sprayer_type (drone/power/manual)
+ALGORITHM:
+  1. Sprayer type selection:
+     drone → precision, premium price | power_sprayer → standard | manual → cheapest
+  2. Farmer marks field boundary on map → auto-calculates area
+  3. Pest type → recommended chemical and concentration suggested (agri-extension integration)
+  4. Chemical cost: farmer supplies OR operator supplies at market rate (shown)
+  5. Drone sprayer: DGCA-licensed operator required; certificate visible in profile
+  6. Coverage report: drone generates GPS-stamped spray coverage map; sent to farmer
+  7. Re-spray guarantee: if pest not controlled within 7 days → 50% discount on re-application
+
+--- 8.6 WATER TANKER SUPPLY ---
+INPUT:  water_source_pref (borewell/municipality), volume_litres, field_location, urgency
+ALGORITHM:
+  1. Tanker owner registers: capacity, water source, GPS, rate per trip
+  2. Farmer enters volume needed; system calculates trips required
+  3. Water source quality: TDS/quality certificate visible (for drinking use; agriculture flexible)
+  4. Multiple trips: scheduled in sequence; each trip GPS-tracked
+  5. Payment: per-trip rate × trip_count; UPI after last delivery
+  6. Drought season: surge pricing capped at 1.5x by platform policy
+
+--- 8.7 MILK COLLECTION / DELIVERY AGGREGATION ---
+INPUT:  farmer_id, quantity_litres, fat_percentage, collection_time
+ALGORITHM:
+  1. Farmer logs daily: quantity + fat% via IoT strip reader (or manual entry)
+  2. Platform aggregates morning/evening collection totals for pickup agent
+  3. Pickup agent arrives; scans farmer QR → confirms quantity + fat% on device
+  4. Digital ledger: per-litre rate = base_rate + fat_bonus; auto-calculated daily
+  5. Monthly payment: aggregated; direct bank transfer to farmer
+  6. Quality: fat < threshold → flagged; discussion with farmer before rate deduction
+  7. Chilling centre integration: platform routes milk to nearest bulk cooler within 2hrs
+
+--- 8.8 SEED / FERTILISER / SPRAY PUMP RENTAL ---
+INPUT:  item_type, quantity/duration, location, need_date
+ALGORITHM:
+  PURCHASE (seed/fertiliser):
+  1. E-commerce catalogue: brand, variety, certified/organic flag, price per kg/bag
+  2. Delivery: agri-input dealer delivers within 24hrs; cold-chain for seeds
+  3. Authenticity: scan QR on seed packet → verified from manufacturer database
+
+  RENTAL (spray pump / implements):
+  1. Equipment owner registers pump: capacity, condition, daily rental rate
+  2. Farmer books for N days; security deposit held via UPI
+  3. Condition photos at pickup + return; any damage deducted from deposit
+  4. Platform insurance: optional Rs. 50/day covers accidental damage
+
+================================================================================
+CATEGORY 9: EVENT, RELIGIOUS & CULTURAL SERVICES
+================================================================================
+
+--- 9.1 TENT HOUSE / SHAMIANA BOOKING ---
+INPUT:  event_type, guest_count, items_needed, event_date, venue_address
+ALGORITHM:
+  1. Item catalogue: shamiana / mandap / tables / chairs / coolers / fans / lights / generator
+  2. Guest count → system suggests minimum area and item quantities
+  3. 3D layout preview: tent owner uploads floor plan template; items placed virtually
+  4. Date-availability calendar: items booked from inventory; prevents double-booking
+  5. Delivery + setup + tear-down: all included; labourers count shown
+  6. Advance: 30% at booking; 70% day before event
+  7. Cancellation: > 10 days = full refund; < 5 days = 30% forfeit (replacement cost)
+  8. Damage deposit: held via UPI; returned within 48hrs of return in good condition
+
+--- 9.2 CATERING SERVICE BOOKING (EVENT) ---
+INPUT:  guest_count, menu_style (veg/non-veg/Jain/mixed), service_type, event_date
+ALGORITHM:
+  1. Menu package builder: pre-set (Silver/Gold/Platinum) OR custom
+  2. Per-plate calculation: platform shows per-head cost as items are selected
+  3. Service staff: auto-calculated (1 per 25 for buffet); adjustable
+  4. Utensils: included / not-included / rental add-on
+  5. Advance: 30% at booking; mid-payment at 7 days before; balance after event
+  6. Guest count flexibility: ±10% of confirmed count handled without extra charge
+  7. On event day: caterer checks in at venue; platform coordinator available on call
+
+--- 9.3 PRIEST / PANDIT / MAULVI BOOKING ---
+INPUT:  ritual_type, religion/tradition, date_time, duration_estimate, language
+ALGORITHM:
+  1. Religion-aware routing: platform separates profiles by tradition (Hindu/Muslim/Sikh/Jain)
+  2. Ritual type taxonomy: wedding / havan / satyanarayan / nikah / naam_karan / antim_sanskar
+  3. Priest profile: experience years, languages, reviews, gotras_known (for Hindu)
+  4. Duration estimate: priest specifies typical duration per ritual
+  5. Samagri (materials): priest lists required items; user can buy via platform's samagri kit
+  6. Advance booking: especially for auspicious dates (Akshaya Tritiya, wedding muhurts)
+  7. Video call pre-booking consultation: discuss ritual details; no extra charge
+  8. Payment: negotiated and confirmed at booking; platform holds till ritual complete
+
+--- 9.4 FLOWER DECORATION ---
+INPUT:  venue_type, event_type, colour_theme, flower_preference, area_sq_ft
+ALGORITHM:
+  1. Venue + event → default decoration style suggested (wedding / birthday / puja / corporate)
+  2. Colour theme picker; platform shows which flowers match
+  3. Flower selection: marigold / rose / tuberose / lotus / seasonal availability flagged
+  4. Reference photo upload: user shares inspiration; decorator confirms feasibility
+  5. Real-time quote: area × decoration density × flower cost
+  6. Fresh flower guarantee: ordered from market on event morning; no day-old flowers
+  7. Setup time: decorator specifies hours needed; venue access arranged
+  8. Post-event dismantling: optional add-on; flowers donated to temple/NGO
+
+--- 9.5 BAND / DJ / SHEHNAI BOOKING ---
+INPUT:  music_type (brass_band/DJ/shehnai/folk), event_type, duration, date, budget
+ALGORITHM:
+  1. Genre taxonomy: Punjabi brass / Rajasthani folk / classical shehnai / DJ electronic
+  2. Audio sample upload: each artist uploads 2-min performance clip; user auditions
+  3. Group size for band: shown with quote (5-piece / 10-piece / full 20-piece)
+  4. DJ: sound system included or separate? Equipment list shown
+  5. Distance surcharge: for venues > 20km from artist base
+  6. Advance: 40% at booking; balance on event day (start)
+  7. Cancellation: < 7 days = 50% advance forfeit (artist committed other dates)
+  8. Noise permit: platform reminds user to obtain local permission for late-night events
+
+--- 9.6 PHOTOGRAPHY & VIDEOGRAPHY ---
+INPUT:  event_type, package (candid/traditional/drone/full), output_format, date
+ALGORITHM:
+  1. Portfolio gallery: real event photos; verified authentic (no stock images allowed)
+  2. Package options:
+     Basic: photos only / Standard: photos + highlights video / Premium: raw + edited + drone
+  3. Number of photographers: 1 / 2 / team; specified in package
+  4. Drone add-on: DGCA-licensed pilot required; certificate in profile
+  5. Delivery timeline: edited photos within 7 days; full video within 15 days
+  6. Cloud delivery: Google Drive / WeTransfer link; no physical drive dependency
+  7. Advance: 30% booking; balance on event day before shoot starts
+  8. Copyright: platform terms clarify: customer owns all photos; photographer cannot reuse without consent
+
+--- 9.7 ASTROLOGER / PALMIST CONSULTATION ---
+INPUT:  consultation_type (Kundali/palmistry/numerology/tarot), birth_details, language
+ALGORITHM:
+  1. Birth details for Kundali: date / time / place → auto-generate kundali chart
+  2. Chart sent to astrologer before call for preparation
+  3. Video call slot booking: astrologer sets availability; user picks
+  4. Disclaimer: mandatory display "For entertainment/guidance only; not medical/legal advice"
+  5. Session recording: user option only; astrologer cannot record without consent
+  6. Payment: per 30-min slot; extension charged pro-rata
+  7. Follow-up: 3-month reminder for annual Kundali update
+
+--- 9.8 BIRTHDAY PARTY SETUP RENTAL ---
+INPUT:  theme, age_of_child, items_needed, venue, guest_count, date
+ALGORITHM:
+  1. Theme catalogue: cartoon characters / jungle / princess / superhero / colour themes
+  2. Item builder: balloon arch / backdrop / bouncy castle / return gift boxes / cake table setup
+  3. Guest count → balloon quantity auto-suggested
+  4. Delivery + setup: 2hrs before party; teardown after party
+  5. Bouncy castle: safety certification of item shown; operator present during use
+  6. Age check: bouncy castle has weight/age limit; platform flags if child too old/young
+  7. Advance: 50% at booking; balance on setup day
+  8. Damage deposit: for bouncy castle; returned on inspection after event
+
+================================================================================
+CATEGORY 10: CLEANING & SANITATION
+================================================================================
+
+--- 10.1 HOUSE DEEP CLEANING ---
+INPUT:  bhk_type (1/2/3/4+BHK), room_count, bathroom_count, add_ons, date
+ALGORITHM:
+  1. BHK selection → base price displayed; itemised by room type
+  2. Add-on menu: kitchen_chimney / balcony / water_tank / sofa / carpet (each priced)
+  3. Standardised checklist: platform defines 45-point cleaning standard per room type
+  4. Checklist sent to team before visit; each item photo-verified on completion
+  5. Before photos: team photographs each room on arrival; evidence of pre-existing state
+  6. Minimum 2-person team for any job > 2BHK; team leader accountable
+  7. Cleaning products: eco-friendly option available at small premium
+  8. Re-clean guarantee: if customer reports issue within 24hrs → re-clean within 48hrs free
+
+--- 10.2 SOFA & CARPET SHAMPOOING ---
+INPUT:  item_type, material (fabric/leather/velvet/synthetic), dimensions, stain_info
+ALGORITHM:
+  1. Material type determines chemical and technique; wrong chemical = damage liability
+  2. Stain pre-treatment: user describes stains; technician carries specialist solvents
+  3. Dimensions: per-seater for sofa; per sq.ft for carpet
+  4. Drying time advisory: 4-6 hrs for fabric; same-day for leather (conditioning)
+  5. Before/after photos: mandatory for every job
+  6. High-value items (Persian rugs): workshop service option; pickup + insurance
+  7. Odour elimination add-on: ozone treatment; Rs. 300 extra; 30-min process
+
+--- 10.3 OFFICE / SHOP CLEANING STAFF BOOKING ---
+INPUT:  premises_type, area_sq_ft, frequency (daily/alternate/weekly), staff_count
+ALGORITHM:
+  1. Area + frequency → base quote; hours per visit auto-calculated
+  2. Subscription model: monthly contract with fixed rate; UPI mandate
+  3. Staff attendance: geo-fenced selfie on arrival AND departure; auto-logged
+  4. Replacement guarantee: if assigned staff absent → replacement provided within 2 hrs
+  5. Supervisor visits: random quality check by platform supervisor once a month
+  6. Staff background verification: police verification mandatory; certificate in profile
+  7. Equipment: cleaning supplies included in quote; inventory tracked per premises
+  8. Holiday management: customer marks holidays; staff roster adjusted; billing prorated
+
+--- 10.4 WATER TANK CLEANING ---
+INPUT:  tank_type (overhead/underground/sump), capacity_litres, material (plastic/concrete/steel)
+ALGORITHM:
+  1. Tank type + capacity → price calculated (min charge for < 1000L; per 1000L above)
+  2. Material determines cleaning method: plastic → pressure wash; concrete → scrub + lime treatment
+  3. Date booking: morning slot preferred (tank refill time needed after)
+  4. Procedure: tank emptied; sediment removed; walls scrubbed; disinfectant applied; rinsed
+  5. Water disconnection advisory: platform informs user to store 1-day water before visit
+  6. Post-service photo report: each stage photographed; report PDF sent to customer
+  7. Recommended frequency: 6-month reminder auto-set after service
+
+--- 10.5 PEST CONTROL ---
+INPUT:  pest_type (cockroach/termite/bedbug/mosquito/rat/lizard), area_sq_ft, service_type
+ALGORITHM:
+  1. Pest type → recommended treatment + chemical list shown (with safety data)
+  2. Service type: general_pest_control / termite_treatment / bedbug_heat_treatment
+  3. Termite treatment: soil treatment + wood treatment; separate pricing
+  4. Chemical details: brand, dilution, safe-re-entry time — all disclosed in app
+  5. Pet & child safety: pre-service checklist sent to customer (vacate for X hours)
+  6. Technician certification: pesticide applicator license visible in profile
+  7. Follow-up visit: included for termite and bedbug (7 and 21 days); scheduled automatically
+  8. Annual contract: 4 visits; 15% discount; auto-renewal option
+
+--- 10.6 DHOBI / LAUNDRY PICKUP & DELIVERY ---
+INPUT:  items_list (shirt/saree/blanket/curtain), service_type (wash/dry_clean/iron_only)
+ALGORITHM:
+  1. Item entry: user selects from catalogue with per-item price shown
+  2. QR code tag: unique tag generated per customer; printed and pinned to bag
+  3. Pickup: dhobi scans QR on collection; item count confirmed in app
+  4. Item tracking: each garment scanned individually (barcode) at entry and exit
+  5. Special instructions: per-item notes (cold wash / no bleach / starch required)
+  6. Delivery TAT: 48 hrs standard; 24 hrs express (20% premium)
+  7. Damage claim: before-photo exists for each item; damage reported within 24hrs of delivery
+  8. Subscription: weekly laundry bundle at flat monthly rate; UPI mandate
+
+--- 10.7 IRONING SERVICE PICKUP / DROP ---
+INPUT:  items_list, starch_preference, delivery_slot
+ALGORITHM:
+  1. Press-only service; per-item pricing; no wash
+  2. Starch level: no starch / light / heavy; per customer preference
+  3. Delivery on hangers: shirts and sarees delivered on hangers; garments not folded
+  4. Item count verification: operator counts items on pickup; customer confirms
+  5. Same-day service: items collected before 10am → delivered by 6pm
+  6. Quantity discount: above 20 items → 10% off; above 50 items → 20% off
+  7. Subscription: household monthly plan; fixed item count per week
+
+--- 10.8 SCRAP / KABADI PICKUP ---
+INPUT:  categories (newspaper/plastic/metal/glass/e-waste/cardboard), estimated_weight
+ALGORITHM:
+  1. Category selection; live rate card shown (updates daily from market rates)
+  2. Estimated weight entered by user for scheduling
+  3. Kabadiwala dispatched; arrives with digital weighing scale
+  4. Actual weight measured on-site; rate × weight = payout calculated in app
+  5. User accepts or disputes payout before confirming
+  6. UPI payment instantly to user (not cash) → prevents manipulation
+  7. E-waste: separate certified recycler; data destruction certificate for electronics
+  8. Receipt: digital receipt with weight + rate + category breakdown; stored in account
+
+================================================================================
+CATEGORY 11: FINANCIAL & LEGAL (INFORMAL)
+================================================================================
+
+--- 11.1 LOCAL MONEY-LENDING / GOLD LOAN ---
+INPUT:  loan_type (cash/gold), amount, tenure, borrower_details
+ALGORITHM:
+  1. Sahukar app: digital bahi khata replacing paper ledger
+  2. Loan entry: borrower name, amount, interest rate, start date, tenure
+  3. Interest calculation: daily/monthly compound; auto-calculated and shown
+  4. Payment schedule: auto-generated; WhatsApp/SMS reminder sent to borrower 3 days before due
+  5. Gold loan: borrower uploads gold photo; purity estimate shown (final at physical check)
+  6. Gold weight + purity logged at disbursement; item photographed and stored digitally
+  7. UPI collection: collection request sent on due date; borrower pays from app
+  8. Default tracking: flagged after 7-day grace; sahukar notified; escalation options shown
+  9. Platform role: tool only; lending is between parties; platform not a NBFC
+
+--- 11.2 CHIT FUND ORGANISER ---
+INPUT:  group_size, monthly_contribution, duration_months, auction_type
+ALGORITHM:
+  1. Group creation: organiser sets parameters; invites members via phone/WhatsApp
+  2. Member onboarding: Aadhaar verification of each member
+  3. Monthly collection: UPI collect request sent to all members on due date
+  4. Defaulter management: automatic reminder on day 1, 3, 7; organiser notified on day 7
+  5. Monthly auction: video conference initiated by platform on auction day
+  6. Bidding: members bid discount amount; lowest bidder wins chit; transparent process
+  7. Winner payout: organiser releases net amount (total - discount - commission) via UPI
+  8. Ledger: every transaction immutable; all members can view; prevents manipulation
+  9. Completion: final member gets full amount (no auction); certificate of completion generated
+
+--- 11.3 INSURANCE PREMIUM COLLECTION ---
+INPUT:  policy_details, premium_amount, due_date, payment_method
+ALGORITHM:
+  1. Agent registers policies for each client: insurer / policy_number / premium / due_date
+  2. Renewal reminder: push notification to agent at 30 / 15 / 7 days before due
+  3. Agent also sends reminder to client via WhatsApp with policy summary
+  4. Collection: UPI collect OR cash; digital receipt auto-generated
+  5. Digital receipt: policy number, amount, date, agent ID, insurer — legally valid
+  6. Lapse prevention: if uncollected by due-2 days → alert escalated to agent supervisor
+  7. Portfolio view: agent sees all policies, premium totals, commission earned
+  8. Client portfolio: customer sees all their policies, due dates, nominees — in one place
+
+--- 11.4 ITR FILING ASSISTANCE ---
+INPUT:  income_type (salaried/business/both), Form_16 (if salaried), financial_year
+ALGORITHM:
+  1. Income type determines ITR form version (ITR-1/2/3/4)
+  2. Form 16 upload: AI extracts TDS, employer details, salary break-up automatically
+  3. Other income: guided entry for FD interest / rental / capital gains / agriculture
+  4. Deduction discovery: platform prompts for 80C/80D/HRA/LTA; suggests likely deductions
+  5. Tax calculation: live computation shown; compare old vs. new tax regime
+  6. Review by agent: agent checks for missed deductions / errors before filing
+  7. e-Verify: Aadhaar OTP verification within 30 days of filing (mandatory)
+  8. Acknowledgement: ITR-V stored in account; reminder for processing status
+
+--- 11.5 PROPERTY DOCUMENT DRAFTING ---
+INPUT:  document_type (rent_agreement/sale_deed/gift_deed/MOU), property_details, parties
+ALGORITHM:
+  1. Document type selection → relevant questionnaire generated (12-20 questions)
+  2. User fills in vernacular; AI generates formal draft in English/Hindi
+  3. Legal review option: empanelled advocate reviews draft for Rs. 299-599 add-on
+  4. e-Stamp integration: platform calculates stamp duty by state; payment online
+  5. Registration scheduling: slot booked at sub-registrar office (where available online)
+  6. Witness arrangement: platform can suggest and connect witnesses if needed
+  7. Document storage: final stamped document stored in DigiLocker-linked account
+
+--- 11.6 NOTARY ATTESTATION BOOKING ---
+INPUT:  document_type, number_of_documents, language, preferred_mode (home/office)
+ALGORITHM:
+  1. User uploads document for notary review before visit
+  2. Notary reviews document type → confirms it falls within their authority
+  3. Mode selection: home visit (higher fee) or office appointment
+  4. Appointment slot: notary's calendar shown; user books
+  5. At attestation: physical document + original ID mandatory
+  6. Notary register entry: logged in digital notary register (platform-maintained)
+  7. Digital copy: notarised document photographed + stored; physical given to user
+
+--- 11.7 GOLD / SILVER BUYING (OLD ORNAMENTS) ---
+INPUT:  item_type, estimated_weight, metal_purity_guess, photos
+ALGORITHM:
+  1. User photographs ornaments; uploads weight estimate
+  2. Platform shows live gold/silver rate (fetched from MCX/IBJA)
+  3. Price estimate = estimated_weight × purity_factor × live_rate × buyback_percentage
+  4. Nearby buyer (jeweller / gold company) confirms interest
+  5. Buyer visits with: electronic gold tester + calibrated weighing scale
+  6. Physical test: karatmeter reading; weight confirmed
+  7. Final price calculated on-site; user accepts or declines
+  8. IF accepted: instant UPI payment to user; item handed over; digital receipt
+  9. No advance commitment until physical test confirms purity
+
+================================================================================
+CATEGORY 12: ARTISAN & CUSTOM WORK
+================================================================================
+
+--- 12.1 GOLD / SILVER SMITH (CUSTOM JEWELLERY) ---
+INPUT:  jewellery_type, metal (gold/silver/mixed), design_reference, weight_estimate
+ALGORITHM:
+  1. Design selection: karigar's portfolio OR user uploads reference photo
+  2. 3D design preview tool: karigar creates 3D model; shared with customer for approval
+  3. Video call with karigar: discuss design nuances, stone selection, finish
+  4. Metal rate locked at design approval (hedges against price fluctuation)
+  5. Making charges quoted separately: per gram or fixed
+  6. In-progress photos at: wax model / cast / setting / finishing stages
+  7. Hallmarking: BIS hallmark included for gold > specified purity; certificate provided
+  8. Advance: 50% (covers material cost); balance on delivery
+  9. Resizing guarantee: free within 30 days if size mismatch
+
+--- 12.2 POTTER ---
+INPUT:  product_type (diyas/crockery/pots/decorative), quantity, custom_design
+ALGORITHM:
+  1. E-commerce storefront: catalogue with photos, per-unit price, available stock
+  2. Custom order: dimensions + design description; potter quotes TAT + price
+  3. Diya bulk order: festival pre-order opens 45 days before Diwali; advance locks price
+  4. Custom message engraving: available for larger items; Rs. 20-50 extra per item
+  5. Packaging: fragile item; bubble wrap + newspaper; eco-friendly option
+  6. Delivery: India Post / courier for distant; self-pickup discount
+  7. B2B option: hotels / restaurants bulk order; invoice with GST
+
+--- 12.3 BAMBOO / CANE WEAVER ---
+INPUT:  product_type (basket/tray/furniture/decorative), dimensions, custom_order
+ALGORITHM:
+  1. Photo gallery: weaver's existing products; in-stock items ship same week
+  2. Custom size basket: user specifies L × W × H + colour (natural/dyed)
+  3. Weaver confirms material availability; quotes TAT (2-7 days per item)
+  4. Progress photo: shared at 50% completion for large orders
+  5. Delivery: India Post registered; tracking number shared
+  6. Bulk craft order (NGOs/gift companies): special pricing; weaver group aggregated for capacity
+  7. Artisan story: weaver's village, craft tradition shown on storefront (builds premium brand)
+
+--- 12.4 HANDLOOM WEAVER ---
+INPUT:  product_type (bed_sheet/towel/saree/table_cloth), dimensions, colour, name_embroidery
+ALGORITHM:
+  1. Custom colour: digital colour picker; weaver selects closest available thread match
+  2. Name/monogram embroidery: user enters text (max 15 chars); placement selected
+  3. Fabric weight: weavers specify GSM; user selects by use case (light/heavy)
+  4. Weave pattern: plain / striped / checked / jamdani — photo options shown
+  5. TAT: 7-14 days per item; longer for complex patterns
+  6. GI tag: if weaver holds GI certification (Pochampally / Chanderi etc.) → displayed prominently
+  7. Care instructions: included with every delivery as QR-linked guide
+
+--- 12.5 TAILORING BOUTIQUE ---
+INPUT:  garment_type, design_catalogue_selection OR custom, measurements
+ALGORITHM:
+  Same as 6.1 (Tailor Custom Stitching) but:
+  1. Boutique has its own design catalogue (not just acceptance of user-supplied designs)
+  2. In-house designer available for consultation (add-on)
+  3. Trial fitting: boutique offers in-store trial or home-visit trial before finalisation
+  4. Premium fabrics available for purchase at boutique; displayed in-app
+  5. Brand page: boutique's own storefront; regular customers can follow for new collections
+
+--- 12.6 BLOCK PRINTING / TIE-DYE ---
+INPUT:  fabric (dupatta/kurta_length/saree/bedsheet), technique (block/tie-dye/batik), pattern
+ALGORITHM:
+  1. Fabric can be user-supplied (pickup) or purchased from artisan
+  2. Block pattern catalogue: artisan photographs all blocks; user selects combination
+  3. Colour selection: natural dyes option highlighted; synthetic option cheaper
+  4. Digital proof: artisan creates a small test swatch; photos sent for approval
+  5. Full production begins only after proof approved
+  6. Drying + fixing time: 2-3 days; artisan marks status in app
+  7. Wash fastness guarantee: artisan certifies colour stays after 10 washes
+
+--- 12.7 LEATHER CRAFTSPERSON ---
+INPUT:  product_type (wallet/belt/bag/diary_cover), dimensions, leather_grade, monogram
+ALGORITHM:
+  1. Wallet/belt design tool: user selects compartments, card slots, buckle type
+  2. Monogram: initials + font style; positioned at specified location
+  3. Leather grade: full-grain / top-grain / genuine; price and durability difference shown
+  4. Colour selection from available hide stock (craftsperson updates stock weekly)
+  5. TAT: 5-10 days per item; handmade and crafted to order
+  6. Stitching style: hand-stitched (premium) vs. machine-stitched; durability comparison shown
+  7. Box packaging: premium gift-ready packaging optional; Rs. 50 extra
+
+--- 12.8 FLOUR MILL (CHAKKI) BOOKING ---
+INPUT:  grain_type (wheat/millet/rice/maize/multi-grain), quantity_kg, grind_size
+ALGORITHM:
+  1. User selects grain type; specifies quantity
+  2. Grind size: coarse / medium / fine; specific to end use (chapati/roti/bread)
+  3. Chakki owner's schedule: pickup slots available (morning/evening)
+  4. Pickup of grain from user; milling done fresh on order
+  5. Bran separation: user specifies keep_bran or separate (for cattle)
+  6. Atta delivery: same day or next day based on queue
+  7. Weight reconciliation: milled atta weight logged; small loss (2-3%) is normal; shown in app
+  8. Subscription: monthly regular milling; UPI mandate; grain pickup on fixed day
+
+--- 12.9 COLD-PRESSED OIL GHANI ---
+INPUT:  oil_type (mustard/coconut/groundnut/sesame/flaxseed), quantity_litres, delivery_freq
+ALGORITHM:
+  1. Oil type selection; seed-to-oil ratio explained (e.g. 3kg groundnut → 1L oil)
+  2. Cold-press certification: ghani owner confirms no heat applied; process photo available
+  3. Quantity: per litre pricing; minimum order 1 litre
+  4. Subscription: monthly delivery; quantity adjustable; UPI mandate
+  5. Production on order: oil milled fresh after order confirmed; not pre-stocked
+  6. Packaging: glass bottle (premium) or food-grade plastic; user selects
+  7. Shelf life advisory: sent with order (varies by oil type: mustard 6 months, coconut 12 months)
+  8. Seed source: farmer/supplier name shown; traceability builds trust
+
+--- 12.10 MASALA GRINDING SERVICE ---
+INPUT:  spice_mix_type (chilli/coriander/garam_masala/sambhar/custom), quantity_kg
+ALGORITHM:
+  1. Standard spice mix menu: each with ingredient list and typical recipe use
+  2. Custom blend: user specifies ingredients + ratio; grinder confirms availability
+  3. Grain form: whole spices picked fresh; ground on order (not pre-ground)
+  4. Moisture level: dry grind vs. wet grind option for fresh pastes
+  5. Vacuum packing: standard; extends shelf life to 6 months
+  6. Labelling: each packet labelled with: ingredients, date of grinding, net weight, batch ID
+  7. Bulk wedding order: large quantities; confirm TAT (> 5kg needs 2-day advance)
+  8. Delivery: local courier; padded to prevent burst during transit
+
+================================================================================
+CATEGORY 13: MISCELLANEOUS NICHE SERVICES
+================================================================================
+
+--- 13.1 KEY MAKER / LOCK REPAIR ---
+INPUT:  service_type (duplicate_key/lock_repair/lock_change/safe_open), photos
+ALGORITHM:
+  KEY DUPLICATION:
+  1. User photographs key alongside reference coin (for size scale)
+  2. AI estimates key blank type from photo; keycutter confirms
+  3. Key cut at workshop; delivered; Rs. 50-200 depending on type (Yale/mortise/car)
+
+  LOCK REPAIR / HOME VISIT:
+  1. Lock type: padlock / mortise / cylindrical / digital
+  2. Issue: stuck / broken_latch / lost_key / seized
+  3. Locksmith geo-matched; visits with standard lock kit
+  4. Emergency lockout: PRIORITY queue; 30-min response target; premium fee
+  5. Security check: locksmith cannot enter home without customer present; platform policy
+
+--- 13.2 WATCH / CLOCK REPAIR ---
+INPUT:  item_type (wristwatch/wall_clock/table_clock), brand, issue_type
+ALGORITHM:
+  1. Issue selection: battery_dead / glass_broken / strap_broken / not_keeping_time / water_damage
+  2. Battery replacement: courier option — user ships watch; replaced and returned in 3 days
+  3. Complex repair: watchmaker visits or user ships to workshop
+  4. Insurance option: Rs. 50 covers watch value up to Rs. 5000 during transit
+  5. Vintage/antique watches: specialist craftsperson; video call assessment first
+  6. Parts sourcing: for rare brands; watchmaker quotes with sourcing timeline
+  7. Warranty on repair: 3 months; defect recurs → re-repair free
+
+--- 13.3 MOBILE SCREEN / BATTERY REPLACEMENT ---
+INPUT:  phone_brand, model_number, issue (screen_cracked/battery_drain/charging_port)
+ALGORITHM:
+  1. Model selection → instant price for genuine vs. compatible part; both shown
+  2. Technician geo-matched; visits with pre-stocked parts for common models
+  3. Repair at customer's location: transparent process; customer watches
+  4. Data safety: technician does NOT handle phone in a locked-room scenario
+  5. Warranty sticker applied after repair; IMEI logged
+  6. Screen repair: touch test + display test before handing back
+  7. Battery replacement: capacity test after install; reading shown to customer
+  8. Repair not possible: technician diagnoses and suggests options (board repair / trade-in)
+
+--- 13.4 UMBRELLA REPAIR ---
+INPUT:  issue_type (rib_broken/fabric_torn/handle_broken/spoke_tip), umbrella_type
+ALGORITHM:
+  1. Photo of damage uploaded; repairman confirms feasibility
+  2. Fixed repair price shown per issue type; no ambiguity
+  3. Fabric replacement: colour options shown from repairman's stock
+  4. Pickup + delivery; TAT: 1-2 days
+  5. Monsoon subscription: sign up before June; flat rate covers 2 repairs per season
+  6. Bulk corporate order: company logos printed on replacement fabric; minimum 10 units
+
+--- 13.5 HELMET / SEAT COVER STITCHING ---
+INPUT:  item_type (helmet_padding/seat_cover), vehicle_type, material_preference
+ALGORITHM:
+  HELMET INTERIOR REPAIR:
+  1. Padding replacement: user specifies helmet brand + size; padding sourced
+  2. Pickup + replace + deliver; TAT: 3 days
+  3. Safety note: platform recommends helmet replacement if outer shell cracked (not just padding)
+
+  SEAT COVER:
+  1. Vehicle type (bike/scooter/car/auto) → standard dimensions known
+  2. Material: rexine / fabric / jeans / velvet; waterproof option highlighted
+  3. Colour + pattern selection from catalogue
+  4. Pickup at doorstep; stitched to fit; delivered in 3-4 days
+  5. Custom printing (name/design) on seat cover: Rs. 100-200 add-on
+
+--- 13.6 SCISSOR / KNIFE SHARPENING ---
+INPUT:  item_types (scissors/knives/blade/garden_shears/clipper), quantity, location
+ALGORITHM:
+  1. Mobile cart model: sharpenerwala registers with live GPS location
+  2. User taps "sharpen now" → sees nearest mobile cart on map
+  3. Alternative: scheduled visit — user books time slot; sharpenerwala routes optimally
+  4. Per-item pricing shown: scissor / kitchen_knife / cleaver / clipper (varied rates)
+  5. On arrival: items sharpened on-site using whetstone/grinding wheel; user watches
+  6. Sharpness test: paper-cut test demonstrated before payment
+  7. Payment: UPI via QR code on cart; or cash; receipt sent via WhatsApp
+
+--- 13.7 VEHICLE NUMBER PLATE MAKING ---
+INPUT:  registration_number, plate_type (standard/embossed/HSRP), vehicle_type, address_proof
+ALGORITHM:
+  1. Enter registration number exactly as in RC book
+  2. Plate type selection:
+     Standard painted → budget option
+     Embossed (raised letters) → mid-range
+     HSRP (High Security) → government-compliant; requires address proof upload
+  3. HSRP process:
+     a. Upload: RC copy + address proof
+     b. Platform verifies documents; submits to authorised HSRP vendor
+     c. Unique security code embossed; registration in MoRTH database
+  4. Font and size: auto-set per BIS standards; no deviation allowed
+  5. TAT: standard → 1 day; HSRP → 3-5 days (government processing)
+  6. Delivery: home delivery of plates; installation option (screw-fit) at extra Rs. 50
+  7. Old plate: user disposes of old plate; platform sends disposal advisory
+
+================================================================================
+CROSS-CUTTING ALGORITHM COMPONENTS (SHARED ACROSS ALL 13 CATEGORIES)
+================================================================================
+
+TRUST ENGINE (applied to every vendor in every category):
+  score = ratings(0.35) + completion_rate(0.25) + kyc_level(0.20)
+        + response_speed(0.15) + repeat_customer_rate(0.05)
+  New vendor boost: +0.10 for first 30 days (cold-start fix)
+  Threshold for visibility: score >= 0.40
+
+DYNAMIC PRICING ENGINE:
+  final_price = (base_SKU + distance_fee + custom_additions) × surge_factor
+  surge_factor range: [1.0, 2.5]; displayed to user BEFORE confirmation always
+
+ESCROW PAYMENT FLOW:
+  user_pays → escrow_hold → start_OTP → job_active → end_OTP
+  → photo_proof → platform_releases_to_vendor (T+1 day for disputes)
+
+OFFLINE FALLBACK:
+  missed_call → IVR(language_auto) → keypad_booking → SMS_confirmation
+  vendor_confirmed_via → IVR_keypress OR call_centre_relay
+
+DISPUTE RESOLUTION:
+  Day 0: auto-detection of no end-OTP / low rating
+  Day 1: platform mediator contacts both parties
+  Day 3: if unresolved → partial refund table applied per category policy
+  Day 7: final decision; vendor trust score adjusted accordingly
+
+VERNACULAR SUPPORT:
+  Input/output: Hindi, Tamil, Telugu, Kannada, Malayalam, Bengali,
+                Marathi, Gujarati, Punjabi, Odia, Assamese, Urdu (12 languages)
+  Voice-first: all menus navigable by voice; no literacy required
+
+================================================================================
+END — ALL 13 CATEGORIES × ALL SUB-SERVICES COVERED
+================================================================================
