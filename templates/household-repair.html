@@ -1,0 +1,1263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeFix — Household Repair & Maintenance Template | Full Moon Computing</title>
+    <meta name="description" content="A live demo household repair & maintenance platform template by Full Moon Computing. Book verified electricians, plumbers, carpenters and 12 more home services with OTP verification, photo evidence and escrow payments.">
+    <meta name="robots" content="index, follow">
+    <meta name="theme-color" content="#1a2e4a">
+    <meta name="author" content="Full Moon Computing">
+    <meta name="copyright" content="© 2026 Full Moon Computing — fullmooncomputing.in. This template's design and code are the property of Full Moon Computing.">
+    <!--
+      ============================================================
+      © 2026 Full Moon Computing — https://fullmooncomputing.in
+      This is a demo template. Design and source code are the
+      property of Full Moon Computing. Unauthorised copying or
+      redistribution is prohibited. Want a site like this?
+      Contact us at https://fullmooncomputing.in/contact
+      ============================================================
+    -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --navy: #1a2e4a;
+            --navy-2: #243b55;
+            --blue: #2563eb;
+            --blue-light: #3b82f6;
+            --sky: #0ea5e9;
+            --orange: #f97316;
+            --orange-dark: #ea580c;
+            --teal: #0d9488;
+            --green: #16a34a;
+            --red: #ef4444;
+            --amber: #f59e0b;
+            --paper: #f8fafc;
+            --ink: #0f172a;
+            --muted: #64748b;
+            --line: #e2e8f0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Plus Jakarta Sans', system-ui, sans-serif; color: var(--ink); background: var(--paper); line-height: 1.65; }
+        a { text-decoration: none; color: inherit; }
+        .container { max-width: 1180px; margin: 0 auto; padding: 0 1.5rem; }
+        .section { padding: 5rem 0; }
+        .center { text-align: center; }
+        .eyebrow { display: inline-block; color: var(--blue); font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; font-size: 0.74rem; margin-bottom: 0.9rem; }
+        .section-title { font-size: 2.5rem; font-weight: 800; color: var(--ink); line-height: 1.12; letter-spacing: -0.02em; }
+        .section-sub { color: var(--muted); max-width: 560px; margin: 0.9rem auto 0; }
+        .btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 13px 26px; border-radius: 12px; font-weight: 700; font-size: 0.92rem; cursor: pointer; border: none; transition: all 0.2s; font-family: inherit; }
+        .btn-blue { background: var(--blue); color: #fff; box-shadow: 0 8px 20px rgba(37,99,235,0.3); }
+        .btn-blue:hover { transform: translateY(-2px); box-shadow: 0 12px 28px rgba(37,99,235,0.45); }
+        .btn-orange { background: var(--orange); color: #fff; box-shadow: 0 8px 20px rgba(249,115,22,0.3); }
+        .btn-orange:hover { transform: translateY(-2px); background: var(--orange-dark); }
+        .btn-ghost { background: rgba(255,255,255,0.1); color: #fff; border: 1px solid rgba(255,255,255,0.25); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.18); }
+        .btn-white { background: #fff; color: var(--blue); }
+        .btn-white:hover { background: #f0f6ff; }
+
+        /* Demo bar */
+        .demo-bar { background: var(--navy); color: #fff; text-align: center; font-size: 0.85rem; padding: 0.6rem 1rem; }
+        .demo-bar a { color: var(--amber); font-weight: 700; }
+        .demo-bar a:hover { text-decoration: underline; }
+
+        /* Nav */
+        header.nav { position: sticky; top: 0; z-index: 200; background: rgba(26,46,74,0.97); backdrop-filter: blur(8px); }
+        .nav-inner { display: flex; align-items: center; justify-content: space-between; padding: 0.9rem 1.5rem; max-width: 1180px; margin: 0 auto; }
+        .brand { display: flex; align-items: center; gap: 0.5rem; color: #fff; font-weight: 800; font-size: 1.3rem; letter-spacing: -0.02em; }
+        .brand .logo { width: 30px; height: 30px; border-radius: 9px; background: linear-gradient(135deg, var(--blue), var(--sky)); display: grid; place-items: center; font-size: 1rem; }
+        .nav-links { display: flex; align-items: center; gap: 1.8rem; list-style: none; }
+        .nav-links a { color: #c7cad2; font-weight: 600; font-size: 0.9rem; transition: color 0.2s; }
+        .nav-links a:hover { color: #fff; }
+        .nav-book { background: var(--orange); color: #fff; padding: 9px 18px; border-radius: 10px; font-weight: 700; font-size: 0.88rem; border: none; cursor: pointer; font-family: inherit; transition: background 0.2s; }
+        .nav-book:hover { background: var(--orange-dark); }
+        .menu-toggle { display: none; background: none; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; }
+
+        /* Hero */
+        .hero { background: radial-gradient(1100px 500px at 75% -10%, rgba(37,99,235,0.28), transparent), var(--navy); color: #fff; padding: 4.5rem 0 5rem; }
+        .hero-grid { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 3rem; align-items: center; }
+        .hero .badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(16,185,129,0.15); color: #6ee7b7; padding: 6px 14px; border-radius: 999px; font-size: 0.8rem; font-weight: 700; margin-bottom: 1.3rem; }
+        .hero .badge .pulse { width: 8px; height: 8px; border-radius: 50%; background: #34d399; animation: pulseAnim 1.8s infinite; }
+        @keyframes pulseAnim { 0% { box-shadow: 0 0 0 0 rgba(52,211,153,0.7); } 70% { box-shadow: 0 0 0 10px rgba(52,211,153,0); } 100% { box-shadow: 0 0 0 0 rgba(52,211,153,0); } }
+        .hero h1 { font-size: 3.4rem; font-weight: 800; line-height: 1.05; letter-spacing: -0.03em; margin-bottom: 1.2rem; }
+        .hero h1 em { color: var(--orange); font-style: normal; }
+        .hero p { color: #b6bac3; font-size: 1.1rem; max-width: 480px; margin-bottom: 1.8rem; }
+        .hero-actions { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .hero-stats { display: flex; gap: 2.2rem; margin-top: 2.5rem; }
+        .hero-stats .num { font-size: 1.7rem; font-weight: 800; color: #fff; }
+        .hero-stats .lbl { font-size: 0.82rem; color: #8c909b; }
+        .emg-badge { display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(239,68,68,0.12); border: 1px solid rgba(239,68,68,0.3); border-radius: 999px; padding: 5px 14px; font-size: 0.78rem; font-weight: 700; color: #fca5a5; margin-top: 1.1rem; }
+
+        /* Hero flow card */
+        .flow-card { background: linear-gradient(160deg, var(--navy-2), #1d3a5c); border: 1px solid rgba(255,255,255,0.1); border-radius: 22px; padding: 1.5rem; box-shadow: 0 30px 60px rgba(0,0,0,0.4); }
+        .flow-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; }
+        .flow-head b { color: #fff; font-size: 1rem; }
+        .flow-status { background: rgba(16,185,129,0.15); color: #6ee7b7; font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 999px; }
+        .bstep { display: flex; gap: 0.9rem; align-items: flex-start; padding: 0.65rem 0; }
+        .bstep .sic { width: 36px; height: 36px; border-radius: 10px; display: grid; place-items: center; font-size: 1rem; flex-shrink: 0; }
+        .bstep.done .sic { background: rgba(16,185,129,0.2); }
+        .bstep.active .sic { background: rgba(37,99,235,0.25); animation: glowStep 2s infinite; }
+        .bstep.pending .sic { background: rgba(255,255,255,0.05); }
+        @keyframes glowStep { 0%,100% { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); } 50% { box-shadow: 0 0 0 8px rgba(37,99,235,0); } }
+        .bstep .stx b { color: #fff; display: block; font-size: 0.88rem; }
+        .bstep .stx span { color: #8890a4; font-size: 0.78rem; }
+        .step-line { width: 2px; height: 12px; margin-left: 17px; border-radius: 2px; }
+        .step-line.done { background: var(--teal); }
+        .step-line.pending { background: rgba(255,255,255,0.1); }
+        .otp-box { margin-top: 1rem; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 14px; padding: 0.9rem 1rem; }
+        .otp-label { font-size: 0.72rem; color: #8890a4; margin-bottom: 0.6rem; }
+        .otp-digits { display: flex; gap: 0.5rem; justify-content: center; }
+        .otp-d { width: 42px; height: 46px; border-radius: 10px; display: grid; place-items: center; font-size: 1.3rem; font-weight: 800; color: #fff; }
+        .otp-d.filled { background: rgba(37,99,235,0.3); border: 1px solid var(--blue); }
+        .otp-d.empty { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.1); color: #4a5568; }
+
+        /* Trust strip */
+        .trust { background: var(--navy); color: #fff; }
+        .trust-row { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 1rem; padding: 1.6rem 0; text-align: center; }
+        .trust-item .ic { font-size: 1.3rem; display: block; margin-bottom: 0.25rem; }
+        .trust-item span { font-size: 0.84rem; color: #b6bac3; font-weight: 500; }
+
+        /* Services grid */
+        .services-section { background: #fff; }
+        .svc-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.1rem; margin-top: 3rem; }
+        .svc { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 1.4rem 1rem; text-align: center; cursor: pointer; transition: all 0.2s; position: relative; }
+        .svc:hover { transform: translateY(-4px); box-shadow: 0 16px 30px rgba(0,0,0,0.09); border-color: var(--blue); background: #f0f6ff; }
+        .svc .sic { font-size: 2rem; display: block; margin-bottom: 0.55rem; }
+        .svc h4 { font-size: 0.88rem; font-weight: 700; color: var(--ink); line-height: 1.3; margin-bottom: 0.25rem; }
+        .svc .sprice { font-size: 0.74rem; color: var(--muted); }
+        .svc .emg-tag { position: absolute; top: 0.5rem; right: 0.5rem; background: rgba(239,68,68,0.12); color: var(--red); font-size: 0.62rem; font-weight: 700; padding: 2px 6px; border-radius: 6px; }
+
+        /* Algorithm Intelligence */
+        .algo-section { background: var(--paper); }
+        .algo-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .algo-card { background: #fff; border: 1px solid var(--line); border-radius: 20px; padding: 2rem; }
+        .algo-card .ac-head { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; }
+        .algo-card .ac-icon { width: 46px; height: 46px; border-radius: 13px; display: grid; place-items: center; font-size: 1.4rem; flex-shrink: 0; }
+        .algo-card .ac-icon.blue { background: rgba(37,99,235,0.1); }
+        .algo-card .ac-icon.amber { background: rgba(245,158,11,0.1); }
+        .algo-card .ac-icon.green { background: rgba(22,163,74,0.1); }
+        .algo-card .ac-icon.red { background: rgba(239,68,68,0.1); }
+        .algo-card h4 { font-size: 1.05rem; font-weight: 800; }
+        .algo-card .ac-sub { font-size: 0.82rem; color: var(--muted); margin-bottom: 1.2rem; }
+        .formula-pill { display: inline-block; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 6px 12px; font-size: 0.78rem; font-family: 'Courier New', monospace; color: var(--ink); font-weight: 600; margin-bottom: 0.5rem; }
+        .algo-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.82rem; padding: 0.4rem 0; border-top: 1px solid var(--line); }
+        .algo-row:first-of-type { border-top: none; }
+        .algo-row .k { color: var(--muted); }
+        .algo-row .v { font-weight: 700; color: var(--ink); }
+        .algo-row .v.green { color: var(--green); }
+        .algo-row .v.amber { color: var(--amber); }
+        .algo-row .v.red { color: var(--red); }
+        .fault-row { display: flex; gap: 0.5rem; align-items: flex-start; font-size: 0.8rem; padding: 0.35rem 0; border-top: 1px dashed var(--line); }
+        .fault-row:first-of-type { border-top: none; }
+        .fault-sym { min-width: 130px; color: var(--muted); }
+        .fault-cause { flex: 1; font-weight: 600; }
+        .fault-cost { color: var(--teal); font-weight: 700; white-space: nowrap; }
+        .bid-card { background: var(--paper); border: 1px solid var(--line); border-radius: 12px; padding: 0.8rem 1rem; margin-bottom: 0.5rem; display: flex; align-items: center; justify-content: space-between; }
+        .bid-card:last-child { margin-bottom: 0; }
+        .bid-name { font-weight: 700; font-size: 0.85rem; }
+        .bid-meta { font-size: 0.75rem; color: var(--muted); }
+        .bid-score { font-size: 0.78rem; font-weight: 700; color: var(--blue); background: rgba(37,99,235,0.08); padding: 3px 8px; border-radius: 6px; }
+        .bid-price { font-weight: 800; font-size: 0.92rem; text-align: right; }
+
+        /* How it works */
+        .how-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 1.2rem; margin-top: 3rem; position: relative; }
+        .how-card { text-align: center; position: relative; }
+        .how-n { width: 50px; height: 50px; border-radius: 14px; background: linear-gradient(135deg, var(--blue), var(--sky)); color: #fff; font-weight: 800; display: grid; place-items: center; margin: 0 auto 1rem; font-size: 1.2rem; box-shadow: 0 8px 20px rgba(37,99,235,0.3); }
+        .how-card h4 { font-size: 0.98rem; font-weight: 700; margin-bottom: 0.4rem; }
+        .how-card p { color: var(--muted); font-size: 0.82rem; }
+        .how-arrow { position: absolute; top: 25px; right: -0.7rem; color: #cbd5e1; font-size: 1.3rem; z-index: 1; }
+        .how-card:last-child .how-arrow { display: none; }
+
+        /* Estimator */
+        .est-wrap { max-width: 860px; margin: 2.5rem auto 0; }
+        .est-card { background: #fff; border: 1px solid var(--line); border-radius: 22px; overflow: hidden; box-shadow: 0 20px 50px rgba(0,0,0,0.07); }
+        .est-tabs { display: flex; border-bottom: 1px solid var(--line); overflow-x: auto; scrollbar-width: none; }
+        .est-tabs::-webkit-scrollbar { display: none; }
+        .est-tab { flex: 1; min-width: 84px; padding: 0.9rem 0.4rem; text-align: center; font-size: 0.75rem; font-weight: 700; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap; }
+        .est-tab:hover { color: var(--blue); background: #f8faff; }
+        .est-tab.active { color: var(--blue); border-bottom-color: var(--blue); background: #f0f7ff; }
+        .est-tab .ticon { display: block; font-size: 1.3rem; margin-bottom: 0.2rem; }
+        .est-body { padding: 1.8rem; }
+        .est-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.2rem; }
+        .est-field label { display: block; font-size: 0.75rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.4rem; }
+        .est-field select, .est-field input[type="number"], .est-field input[type="date"] { width: 100%; padding: 11px 14px; border: 1.5px solid var(--line); border-radius: 10px; font-family: inherit; font-size: 0.9rem; background: #fff; color: var(--ink); transition: border-color 0.2s; }
+        .est-field select:focus, .est-field input:focus { outline: none; border-color: var(--blue); }
+        .toggle-row { display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.2rem; }
+        .tgl-btn { flex: 1; min-width: 100px; padding: 9px 12px; border: 1.5px solid var(--line); border-radius: 10px; background: #fff; font-family: inherit; font-weight: 700; font-size: 0.82rem; cursor: pointer; transition: all 0.2s; text-align: center; color: var(--muted); }
+        .tgl-btn:hover { border-color: var(--blue); color: var(--blue); }
+        .tgl-btn.on { border-color: var(--blue); background: #f0f7ff; color: var(--blue); }
+        .tgl-btn.emg.on { border-color: var(--red); background: #fff5f5; color: var(--red); }
+        .calc-btn { width: 100%; justify-content: center; margin-top: 0.5rem; }
+        .est-result { background: linear-gradient(135deg, #f0f7ff, #f8faff); border: 1px solid #c7d9fb; border-radius: 14px; padding: 1.5rem; margin-top: 1.2rem; display: none; }
+        .est-result.show { display: block; }
+        .result-label { font-size: 0.74rem; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 0.6rem; }
+        .price-range { font-size: 2rem; font-weight: 800; color: var(--ink); letter-spacing: -0.02em; margin-bottom: 0.3rem; }
+        .price-note { font-size: 0.82rem; color: var(--muted); margin-bottom: 1rem; }
+        .breakdown { display: flex; flex-direction: column; gap: 0.4rem; padding-top: 0.8rem; border-top: 1px solid var(--line); }
+        .bd-row { display: flex; justify-content: space-between; font-size: 0.88rem; }
+        .bd-row .k { color: var(--muted); }
+        .bd-row .v { font-weight: 700; }
+        .bd-row.surge .v { color: var(--red); }
+        .bd-row.emg-note { background: rgba(239,68,68,0.05); border-radius: 8px; padding: 6px 10px; margin-top: 0.3rem; }
+        .bd-row.emg-note .k { color: var(--red); font-size: 0.8rem; }
+        .deposit-note { font-size: 0.8rem; color: var(--teal); font-weight: 600; margin-top: 0.8rem; }
+        .holdback-note { font-size: 0.78rem; color: var(--muted); margin-top: 0.4rem; }
+        .result-book { width: 100%; justify-content: center; margin-top: 1rem; }
+
+        /* Filter health bar */
+        .filter-bar-wrap { margin-top: 1rem; }
+        .filter-bar-label { display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--muted); margin-bottom: 0.4rem; }
+        .filter-bar-track { height: 10px; background: var(--line); border-radius: 99px; overflow: hidden; position: relative; }
+        .filter-bar-fill { height: 100%; border-radius: 99px; transition: width 0.4s; }
+        .filter-bar-markers { position: relative; height: 18px; }
+        .filter-marker { position: absolute; font-size: 0.65rem; color: var(--muted); transform: translateX(-50%); top: 2px; }
+        .filter-status { display: inline-block; font-size: 0.8rem; font-weight: 700; padding: 4px 10px; border-radius: 8px; margin-top: 0.5rem; }
+        .filter-status.healthy { background: rgba(22,163,74,0.1); color: var(--green); }
+        .filter-status.approaching { background: rgba(245,158,11,0.1); color: var(--amber); }
+        .filter-status.due { background: rgba(249,115,22,0.1); color: var(--orange); }
+        .filter-status.overdue { background: rgba(239,68,68,0.1); color: var(--red); }
+
+        /* Emergency section */
+        .emg-section { background: linear-gradient(135deg, #1a0a0a, #2d1010); color: #fff; }
+        .emg-section .section-title { color: #fff; }
+        .emg-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .emg-card { background: rgba(255,255,255,0.04); border: 1px solid rgba(239,68,68,0.2); border-radius: 18px; padding: 1.8rem; }
+        .emg-card .tag { display: inline-block; background: rgba(239,68,68,0.15); color: #fca5a5; font-size: 0.72rem; font-weight: 700; padding: 3px 10px; border-radius: 6px; letter-spacing: 0.08em; text-transform: uppercase; margin-bottom: 0.9rem; }
+        .emg-card h4 { font-size: 1.05rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+        .emg-card .trigger { font-size: 0.8rem; color: #94a3b8; margin-bottom: 1rem; }
+        .emg-steps { list-style: none; }
+        .emg-steps li { font-size: 0.82rem; color: #c0c8da; padding: 0.28rem 0 0.28rem 1.6rem; position: relative; }
+        .emg-steps li::before { content: counter(step); counter-increment: step; position: absolute; left: 0; background: rgba(239,68,68,0.2); color: #fca5a5; width: 18px; height: 18px; border-radius: 5px; font-size: 0.68rem; font-weight: 800; display: grid; place-items: center; top: 0.3rem; }
+        .emg-steps { counter-reset: step; }
+        .emg-dispatch { margin-top: 1rem; background: rgba(239,68,68,0.08); border: 1px solid rgba(239,68,68,0.15); border-radius: 10px; padding: 0.7rem 1rem; font-size: 0.78rem; color: #fca5a5; }
+
+        /* Safety */
+        .safety { background: var(--navy); color: #fff; }
+        .safety .section-title { color: #fff; }
+        .safety-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; text-align: left; }
+        .safety-card { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 18px; padding: 1.8rem; }
+        .safety-card .sic { font-size: 2rem; display: block; margin-bottom: 0.9rem; }
+        .safety-card h4 { font-size: 1.05rem; font-weight: 700; color: #fff; margin-bottom: 0.5rem; }
+        .safety-card p { color: #94a3b8; font-size: 0.88rem; margin-bottom: 0.8rem; }
+        .safety-steps { list-style: none; }
+        .safety-steps li { color: #b0b8cc; font-size: 0.82rem; padding: 0.28rem 0 0.28rem 1.4rem; position: relative; }
+        .safety-steps li::before { content: '→'; position: absolute; left: 0; color: var(--sky); font-weight: 700; }
+
+        /* Reviews */
+        .review-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 3rem; }
+        .review { background: #fff; border: 1px solid var(--line); border-radius: 18px; padding: 1.8rem; }
+        .review .stars { color: var(--amber); letter-spacing: 2px; margin-bottom: 0.7rem; font-size: 0.88rem; }
+        .review p { font-size: 0.92rem; color: var(--ink); margin-bottom: 1.2rem; }
+        .review .who { display: flex; align-items: center; gap: 0.7rem; }
+        .review .av { width: 38px; height: 38px; border-radius: 50%; background: linear-gradient(135deg, var(--blue), var(--sky)); color: #fff; display: grid; place-items: center; font-weight: 800; font-size: 0.88rem; flex-shrink: 0; }
+        .review .who b { font-size: 0.88rem; display: block; }
+        .review .who .meta { font-size: 0.76rem; color: var(--muted); }
+        .verified { color: var(--teal); font-size: 0.73rem; font-weight: 700; }
+
+        /* CTA band */
+        .cta { background: linear-gradient(135deg, var(--blue), var(--sky)); color: #fff; text-align: center; border-radius: 28px; padding: 3.8rem 2rem; }
+        .cta h2 { font-size: 2.3rem; font-weight: 800; letter-spacing: -0.02em; }
+        .cta p { margin: 0.6rem 0 1.8rem; opacity: 0.92; }
+
+        /* Footer */
+        footer.site { background: var(--navy); color: #8890a4; padding: 3.5rem 0 2rem; }
+        .foot-grid { display: grid; grid-template-columns: 1.4fr 1fr 1fr 1fr; gap: 2rem; }
+        footer.site .brand { margin-bottom: 0.9rem; }
+        footer.site p { font-size: 0.88rem; max-width: 280px; }
+        footer.site h5 { color: #fff; font-size: 0.95rem; margin-bottom: 0.9rem; }
+        footer.site ul { list-style: none; }
+        footer.site ul li { margin-bottom: 0.5rem; font-size: 0.88rem; }
+        footer.site ul li a:hover { color: var(--sky); }
+        .foot-bottom { border-top: 1px solid rgba(255,255,255,0.08); margin-top: 2.5rem; padding-top: 1.5rem; text-align: center; font-size: 0.82rem; }
+        .foot-bottom .credit a { color: var(--amber); font-weight: 700; }
+
+        /* Toast */
+        .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(40px); background: var(--ink); color: #fff; padding: 12px 22px; border-radius: 12px; font-weight: 600; font-size: 0.9rem; opacity: 0; transition: 0.3s; z-index: 500; white-space: nowrap; max-width: 90vw; white-space: normal; text-align: center; }
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+        @media (max-width: 1080px) {
+            .how-grid { grid-template-columns: repeat(3, 1fr); }
+            .how-card:nth-child(3) .how-arrow { display: none; }
+        }
+        @media (max-width: 960px) {
+            .nav-links { display: none; }
+            .menu-toggle { display: block; }
+            .nav-links.open { display: flex; flex-direction: column; align-items: flex-start; gap: 1.1rem; position: absolute; top: 100%; left: 0; right: 0; background: var(--navy); padding: 1.3rem 1.5rem; }
+            .hero-grid { grid-template-columns: 1fr; }
+            .algo-grid { grid-template-columns: 1fr; }
+            .safety-grid, .review-grid, .emg-grid { grid-template-columns: 1fr; }
+            .foot-grid { grid-template-columns: 1fr 1fr; }
+            .svc-grid { grid-template-columns: repeat(3, 1fr); }
+            .est-fields { grid-template-columns: 1fr; }
+            .hero h1 { font-size: 2.5rem; }
+            .section-title { font-size: 2rem; }
+        }
+        @media (max-width: 640px) {
+            .how-grid { grid-template-columns: repeat(2, 1fr); }
+            .how-card:nth-child(2) .how-arrow { display: none; }
+            .how-card:nth-child(4) .how-arrow { display: none; }
+        }
+        @media (max-width: 560px) {
+            .svc-grid { grid-template-columns: repeat(3, 1fr); }
+            .hero-stats { gap: 1.4rem; }
+            .foot-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 400px) {
+            .svc-grid { grid-template-columns: repeat(2, 1fr); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Demo bar -->
+    <div class="demo-bar">
+        🔧 This is a <strong>live demo household repair &amp; maintenance template</strong> by Full Moon Computing —
+        <a href="/contact">Get one for your service business →</a>
+    </div>
+
+    <!-- Nav -->
+    <header class="nav">
+        <div class="nav-inner">
+            <a href="#home" class="brand"><span class="logo">🔧</span> Home<span style="color:var(--orange)">Fix</span></a>
+            <button class="menu-toggle" aria-label="Menu" onclick="document.getElementById('navLinks').classList.toggle('open')">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#services">Services</a></li>
+                <li><a href="#algorithm">Platform Intelligence</a></li>
+                <li><a href="#how">How it works</a></li>
+                <li><a href="#estimate">Get Estimate</a></li>
+                <li><a href="#safety">Safety</a></li>
+                <li><button class="nav-book" onclick="toast('Demo only — a live app would open the booking flow!')">Book Now</button></li>
+            </ul>
+        </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="home">
+        <div class="container hero-grid">
+            <div>
+                <span class="badge"><span class="pulse"></span> 1,200+ verified pros · live in your city</span>
+                <h1>Every repair.<br><em>One trusted app.</em></h1>
+                <p>Book licensed electricians, plumbers, carpenters and 12 more home services. OTP-secured jobs, photo evidence at every step, escrow payments — all built on deep pricing algorithms.</p>
+                <div class="hero-actions">
+                    <a href="#services" class="btn btn-orange">🔧 Book a Service</a>
+                    <a href="#estimate" class="btn btn-ghost">Try Estimator</a>
+                </div>
+                <div class="hero-stats">
+                    <div><div class="num">15+</div><div class="lbl">Service types</div></div>
+                    <div><div class="num">4.8★</div><div class="lbl">22k+ ratings</div></div>
+                    <div><div class="num">3 km</div><div class="lbl">Geo-match radius</div></div>
+                    <div><div class="num">48 hr</div><div class="lbl">Escrow protection</div></div>
+                </div>
+                <div class="emg-badge">🚨 24/7 Emergency — gas leaks · pipe bursts · complete power outages</div>
+            </div>
+
+            <!-- Booking flow card -->
+            <div class="flow-card">
+                <div class="flow-head"><b>Booking #HF-1047</b><span class="flow-status">● In Progress</span></div>
+
+                <div class="bstep done">
+                    <div class="sic">✅</div>
+                    <div class="stx"><b>Service booked</b><span>⚡ Electrician · Fan repair · ₹275 est.</span></div>
+                </div>
+                <div class="step-line done"></div>
+                <div class="bstep done">
+                    <div class="sic">👷</div>
+                    <div class="stx"><b>Pro matched</b><span>Ravi Kumar · ⭐ 4.9 · 1.8 km · 342 jobs</span></div>
+                </div>
+                <div class="step-line done"></div>
+                <div class="bstep active">
+                    <div class="sic">🛵</div>
+                    <div class="stx"><b>On the way</b><span>ETA 12 min · live GPS tracking</span></div>
+                </div>
+                <div class="step-line pending"></div>
+                <div class="bstep pending">
+                    <div class="sic">🔐</div>
+                    <div class="stx"><b>Start OTP</b><span>Share code with pro on arrival · clock starts</span></div>
+                </div>
+                <div class="step-line pending"></div>
+                <div class="bstep pending">
+                    <div class="sic">📸</div>
+                    <div class="stx"><b>Before + after photo</b><span>Pro uploads before work starts</span></div>
+                </div>
+                <div class="step-line pending"></div>
+                <div class="bstep pending">
+                    <div class="sic">✔️</div>
+                    <div class="stx"><b>End OTP &amp; pay</b><span>You confirm · invoice auto-generated</span></div>
+                </div>
+
+                <div class="otp-box">
+                    <div class="otp-label">Start OTP — share with technician on arrival</div>
+                    <div class="otp-digits">
+                        <div class="otp-d filled">7</div>
+                        <div class="otp-d filled">4</div>
+                        <div class="otp-d filled">2</div>
+                        <div class="otp-d filled">9</div>
+                        <div class="otp-d empty">·</div>
+                        <div class="otp-d empty">·</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Trust strip -->
+    <section class="trust">
+        <div class="container trust-row">
+            <div class="trust-item"><span class="ic">🔐</span><span>OTP start &amp; end</span></div>
+            <div class="trust-item"><span class="ic">📸</span><span>Photo at every milestone</span></div>
+            <div class="trust-item"><span class="ic">🏦</span><span>Escrow payment protection</span></div>
+            <div class="trust-item"><span class="ic">📍</span><span>Geo-matched 3–5 km</span></div>
+            <div class="trust-item"><span class="ic">🛡️</span><span>Background-verified pros</span></div>
+            <div class="trust-item"><span class="ic">⚖️</span><span>Trust score ranked</span></div>
+        </div>
+    </section>
+
+    <!-- Services -->
+    <section class="section services-section" id="services">
+        <div class="container">
+            <div class="center">
+                <span class="eyebrow">15 categories</span>
+                <h2 class="section-title">What needs fixing today?</h2>
+                <p class="section-sub">Tap any service to jump to the instant estimator, or explore the pricing algorithm yourself.</p>
+            </div>
+            <div class="svc-grid">
+                <div class="svc" onclick="pickService('electrician')">
+                    <span class="sic">⚡</span><h4>Electrician</h4>
+                    <div class="sprice">From ₹90 + ₹50 visit fee (T3)</div>
+                </div>
+                <div class="svc" onclick="pickService('plumber')">
+                    <span class="sic">🔧</span><h4>Plumber</h4>
+                    <div class="sprice">₹250–1,500 · 20% deposit</div>
+                    <span class="emg-tag">🚨 EMG</span>
+                </div>
+                <div class="svc" onclick="pickService('carpenter')">
+                    <span class="sic">🪵</span><h4>Carpenter</h4>
+                    <div class="sprice">₹200–3,200 · per-job or hourly</div>
+                </div>
+                <div class="svc" onclick="pickService('painter')">
+                    <span class="sic">🎨</span><h4>Painter</h4>
+                    <div class="sprice">₹8–26/sqft · auto area calc</div>
+                </div>
+                <div class="svc" onclick="pickService('mason')">
+                    <span class="sic">🧱</span><h4>Mason</h4>
+                    <div class="sprice">Open bidding · top 3 ranked</div>
+                </div>
+                <div class="svc" onclick="toast('Welder: photo quote → material cost + labour hours billed separately')">
+                    <span class="sic">🔩</span><h4>Welder</h4>
+                    <div class="sprice">₹350–650/hr · photo quote</div>
+                </div>
+                <div class="svc" onclick="pickService('ac')">
+                    <span class="sic">❄️</span><h4>AC Repair &amp; Service</h4>
+                    <div class="sprice">₹449–699 service · AMC ₹1,199/yr</div>
+                </div>
+                <div class="svc" onclick="toast('Washing Machine: error code lookup (E6, LE, dC…) → instant fault + cost estimate before booking')">
+                    <span class="sic">🫧</span><h4>Washing Machine</h4>
+                    <div class="sprice">From ₹300 · fault DB lookup</div>
+                </div>
+                <div class="svc" onclick="toast('Microwave: self-diagnosis tree shown first — child lock resolved FREE with no booking')">
+                    <span class="sic">📟</span><h4>Microwave / Induction</h4>
+                    <div class="sprice">From ₹300 · self-diagnosis first</div>
+                </div>
+                <div class="svc" onclick="toast('TV: pre-classifies issue — remote dispatched same-day, STB checklist resolves FREE, display or board → technician')">
+                    <span class="sic">📺</span><h4>TV Repair</h4>
+                    <div class="sprice">Remote ₹199 · display from ₹4,000</div>
+                </div>
+                <div class="svc" onclick="pickService('purifier')">
+                    <span class="sic">💧</span><h4>Water Purifier</h4>
+                    <div class="sprice">TDS check FREE · AMC ₹799/yr</div>
+                </div>
+                <div class="svc" onclick="toast('Gas stove: regulator_leak auto-flags EMERGENCY — 5-step safety protocol shown instantly before dispatch')">
+                    <span class="sic">🔥</span><h4>Gas Stove &amp; Chimney</h4>
+                    <div class="sprice">From ₹149 · same-day EMG</div>
+                    <span class="emg-tag">🚨 EMG</span>
+                </div>
+                <div class="svc" onclick="toast('Inverter: hydrometer reading per cell logged (S.G. ≥ 1.250 healthy) · battery buyback deducted from new price')">
+                    <span class="sic">🔋</span><h4>Inverter &amp; UPS</h4>
+                    <div class="sprice">From ₹99 · 90-day check cycle</div>
+                </div>
+                <div class="svc" onclick="toast('Mosquito Net: AR camera auto-measures window W×H ± 2 cm · quote itemised per window')">
+                    <span class="sic">🪟</span><h4>Mosquito Net</h4>
+                    <div class="sprice">₹25–70/sqft · AR-measured</div>
+                </div>
+                <div class="svc" onclick="toast('Glass: queries nearest shop for stock · cut to ±1 mm · fragile insurance ₹50 covers transit break')">
+                    <span class="sic">🔲</span><h4>Glass Replacement</h4>
+                    <div class="sprice">₹60–280/sqft · same-day cut</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Algorithm Intelligence -->
+    <section class="section algo-section" id="algorithm">
+        <div class="container">
+            <div class="center">
+                <span class="eyebrow">Platform intelligence</span>
+                <h2 class="section-title">Algorithms that work for you</h2>
+                <p class="section-sub">Every booking flows through a deep pricing engine, fault database, trust scoring, and real-time dispatch logic.</p>
+            </div>
+            <div class="algo-grid">
+
+                <!-- Card 1: Fault DB & Self-Diagnosis -->
+                <div class="algo-card">
+                    <div class="ac-head">
+                        <div class="ac-icon blue">🧠</div>
+                        <div>
+                            <h4>Fault Database &amp; Self-Diagnosis</h4>
+                            <div class="ac-sub">Symptom → likely fault → cost shown before any booking. Some issues resolve FREE in-app.</div>
+                        </div>
+                    </div>
+                    <div class="fault-row">
+                        <div class="fault-sym">child_lock</div>
+                        <div class="fault-cause">✓ FREE — hold Start/Stop 3 s</div>
+                        <div class="fault-cost">₹0</div>
+                    </div>
+                    <div class="fault-row">
+                        <div class="fault-sym">not_spinning</div>
+                        <div class="fault-cause">Motor brushes or capacitor</div>
+                        <div class="fault-cost">₹600–1,400</div>
+                    </div>
+                    <div class="fault-row">
+                        <div class="fault-sym">water_leaking (WM)</div>
+                        <div class="fault-cause">Door seal or pump fault</div>
+                        <div class="fault-cost">₹400–1,000</div>
+                    </div>
+                    <div class="fault-row">
+                        <div class="fault-sym">sparks_inside (MW)</div>
+                        <div class="fault-cause">⚠ DO NOT USE — coating arcing</div>
+                        <div class="fault-cost">₹600–1,500</div>
+                    </div>
+                    <div class="fault-row">
+                        <div class="fault-sym">not_cooling (AC)</div>
+                        <div class="fault-cause">Gas leak or coil issue</div>
+                        <div class="fault-cost">₹1,200–2,500</div>
+                    </div>
+                    <div class="fault-row">
+                        <div class="fault-sym">LG error LE</div>
+                        <div class="fault-cause">Motor fault (brand DB lookup)</div>
+                        <div class="fault-cost">₹700–1,600</div>
+                    </div>
+                </div>
+
+                <!-- Card 2: Bidding Engine (Mason) -->
+                <div class="algo-card">
+                    <div class="ac-head">
+                        <div class="ac-icon amber">⚖️</div>
+                        <div>
+                            <h4>Bidding Engine — Mason Jobs</h4>
+                            <div class="ac-sub">Platform broadcasts job to all masons within 3 km. 2-hour bidding window. Ranked by trust + price.</div>
+                        </div>
+                    </div>
+                    <div class="formula-pill">ranking = trust_score × 0.50 + price_score × 0.50</div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.9rem;">where price_score = 1.0 for lowest bidder, 0.0 for highest</div>
+                    <div class="bid-card">
+                        <div><div class="bid-name">Suresh M.</div><div class="bid-meta">⭐ 4.8 · 2.1 km · 3 days est.</div></div>
+                        <div><div class="bid-score">Score 0.91</div></div>
+                        <div><div class="bid-price">₹6,200</div><div style="font-size:0.72rem;color:var(--teal)">Lowest bid</div></div>
+                    </div>
+                    <div class="bid-card">
+                        <div><div class="bid-name">Prakash G.</div><div class="bid-meta">⭐ 4.9 · 3.4 km · 2 days est.</div></div>
+                        <div><div class="bid-score">Score 0.88</div></div>
+                        <div><div class="bid-price">₹7,000</div></div>
+                    </div>
+                    <div class="bid-card">
+                        <div><div class="bid-name">Dinesh R.</div><div class="bid-meta">⭐ 4.6 · 1.2 km · 4 days est.</div></div>
+                        <div><div class="bid-score">Score 0.72</div></div>
+                        <div><div class="bid-price">₹7,800</div></div>
+                    </div>
+                    <div style="font-size:0.75rem;color:var(--muted);margin-top:0.7rem;">Advance 30% · Escrow 60% · Punchlist holdback 10%</div>
+                </div>
+
+                <!-- Card 3: Trust Score Formula -->
+                <div class="algo-card">
+                    <div class="ac-head">
+                        <div class="ac-icon green">⭐</div>
+                        <div>
+                            <h4>Trust Score &amp; Geo-Dispatch</h4>
+                            <div class="ac-sub">Every pro ranked by composite trust formula. Geo-query finds best match within 3 km first.</div>
+                        </div>
+                    </div>
+                    <div class="formula-pill">trust = rating×0.40 + completion×0.30 + response×0.20 + repeat×0.10</div>
+                    <div class="algo-row"><span class="k">Minimum to appear in results</span><span class="v green">≥ 3.5</span></div>
+                    <div class="algo-row"><span class="k">Primary geo-radius</span><span class="v">3 km</span></div>
+                    <div class="algo-row"><span class="k">Fallback radius (if &lt; 2 pros)</span><span class="v">5 km</span></div>
+                    <div class="algo-row"><span class="k">Welder radius (portable kit)</span><span class="v">5 km</span></div>
+                    <div class="algo-row"><span class="k">Score &lt; 2.5</span><span class="v amber">Account paused</span></div>
+                    <div class="algo-row"><span class="k">Score &lt; 2.0</span><span class="v red">Account suspended</span></div>
+                    <div class="algo-row"><span class="k">Premium brands (Daikin, Hitachi…)</span><span class="v">OEM-certified only</span></div>
+                </div>
+
+                <!-- Card 4: Maintenance Tracker -->
+                <div class="algo-card">
+                    <div class="ac-head">
+                        <div class="ac-icon red">📅</div>
+                        <div>
+                            <h4>Maintenance Tracker &amp; AMC</h4>
+                            <div class="ac-sub">Filter life %, AC service interval, and inverter quarterly cycle — all auto-tracked with push reminders.</div>
+                        </div>
+                    </div>
+                    <div class="algo-row"><span class="k">Water purifier filter life</span><span class="v">180-day model</span></div>
+                    <div class="algo-row"><span class="k">Reminder threshold</span><span class="v amber">85% used = 153 days</span></div>
+                    <div class="algo-row"><span class="k">Overdue flag</span><span class="v red">≥ 100% — quality risk</span></div>
+                    <div class="algo-row"><span class="k">AC service interval</span><span class="v">180 days (AMC)</span></div>
+                    <div class="algo-row"><span class="k">Inverter quarterly check</span><span class="v">90-day cycle</span></div>
+                    <div class="algo-row"><span class="k">AMC discount (all services)</span><span class="v green">10% off per visit</span></div>
+                    <div style="margin-top:1rem;">
+                        <div style="font-size:0.75rem;color:var(--muted);margin-bottom:0.3rem;">Example: filter at 87% used</div>
+                        <div class="filter-bar-track"><div class="filter-bar-fill" style="width:87%;background:linear-gradient(90deg,var(--green),var(--amber),var(--red));"></div></div>
+                        <div class="filter-bar-markers">
+                            <div class="filter-marker" style="left:75%">75%</div>
+                            <div class="filter-marker" style="left:85%">85%</div>
+                        </div>
+                        <span class="filter-status due">⚠ Due — schedule service now</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="section" id="how" style="background:#fff;">
+        <div class="container center">
+            <span class="eyebrow">The booking flow</span>
+            <h2 class="section-title">Safe, transparent, end-to-end</h2>
+            <p class="section-sub">Every job is tracked, photo-verified and payment-protected across 5 clear steps.</p>
+            <div class="how-grid">
+                <div class="how-card">
+                    <div class="how-n">1</div>
+                    <h4>Select &amp; describe</h4>
+                    <p>Pick service, describe the problem, upload photos. Algorithm maps to complexity tier and shows instant price range.</p>
+                    <span class="how-arrow">→</span>
+                </div>
+                <div class="how-card">
+                    <div class="how-n">2</div>
+                    <h4>Get matched</h4>
+                    <p>Geo-query finds verified pros within 3–5 km. Ranked by trust score. Plumber / mason jobs go to competitive bidding.</p>
+                    <span class="how-arrow">→</span>
+                </div>
+                <div class="how-card">
+                    <div class="how-n">3</div>
+                    <h4>OTP-secured start</h4>
+                    <p>Pro enters Start-OTP on arrival. Before-photo uploaded. Parts logged with receipt photos as work progresses.</p>
+                    <span class="how-arrow">→</span>
+                </div>
+                <div class="how-card">
+                    <div class="how-n">4</div>
+                    <h4>Approve extras in-app</h4>
+                    <p>Any extra work found on-site raises an approval request. You approve or reject before work continues. No surprises.</p>
+                    <span class="how-arrow">→</span>
+                </div>
+                <div class="how-card">
+                    <div class="how-n">5</div>
+                    <h4>End OTP &amp; pay</h4>
+                    <p>Completion photo uploaded. You enter End-OTP to confirm. Auto-invoice generated. Escrow released. 48-hr dispute window.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Estimator -->
+    <section class="section" id="estimate" style="background:var(--paper);">
+        <div class="container center">
+            <span class="eyebrow">Try the algorithm</span>
+            <h2 class="section-title">Get an instant estimate</h2>
+            <p class="section-sub">Select a service, fill in the details — the pricing algorithm runs live on T3 base rates from the spec and shows a full breakdown.</p>
+            <div class="est-wrap">
+                <div class="est-card">
+                    <div class="est-tabs" id="estTabs">
+                        <div class="est-tab active" onclick="switchTab('electrician',this)"><span class="ticon">⚡</span>Electrician</div>
+                        <div class="est-tab" onclick="switchTab('plumber',this)"><span class="ticon">🔧</span>Plumber</div>
+                        <div class="est-tab" onclick="switchTab('carpenter',this)"><span class="ticon">🪵</span>Carpenter</div>
+                        <div class="est-tab" onclick="switchTab('painter',this)"><span class="ticon">🎨</span>Painter</div>
+                        <div class="est-tab" onclick="switchTab('mason',this)"><span class="ticon">🧱</span>Mason</div>
+                        <div class="est-tab" onclick="switchTab('ac',this)"><span class="ticon">❄️</span>AC</div>
+                        <div class="est-tab" onclick="switchTab('purifier',this)"><span class="ticon">💧</span>Purifier</div>
+                    </div>
+                    <div class="est-body">
+                        <div class="est-fields" id="estFields"></div>
+
+                        <!-- Urgency -->
+                        <div style="margin-bottom:1.1rem" id="urgSection">
+                            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">Urgency</label>
+                            <div class="toggle-row" id="urgRow">
+                                <button class="tgl-btn on" onclick="toggleGroup('urgRow',this);urgency='normal'">🕐 Normal</button>
+                                <button class="tgl-btn emg" onclick="toggleGroup('urgRow',this);urgency='emergency'">🚨 Emergency (1.5× labour)</button>
+                            </div>
+                        </div>
+
+                        <!-- City tier -->
+                        <div style="margin-bottom:1.4rem">
+                            <label style="display:block;font-size:0.75rem;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:0.5rem;">City Tier</label>
+                            <div class="toggle-row" id="tierRow">
+                                <button class="tgl-btn" onclick="toggleGroup('tierRow',this);cityMult=1.3;tierIdx=0">T1 — Mumbai, Delhi, Bengaluru…</button>
+                                <button class="tgl-btn on" onclick="toggleGroup('tierRow',this);cityMult=1.1;tierIdx=1">T2 — Pune, Hyderabad, Jaipur…</button>
+                                <button class="tgl-btn" onclick="toggleGroup('tierRow',this);cityMult=1.0;tierIdx=2">T3 — All other cities</button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-blue calc-btn" onclick="calculateEstimate()">Calculate Estimate →</button>
+
+                        <div class="est-result" id="estResult">
+                            <div class="result-label">Estimated price range</div>
+                            <div class="price-range" id="priceRange"></div>
+                            <div class="price-note" id="priceNote"></div>
+                            <div id="filterBarHtml"></div>
+                            <div class="breakdown" id="breakdown"></div>
+                            <div class="deposit-note" id="depositNote" style="display:none"></div>
+                            <div class="holdback-note" id="holdbackNote" style="display:none"></div>
+                            <button class="btn btn-orange result-book" onclick="toast('Demo only — a live app would confirm this booking!')">🔧 Book This Service</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Emergency Protocols -->
+    <section class="section emg-section" id="emergency">
+        <div class="container center">
+            <span class="eyebrow" style="color:#fca5a5">Auto-emergency detection</span>
+            <h2 class="section-title">Three triggers. Instant priority dispatch.</h2>
+            <p class="section-sub" style="color:#94a3b8">When any of these issues is selected, the platform auto-flags the booking as an emergency — 1.5× surge on labour, priority dispatch, and a same-day guarantee.</p>
+            <div class="emg-grid">
+                <div class="emg-card">
+                    <div class="tag">🔥 Gas Leak</div>
+                    <h4>Regulator / Pipe Leak</h4>
+                    <p class="trigger">Trigger: <code style="font-size:0.78rem;color:#fca5a5">issue_type == regulator_leak</code></p>
+                    <ul class="emg-steps">
+                        <li>Turn gas cylinder valve OFF immediately</li>
+                        <li>Open all windows and doors</li>
+                        <li>Do NOT switch any electrical appliance on or off</li>
+                        <li>Do NOT light any flame</li>
+                        <li>Evacuate if the smell is very strong</li>
+                    </ul>
+                    <div class="emg-dispatch">⚡ Gas-certified tech dispatched · same-day guarantee · platform agent monitors live</div>
+                </div>
+                <div class="emg-card">
+                    <div class="tag">💧 Pipe Burst</div>
+                    <h4>Burst Pipe — Water Emergency</h4>
+                    <p class="trigger">Trigger: <code style="font-size:0.78rem;color:#fca5a5">issue_type == pipe_burst</code></p>
+                    <ul class="emg-steps">
+                        <li>Turn off the main water supply valve immediately</li>
+                        <li>Move valuables away from the affected area</li>
+                        <li>Do not use electrical switches if water is near wiring</li>
+                        <li>Document the burst with a photo for the plumber</li>
+                        <li>Open taps to drain remaining pressure</li>
+                    </ul>
+                    <div class="emg-dispatch">⚡ Priority plumber dispatched · urgency forced · 1.5× surge shown at booking</div>
+                </div>
+                <div class="emg-card">
+                    <div class="tag">⚡ Power Out</div>
+                    <h4>Complete Flat Power Failure</h4>
+                    <p class="trigger">Trigger: <code style="font-size:0.78rem;color:#fca5a5">issue_type == no_power_whole_flat</code></p>
+                    <ul class="emg-steps">
+                        <li>Check the main MCB/fuse box — trip may have caused the outage</li>
+                        <li>If MCB has tripped, reset once — if it trips again, stop</li>
+                        <li>Confirm whether neighbours have power (building fault vs your flat)</li>
+                        <li>Keep fridge closed — food stays safe for ~4 hours</li>
+                        <li>Electrician will inspect MCB, load distribution &amp; wiring</li>
+                    </ul>
+                    <div class="emg-dispatch">⚡ Licensed electrician dispatched · 30-min target response (T1/T2)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Safety -->
+    <section class="section safety" id="safety">
+        <div class="container center">
+            <span class="eyebrow" style="color:var(--sky)">How we protect you</span>
+            <h2 class="section-title">Safety built into every job</h2>
+            <div class="safety-grid">
+                <div class="safety-card">
+                    <span class="sic">🔐</span>
+                    <h4>OTP Verification — Start &amp; End</h4>
+                    <p>Every job is bookended by two one-time passwords — one to start work and one to confirm completion. 3 wrong entries → platform agent alerted.</p>
+                    <ul class="safety-steps">
+                        <li>Pro enters Start-OTP on arriving at your door</li>
+                        <li>Job clock starts; no billable time before OTP</li>
+                        <li>Any extra work needs in-app approval from you</li>
+                        <li>End-OTP confirms satisfaction; escrow released</li>
+                    </ul>
+                </div>
+                <div class="safety-card">
+                    <span class="sic">📸</span>
+                    <h4>Photo Evidence at Every Step</h4>
+                    <p>Professionals upload photos at key milestones. All stored immutably against the booking — protects both sides in any dispute.</p>
+                    <ul class="safety-steps">
+                        <li>Before-photo documents existing condition</li>
+                        <li>Parts purchased: receipt + item photo logged</li>
+                        <li>Daily progress photo for multi-day jobs</li>
+                        <li>After-photo triggers end-OTP eligibility</li>
+                    </ul>
+                </div>
+                <div class="safety-card">
+                    <span class="sic">🏦</span>
+                    <h4>Escrow Payment Protection</h4>
+                    <p>Your money is held on the platform and released only when you confirm the job is done. 48-hour dispute window after End-OTP.</p>
+                    <ul class="safety-steps">
+                        <li>Deposit (20–30%) collected at booking confirmation</li>
+                        <li>Balance held in escrow during the job</li>
+                        <li>Auto-release at 48 hrs if no dispute raised</li>
+                        <li>100% refund on cancellation before Start-OTP</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Reviews -->
+    <section class="section" style="background:#fff;">
+        <div class="container center">
+            <span class="eyebrow">What customers say</span>
+            <h2 class="section-title">Trusted by thousands of homes</h2>
+            <div class="review-grid">
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"The OTP system is genuinely reassuring — I knew exactly when work started and when it ended. The electrician broke down every part on the invoice. ₹170 for the fan job, exactly as estimated."</p>
+                    <div class="who"><div class="av">A</div><div><b>Aarav S.</b><br><span class="meta">Pune · <span class="verified">✓ Verified booking</span></span></div></div>
+                </div>
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"Sent a photo of the leak, got three plumber quotes in 14 minutes, paid 20% deposit and the plumber was here same afternoon. Escrow meant I didn't hand over a rupee until the pipe was fixed."</p>
+                    <div class="who"><div class="av">P</div><div><b>Priyanka M.</b><br><span class="meta">Bengaluru · <span class="verified">✓ Verified booking</span></span></div></div>
+                </div>
+                <div class="review" style="text-align:left">
+                    <div class="stars">★★★★★</div>
+                    <p>"AMC plan for the AC and water purifier. Auto-reminder came at exactly 153 days (85% of 180!) — technician arrived with the right filter kit and logged TDS before and after. Couldn't be smoother."</p>
+                    <div class="who"><div class="av">R</div><div><b>Rajesh K.</b><br><span class="meta">Mumbai · <span class="verified">✓ Verified booking</span></span></div></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA -->
+    <section class="section" style="background:var(--paper);">
+        <div class="container">
+            <div class="cta">
+                <h2>Something broken at home?</h2>
+                <p>A verified professional can be at your door in under an hour.</p>
+                <a href="#services" class="btn btn-white">🔧 Book a Service Now</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="site">
+        <div class="container">
+            <div class="foot-grid">
+                <div>
+                    <a href="#home" class="brand"><span class="logo">🔧</span> Home<span style="color:var(--sky)">Fix</span></a>
+                    <p>A verified home repair &amp; maintenance platform. 15 service categories, OTP-secured jobs, escrow payments, photo evidence and deep pricing algorithms at every step.</p>
+                </div>
+                <div><h5>Services</h5><ul>
+                    <li><a href="#">Electrician</a></li>
+                    <li><a href="#">Plumber</a></li>
+                    <li><a href="#">Carpenter</a></li>
+                    <li><a href="#">Painter</a></li>
+                    <li><a href="#">Mason · Welder · AC →</a></li>
+                </ul></div>
+                <div><h5>Platform</h5><ul>
+                    <li><a href="#">How it works</a></li>
+                    <li><a href="#">Safety &amp; trust</a></li>
+                    <li><a href="#">Become a Pro</a></li>
+                    <li><a href="#">AMC plans</a></li>
+                    <li><a href="#">Emergency line</a></li>
+                </ul></div>
+                <div><h5>Support</h5><ul>
+                    <li><a href="#">Track booking</a></li>
+                    <li><a href="#">Raise dispute</a></li>
+                    <li><a href="#">Pricing algorithm</a></li>
+                    <li><a href="#">Contact us</a></li>
+                </ul></div>
+            </div>
+            <div class="foot-bottom">
+                <p>© 2026 HomeFix (fictional demo). All rights reserved.</p>
+                <p class="credit">Template designed &amp; built by <a href="/">Full Moon Computing</a></p>
+            </div>
+        </div>
+    </footer>
+
+    <div class="toast" id="toast"></div>
+
+    <script>
+    /* ══════════════════════════════════════════════════════════════
+       PRICING DATA — T3 base prices from spec (×cityMult in JS)
+       ══════════════════════════════════════════════════════════════ */
+    const SVC = {
+        electrician: {
+            visitFeeByTier: [100, 75, 50],   // T1, T2, T3 per spec
+            depositPct: 0,
+            types: [
+                { id: 'fan',    label: 'Fan install / repair',          base: 170 },
+                { id: 'switch', label: 'Switch / socket repair',         base: 90  },
+                { id: 'wiring', label: 'Wiring work (per circuit)',       base: 450 },
+                { id: 'socket', label: 'New socket point',               base: 120 },
+                { id: 'mcb',    label: 'MCB / fuse-box work',           base: 280 }
+            ],
+            fields: [{ id: 'type', label: 'Job type', kind: 'types' }],
+            note: 'Estimate: base ×0.88 to ×1.18. Parts billed separately per receipt.'
+        },
+        plumber: {
+            visitFeeByTier: [0, 0, 0],
+            depositPct: 20,
+            types: [
+                { id: 'leak',       label: 'Pipe leak repair',          lo: 250,  hi: 550  },
+                { id: 'tap',        label: 'Tap repair / replacement',  lo: 180,  hi: 380  },
+                { id: 'commode',    label: 'Commode / toilet issue',     lo: 350,  hi: 750  },
+                { id: 'geyser',     label: 'Geyser repair',             lo: 500,  hi: 1100 },
+                { id: 'pipe_burst', label: '🚨 Pipe burst — EMERGENCY', lo: 700,  hi: 1500, emergency: true }
+            ],
+            fields: [{ id: 'type', label: 'Issue type', kind: 'types' }],
+            note: 'Photo upload required before quote is sent. 20% deposit at booking.'
+        },
+        carpenter: {
+            visitFeeByTier: [0, 0, 0],
+            depositPct: 0,
+            types: [
+                { id: 'hinge',  label: 'Hinge / joint repair',   lo: 200,  hi: 450  },
+                { id: 'door',   label: 'Door / drawer fix',        lo: 350,  hi: 650  },
+                { id: 'polish', label: 'Polish / refinish',        lo: 700,  hi: 1400 },
+                { id: 'repair', label: 'Furniture repair',         lo: 500,  hi: 1000 },
+                { id: 'refurb', label: 'Full refurbishment',       lo: 1400, hi: 3200 }
+            ],
+            fields: [{ id: 'type', label: 'Work type', kind: 'types' }],
+            note: 'Per-hour billing option: ₹250/hr (T3). Time billed in 30-min increments.'
+        },
+        painter: {
+            visitFeeByTier: [0, 0, 0],
+            depositPct: 0,
+            perSqft: true,
+            types: [
+                { id: 'distemper', label: 'Distemper',          rps: 8,  primer: 2 },
+                { id: 'emulsion',  label: 'Emulsion (premium)', rps: 14, primer: 3 },
+                { id: 'enamel',    label: 'Enamel',             rps: 18, primer: 3 },
+                { id: 'texture',   label: 'Texture paint',      rps: 26, primer: 4 }
+            ],
+            surfaces: [
+                { id: 'new',     label: 'New plaster',            mult: 1.0 },
+                { id: 'repaint', label: 'Old paint (repaint)',     mult: 1.1 },
+                { id: 'damaged', label: 'Damaged / patch needed',  mult: 1.3 }
+            ],
+            fields: [
+                { id: 'type',    label: 'Paint type',        kind: 'types'   },
+                { id: 'sqft',    label: 'Wall area (sq.ft)', kind: 'number', placeholder: 'e.g. 400' },
+                { id: 'surface', label: 'Surface condition', kind: 'surfaces' }
+            ],
+            note: 'Paint tins purchased on-site; approved by you; added to invoice at cost.'
+        },
+        mason: {
+            visitFeeByTier: [0, 0, 0],
+            depositPct: 30,
+            holdbackPct: 10,
+            perArea: true,
+            types: [
+                { id: 'tile',      label: 'Tile repair / laying',    lo: 40,  hi: 80,  unit: 'sqft' },
+                { id: 'plaster',   label: 'Plaster patching',        lo: 25,  hi: 55,  unit: 'sqft' },
+                { id: 'crack',     label: 'Wall crack filling',      lo: 150, hi: 350, unit: 'crack' },
+                { id: 'waterproof',label: 'Waterproofing',           lo: 70,  hi: 130, unit: 'sqft' },
+                { id: 'flooring',  label: 'New flooring (labour)',   lo: 60,  hi: 120, unit: 'sqft' }
+            ],
+            fields: [
+                { id: 'type', label: 'Job type',                    kind: 'types' },
+                { id: 'qty',  label: 'Area (sqft) or crack count',  kind: 'number', placeholder: 'e.g. 80' }
+            ],
+            note: '2-hour bidding window. Top 3 bids ranked by trust 50% + price 50%.'
+        },
+        ac: {
+            visitFeeByTier: [0, 0, 0],
+            depositPct: 0,
+            types: [
+                { id: 'service', label: 'Annual service / cleaning',  lo: 449, hi: 699  },
+                { id: 'gas_r22', label: 'Gas refill — R22',           lo: 1100,hi: 1400 },
+                { id: 'gas_r32', label: 'Gas refill — R32 / R410a',   lo: 1300,hi: 2200 },
+                { id: 'repair',  label: 'Not cooling — diagnosis',     lo: 1200,hi: 2500 },
+                { id: 'noise',   label: 'Noise / vibration repair',   lo: 500, hi: 1500 },
+                { id: 'install', label: 'New AC installation (≤3 ft)', lo: 1200,hi: 2000 }
+            ],
+            fields: [{ id: 'type', label: 'Service type', kind: 'types' }],
+            note: 'AMC plan (1 unit/yr): ₹1,199. Reminder auto-sent at 153 days (85% of 180).'
+        },
+        purifier: {
+            visitFeeByTier: [0, 0, 0],
+            depositPct: 0,
+            filterLife: 180,
+            types: [
+                { id: 'tds',      label: 'TDS check only — FREE',       lo: 0,   hi: 0    },
+                { id: 'filter',   label: 'Filter change',               lo: 349, hi: 599  },
+                { id: 'membrane', label: 'RO membrane replacement',     lo: 799, hi: 1499 },
+                { id: 'full',     label: 'Full service (filter+membrane+TDS)', lo: 1099, hi: 1999 }
+            ],
+            fields: [
+                { id: 'type',     label: 'Service type',    kind: 'types' },
+                { id: 'last_svc', label: 'Last service date (optional)', kind: 'date'  }
+            ],
+            note: 'AMC plan (1 unit/yr): ₹799. TDS after-reading logged; eco-disposal certificate issued.'
+        }
+    };
+
+    let curSvc   = 'electrician';
+    let urgency  = 'normal';
+    let cityMult = 1.1;
+    let tierIdx  = 1;   // 0=T1, 1=T2, 2=T3
+
+    /* ── Tab switch ── */
+    function switchTab(svc, el) {
+        curSvc = svc;
+        document.querySelectorAll('.est-tab').forEach(t => t.classList.remove('active'));
+        el.classList.add('active');
+        renderFields();
+        document.getElementById('estResult').classList.remove('show');
+        // Hide urgency for purifier (no surge applicable)
+        document.getElementById('urgSection').style.display = svc === 'purifier' ? 'none' : '';
+    }
+
+    /* ── Render dynamic fields ── */
+    function renderFields() {
+        const s   = SVC[curSvc];
+        const box = document.getElementById('estFields');
+        box.innerHTML = '';
+        s.fields.forEach(f => {
+            const wrap = document.createElement('div');
+            wrap.className = 'est-field';
+            let html = `<label>${f.label}</label>`;
+            if (f.kind === 'number') {
+                html += `<input type="number" id="ef_${f.id}" placeholder="${f.placeholder || ''}" min="1">`;
+            } else if (f.kind === 'date') {
+                html += `<input type="date" id="ef_${f.id}" max="${new Date().toISOString().split('T')[0]}">`;
+            } else {
+                const opts = f.kind === 'surfaces' ? s.surfaces : s.types;
+                html += `<select id="ef_${f.id}"><option value="">— Select —</option>`;
+                opts.forEach(o => {
+                    let lbl = o.label;
+                    if (o.rps !== undefined) lbl += ` (₹${o.rps}/sqft T3)`;
+                    html += `<option value="${o.id}">${lbl}</option>`;
+                });
+                html += '</select>';
+            }
+            wrap.innerHTML = html;
+            box.appendChild(wrap);
+        });
+
+        // Set grid to 1-col if only 1 field
+        box.style.gridTemplateColumns = s.fields.length === 1 ? '1fr' : '1fr 1fr';
+    }
+
+    /* ── Toggle button group ── */
+    function toggleGroup(rowId, el) {
+        document.querySelectorAll(`#${rowId} .tgl-btn`).forEach(b => b.classList.remove('on'));
+        el.classList.add('on');
+    }
+
+    /* ── Format ₹ with Indian commas ── */
+    function fmt(n) { return '₹' + Math.round(n).toLocaleString('en-IN'); }
+
+    /* ── Filter life bar HTML ── */
+    function filterBarHtml(pct) {
+        const clamped = Math.min(pct, 120);
+        let statusCls, statusTxt;
+        if (pct >= 100)      { statusCls = 'overdue';    statusTxt = '🚨 Overdue — quality risk'; }
+        else if (pct >= 85)  { statusCls = 'due';         statusTxt = '⚠ Due — schedule service now'; }
+        else if (pct >= 75)  { statusCls = 'approaching'; statusTxt = '📅 Approaching — book soon'; }
+        else                 { statusCls = 'healthy';     statusTxt = '✓ Healthy'; }
+
+        const fillColor = pct < 75
+            ? 'var(--green)'
+            : pct < 85
+            ? 'linear-gradient(90deg,var(--green),var(--amber))'
+            : 'linear-gradient(90deg,var(--green),var(--amber),var(--red))';
+
+        return `<div class="filter-bar-wrap">
+            <div class="filter-bar-label"><span>Filter life used</span><span>${Math.round(pct)}%</span></div>
+            <div class="filter-bar-track">
+                <div class="filter-bar-fill" style="width:${Math.min(clamped,100)}%;background:${fillColor}"></div>
+            </div>
+            <div class="filter-bar-markers">
+                <div class="filter-marker" style="left:75%">75%</div>
+                <div class="filter-marker" style="left:85%">85%</div>
+                <div class="filter-marker" style="left:99%">100%</div>
+            </div>
+            <span class="filter-status ${statusCls}">${statusTxt}</span>
+        </div>`;
+    }
+
+    /* ── Main estimate calculator ── */
+    function calculateEstimate() {
+        const s      = SVC[curSvc];
+        const typeEl = document.getElementById('ef_type');
+        if (!typeEl || !typeEl.value) { toast('Please select a service type first'); return; }
+
+        const sel = s.types.find(t => t.id === typeEl.value);
+        let lo, hi, rows = [], extraHtml = '';
+
+        /* ── ELECTRICIAN: single base ×0.88–1.18 ── */
+        if (curSvc === 'electrician') {
+            const base = Math.round(sel.base * cityMult);
+            lo = Math.round(base * 0.88);
+            hi = Math.round(base * 1.18);
+            rows.push({ k: `Labour — ${sel.label}`, v: `${fmt(lo)} – ${fmt(hi)}` });
+            const vf = s.visitFeeByTier[tierIdx];
+            if (vf) rows.push({ k: `Visit / call-out fee (T${tierIdx+1})`, v: `+${fmt(vf)}` });
+            if (urgency === 'emergency') {
+                lo = Math.round(lo * 1.5); hi = Math.round(hi * 1.5);
+                rows.push({ k: '🚨 Emergency surge (1.5× labour)', v: '+50%', surge: true });
+            }
+            lo += vf; hi += vf;
+
+        /* ── PAINTER: per sqft with dynamic primer rate ── */
+        } else if (s.perSqft) {
+            const sqftEl = document.getElementById('ef_sqft');
+            const sqft   = parseFloat(sqftEl ? sqftEl.value : '') || 0;
+            if (sqft <= 0) { toast('Please enter the wall area in sq.ft.'); return; }
+            const surfEl  = document.getElementById('ef_surface');
+            const surfMlt = surfEl && surfEl.value
+                ? (s.surfaces.find(x => x.id === surfEl.value) || { mult: 1 }).mult
+                : 1.0;
+            const labRate   = Math.round(sel.rps * cityMult * surfMlt * 10) / 10;
+            const primRate  = Math.round(sel.primer * cityMult * 10) / 10;
+            const labCost   = Math.round(sqft * labRate);
+            const primCost  = Math.round(sqft * primRate);
+            lo = Math.round((labCost + primCost) * 0.90);
+            hi = Math.round((labCost + primCost) * 1.15);
+            const estDays = Math.ceil(sqft / 300);
+            rows.push({ k: `Labour (${sqft} sqft × ₹${labRate}/sqft)`, v: fmt(labCost) });
+            rows.push({ k: `Primer (${sqft} sqft × ₹${primRate}/sqft)`, v: fmt(primCost) });
+            if (surfMlt > 1) rows.push({ k: `Surface condition factor (${surfMlt}×)`, v: 'included above' });
+            rows.push({ k: 'Estimated days on-site', v: `~${estDays} day${estDays > 1 ? 's' : ''}` });
+            rows.push({ k: 'Paint tin cost', v: 'billed at cost (on-site approval)' });
+
+        /* ── MASON: per sqft or per crack with bidding engine ── */
+        } else if (s.perArea) {
+            const qtyEl = document.getElementById('ef_qty');
+            const qty   = parseFloat(qtyEl ? qtyEl.value : '') || 0;
+            if (qty <= 0) { toast(`Please enter the ${sel.unit === 'crack' ? 'number of cracks' : 'area in sqft'}`); return; }
+            lo = Math.round(sel.lo * cityMult * qty);
+            hi = Math.round(sel.hi * cityMult * qty);
+            const unit = sel.unit === 'crack' ? `${qty} crack${qty > 1 ? 's' : ''}` : `${qty} sqft`;
+            rows.push({ k: `${sel.label} — ${unit}`, v: `${fmt(sel.lo * cityMult)} – ${fmt(sel.hi * cityMult)} /${sel.unit}` });
+            rows.push({ k: 'Your estimated total range', v: `${fmt(lo)} – ${fmt(hi)}` });
+            rows.push({ k: 'Bidding window', v: '2 hours from posting' });
+            rows.push({ k: 'Advance at booking', v: `~${fmt(lo * 0.30)} (30%)` });
+            rows.push({ k: 'Escrow during job', v: `~${fmt(lo * 0.60)} (60%)` });
+            rows.push({ k: 'Punchlist holdback (7 days)', v: `~${fmt(lo * 0.10)} (10%)` });
+
+        /* ── WATER PURIFIER: range + filter life bar ── */
+        } else if (curSvc === 'purifier') {
+            if (sel.lo === 0 && sel.hi === 0) {
+                // TDS check — free
+                document.getElementById('priceRange').textContent = 'FREE';
+                document.getElementById('priceNote').textContent  = 'TDS meter check at your doorstep. No charge.';
+                document.getElementById('filterBarHtml').innerHTML = '';
+                document.getElementById('breakdown').innerHTML = '<div class="bd-row"><span class="k">TDS check</span><span class="v" style="color:var(--green)">₹0 — complimentary</span></div>';
+                document.getElementById('depositNote').style.display = 'none';
+                document.getElementById('holdbackNote').style.display = 'none';
+                document.getElementById('estResult').classList.add('show');
+                return;
+            }
+            lo = Math.round(sel.lo * cityMult);
+            hi = Math.round(sel.hi * cityMult);
+            rows.push({ k: sel.label, v: `${fmt(lo)} – ${fmt(hi)}` });
+            rows.push({ k: 'AMC discount (if active)', v: '10% off' });
+            // Filter life bar
+            const dateEl = document.getElementById('ef_last_svc');
+            if (dateEl && dateEl.value) {
+                const last = new Date(dateEl.value);
+                const days = Math.round((Date.now() - last.getTime()) / 86400000);
+                const pct  = (days / s.filterLife) * 100;
+                extraHtml  = filterBarHtml(pct);
+                rows.push({ k: 'Days since last service', v: `${days} days` });
+                rows.push({ k: 'Filter life used', v: `${Math.round(pct)}% of 180 days` });
+            }
+
+        /* ── ALL OTHER RANGE SERVICES (plumber, carpenter, AC) ── */
+        } else {
+            lo = Math.round(sel.lo * cityMult);
+            hi = Math.round(sel.hi * cityMult);
+            rows.push({ k: sel.label, v: `${fmt(lo)} – ${fmt(hi)}` });
+            if (sel.emergency) {
+                urgency = 'emergency';
+                toggleGroup('urgRow', document.querySelector('#urgRow .emg'));
+                rows.push({ k: '🚨 EMERGENCY forced — pipe burst', v: '1.5× surge applied', surge: true });
+                rows.push({ k: 'Action NOW', v: 'Turn off main water valve immediately', surge: true });
+            }
+            if (urgency === 'emergency' && !sel.emergency) {
+                lo = Math.round(lo * 1.5); hi = Math.round(hi * 1.5);
+                rows.push({ k: '🚨 Emergency surge (1.5× labour)', v: '+50%', surge: true });
+            } else if (sel.emergency) {
+                lo = Math.round(lo * 1.5); hi = Math.round(hi * 1.5);
+            }
+        }
+
+        /* ── Render result ── */
+        if (curSvc !== 'mason') {
+            document.getElementById('priceRange').textContent = `${fmt(lo)} – ${fmt(hi)}`;
+        } else {
+            document.getElementById('priceRange').textContent = `${fmt(lo)} – ${fmt(hi)}`;
+        }
+
+        document.getElementById('priceNote').textContent = s.note || 'Final confirmed by pro after site inspection · parts billed separately';
+        document.getElementById('filterBarHtml').innerHTML = extraHtml;
+
+        const bd = document.getElementById('breakdown');
+        bd.innerHTML = rows.map(r =>
+            `<div class="bd-row${r.surge ? ' surge' : ''}">
+                <span class="k">${r.k}</span>
+                <span class="v">${r.v}</span>
+            </div>`
+        ).join('');
+
+        const dn = document.getElementById('depositNote');
+        if (s.depositPct && curSvc !== 'mason') {
+            dn.textContent = `${fmt(lo * s.depositPct / 100)} deposit payable at booking (${s.depositPct}%). Balance held in escrow until End-OTP.`;
+            dn.style.display = 'block';
+        } else if (curSvc === 'mason') {
+            dn.textContent = `${fmt(lo * 0.30)} advance (30%) payable at booking.`;
+            dn.style.display = 'block';
+        } else {
+            dn.style.display = 'none';
+        }
+
+        const hn = document.getElementById('holdbackNote');
+        if (curSvc === 'mason') {
+            hn.textContent = `${fmt(lo * 0.10)} punchlist holdback (10%) released 7 days after completion once defect-free.`;
+            hn.style.display = 'block';
+        } else {
+            hn.style.display = 'none';
+        }
+
+        document.getElementById('estResult').classList.add('show');
+    }
+
+    /* ── Service card click → scroll + tab ── */
+    const TAB_SVCS = ['electrician', 'plumber', 'carpenter', 'painter', 'mason', 'ac', 'purifier'];
+    function pickService(svc) {
+        document.getElementById('estimate').scrollIntoView({ behavior: 'smooth' });
+        const idx = TAB_SVCS.indexOf(svc);
+        if (idx >= 0) {
+            const tabs = document.querySelectorAll('.est-tab');
+            if (tabs[idx]) switchTab(svc, tabs[idx]);
+        } else {
+            setTimeout(() => toast('Full app opens the ' + svc + ' booking flow!'), 500);
+        }
+    }
+
+    /* ── Toast ── */
+    let toastTimer;
+    function toast(msg) {
+        const t = document.getElementById('toast');
+        t.textContent = msg;
+        t.classList.add('show');
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => t.classList.remove('show'), 3000);
+    }
+
+    /* ── Init ── */
+    renderFields();
+    document.querySelectorAll('#navLinks a').forEach(a =>
+        a.addEventListener('click', () => document.getElementById('navLinks').classList.remove('open')));
+    </script>
+</body>
+</html>
