@@ -1,0 +1,1485 @@
+CATEGORY 1: HOUSEHOLD REPAIR & MAINTENANCE
+================================================================================
+Platform : HomeFix
+Currency : INR (₹)
+Version  : 2.0 — Deep Algorithm Spec
+================================================================================
+
+GLOBAL CONSTANTS (apply to every service in this category)
+------------------------------------------------------------
+CITY_TIER_MULTIPLIER:
+  T1 = 1.30   → Mumbai, Delhi NCR, Bengaluru, Chennai, Hyderabad, Pune, Kolkata
+  T2 = 1.10   → Jaipur, Surat, Lucknow, Nagpur, Indore, Bhopal, Coimbatore, Kochi
+  T3 = 1.00   → all remaining towns and cities
+
+GEO_RADIUS:
+  primary   = 3 km   (all services except Welder)
+  secondary = 5 km   (fallback when < 2 pros available in primary)
+  welder    = 5 km   (portable welding kit required; wider base needed)
+
+TRUST_SCORE:
+  formula = (avg_rating * 0.40)
+           + (completion_rate * 0.30)
+           + (response_time_score * 0.20)
+           + (repeat_hire_rate * 0.10)
+  range   = 0.0 – 5.0
+  minimum to appear in results = 3.5
+
+EMERGENCY_SURGE = 1.5×  (applied to labour only; never to parts or visit fee)
+EMERGENCY_AUTO_FLAGS:
+  - issue_type == regulator_leak     (Gas Stove)
+  - issue_type == pipe_burst         (Plumber)
+  - issue_type == no_power_whole_flat (Electrician)
+
+OTP SYSTEM (universal across all services):
+  start_otp : 6-digit code → generated at booking → sent to user's phone
+              → pro enters on arrival → booking clock starts
+              → billable time begins from this moment
+  end_otp   : 6-digit code → generated when pro taps "job done"
+              → sent to user → user enters → billing stops
+              → escrow release triggered automatically
+  wrong OTP 3× by pro → platform agent auto-alerted; job paused
+
+ESCROW RULES:
+  deposit collected at  : booking confirmation
+  balance held until    : end_otp confirmed OR mutual cancellation
+  auto_release after    : 48 hours post end_otp (if no dispute raised)
+  dispute_window        : 48 hours after end_otp
+  cancellation refund   : 100% if cancelled before start_otp
+                          0% if cancelled after start_otp
+
+MANDATORY PHOTO MILESTONES (all services):
+  before_photo : uploaded by pro before any work begins (proof of condition)
+  parts_photo  : each part purchased → receipt + item photo (logged in booking)
+  progress_photo: end of each day for multi-day jobs
+  after_photo  : uploaded by pro on completion → triggers end_otp eligibility
+
+DIGITAL INVOICE FIELDS (all services):
+  booking_id, pro_name, start_time, end_time, duration_mins,
+  labour_charge, parts_itemised[ {name, qty, unit_price} ],
+  visit_fee, surge_applied (bool), city_tier, total,
+  payment_mode, otp_start_verified (bool), otp_end_verified (bool)
+
+
+================================================================================
+1.1  ELECTRICIAN
+================================================================================
+
+INPUTS:
+  job_type   : fan_install_repair | switch_socket_repair | wiring_work
+               | new_socket_point | mcb_fusebox
+  location   : GPS lat/lng + address text
+  urgency    : normal | emergency
+  city_tier  : T1 | T2 | T3  (auto-detected from GPS; user can override)
+
+COMPLEXITY TIERS:
+  T1 — Simple   : fan_install_repair, switch_socket_repair, new_socket_point
+  T2 — Moderate : wiring_work, mcb_fusebox
+  T3 — Advanced : full_rewiring, distribution_board  (requires licensed cert upload)
+
+BASE LABOUR PRICE TABLE (T3 city, before multiplier):
+  job_type                  T3_base (₹)   notes
+  ──────────────────────────────────────────────────────────
+  fan_install_repair           170         ceiling / exhaust / table fan
+  switch_socket_repair          90         single point; standard face plate
+  wiring_work                  450         per circuit; conduit included
+  new_socket_point             120         point + conduit run up to 2 m
+  mcb_fusebox                  280         MCB replacement or fuse box work
+  ──────────────────────────────────────────────────────────
+  final_base = T3_base × CITY_TIER_MULTIPLIER[city_tier]
+
+VISIT FEE (flat; always added; not part of estimate range):
+  T1 city → ₹100     T2 city → ₹75     T3 city → ₹50
+
+ALGORITHM:
+  Step 1   User selects job_type from dropdown.
+           system looks up: complexity_tier = COMPLEXITY_MAP[job_type]
+           display to user: "This is a [T1 / T2] complexity job."
+
+  Step 2   System reads GPS → resolves city_tier.
+           IF city_tier ambiguous (border town): show manual picker.
+
+  Step 3   base_price = PRICE_TABLE[job_type]['T3'] × CITY_TIER_MULTIPLIER[city_tier]
+           estimate_lo = round(base_price × 0.88)
+           estimate_hi = round(base_price × 1.18)
+           Display range now, BEFORE urgency applied.
+
+  Step 4   Urgency check:
+           IF urgency == EMERGENCY:
+             surge_factor = 1.5
+             base_price  *= 1.5
+             estimate_lo  = round(base_price × 0.88)
+             estimate_hi  = round(base_price × 1.18)
+             push alert: "🚨 Emergency surge 1.5× applied to labour."
+           ELSE:
+             surge_factor = 1.0  (no change)
+
+  Step 5   Geo-query:
+           candidates = pros WHERE
+             profession == 'electrician'
+             AND distance(pro, user) <= GEO_RADIUS.primary
+             AND verified_license == true
+             AND status == 'available'
+             AND trust_score >= 3.5
+           IF len(candidates) < 2 → expand to GEO_RADIUS.secondary
+           IF len(candidates) == 0 → show "No pros available now. Schedule for tomorrow?"
+
+  Step 6   Rank candidates:
+           FOR each pro: rank_score = TRUST_SCORE formula
+           sort DESC by rank_score
+           show user: top 3 pros — name, photo, trust_score, distance, total_jobs_done
+
+  Step 7   User selects pro → booking confirmed.
+           deposit = ₹0  (electrician jobs; no advance)
+           escrow_hold = estimate_lo  (platform wallet)
+
+  Step 8   OTP flow:
+           start_otp sent to user → pro enters on arrival
+           clock_start = arrival timestamp
+           pro uploads before_photo (mandatory; job cannot proceed without it)
+
+  Step 9   During job — parts logging:
+           FOR each part used (wire, socket, MCB, fuse, tape…):
+             pro enters: part_name + unit_price + quantity
+             receipt_photo uploaded
+             part_line_item appended to live invoice
+
+  Step 10  On-site quote revision:
+           IF actual job scope > original job_type:
+             pro raises revision request in-app
+             user sees: "Additional work found: [description]. Extra ₹[amount]. Approve?"
+             user: APPROVE → work continues
+             user: REJECT  → only original scope completed; revised invoice
+
+  Step 11  Completion:
+           pro uploads after_photo
+           pro taps "Job done" → end_otp sent to user
+           user enters end_otp → job status = 'completed'
+           clock_stop = timestamp
+
+  Step 12  Invoice auto-generated:
+           labour_charge = base_price (agreed or revised)
+           parts_total   = SUM(part_line_items)
+           visit_fee     = VISIT_FEE[city_tier]
+           IF surge: label "Emergency 1.5×" on invoice line
+           total = labour_charge + parts_total + visit_fee
+           PDF emailed to user + available in-app
+
+  Step 13  Payment:
+           UPI → QR generated in-app; escrow released on scan confirmation
+           Cash → pro marks paid; platform confirms; escrow released
+           Rating prompt: 1–5 stars + optional text (shown 10 min after payment)
+
+
+================================================================================
+1.2  PLUMBER
+================================================================================
+
+INPUTS:
+  issue_type  : leak_repair | tap_repair_replace | commode_toilet_issue
+                | geyser_repair | pipe_burst
+  photos      : 1–3 images of problem area (mandatory before quote is sent)
+  location    : GPS lat/lng + address
+  urgency     : normal | emergency
+                (pipe_burst auto-forces urgency = EMERGENCY)
+
+BASE PRICE RANGES (T3, before city multiplier):
+  issue_type               T3 lo (₹)    T3 hi (₹)    notes
+  ──────────────────────────────────────────────────────────────────────
+  leak_repair                 250           550        joint, pipe, fitting
+  tap_repair_replace          180           380        part cost billed extra
+  commode_toilet_issue        350           750        flush valve, seat, wax ring
+  geyser_repair               500          1100        element, thermostat, valve
+  pipe_burst (EMERGENCY)      700          1500        + 1.5× surge on labour
+  ──────────────────────────────────────────────────────────────────────
+  displayed_lo = T3_lo × CITY_TIER_MULTIPLIER
+  displayed_hi = T3_hi × CITY_TIER_MULTIPLIER
+
+DEPOSIT MODEL:
+  deposit_pct  = 20%
+  deposit_base = displayed_lo  (lower bound of quote accepted by user)
+  deposit_amount = round(accepted_quote × 0.20)
+  escrow holds: accepted_quote − deposit_amount
+
+ALGORITHM:
+  Step 1   User selects issue_type.
+           IF issue_type == 'pipe_burst':
+             urgency = EMERGENCY  (forced; cannot be overridden)
+             show red alert: "Pipe burst detected. Priority dispatch activated.
+                              Turn off main water valve now if possible."
+
+  Step 2   Photo upload:
+           required_min = 1,  recommended = 3
+           IF no photo: block progression with message:
+             "Photo helps plumber quote accurately. Attach at least 1 photo to continue."
+           photos stored against booking object.
+
+  Step 3   Remote quote broadcast:
+           broadcast job_details + photos to all plumbers within GEO_RADIUS.primary
+           quote_window = 15 minutes
+           plumbers enter: { quoted_price, ETA_minutes, note_to_user }
+           IF 0 responses after 15 min: expand radius + rebroadcast; notify user.
+
+  Step 4   User receives quotes:
+           display each: plumber_name, trust_score, quoted_price, ETA
+           user action:
+             ACCEPT  → proceed to deposit payment
+             REJECT  → re-broadcast (once more; then manual assignment by platform)
+             COUNTER → open chat; plumber can revise quote once
+
+  Step 5   Booking confirmed (after accept):
+           deposit_amount = round(accepted_quote × 0.20)
+           UPI payment collected: deposit_amount
+           slot confirmed; plumber status → 'en_route'
+           SMS to user: "Plumber [name] on the way. ETA [X] min."
+
+  Step 6   On-site arrival:
+           plumber enters start_otp
+           before_photo taken and uploaded (mandatory)
+
+  Step 7   On-site quote revision (if extra work found):
+           plumber raises revision_request:
+             { description: text, extra_amount: ₹N, photo_of_extra_work }
+           user notification: "Plumber found [desc]. Extra ₹[N] needed. Approve?"
+           IF APPROVE: revised total locked; work continues
+           IF DISPUTE:
+             platform_agent joins 3-way chat
+             agent views: original photos, revision photo, chat log
+             resolution options: partial_approval | refund_deposit | cancel
+
+  Step 8   Job completion:
+           plumber uploads after_photo
+           plumber taps "Done" → end_otp sent to user
+           user enters end_otp → status = 'completed'
+
+  Step 9   Balance payment:
+           balance = final_agreed_price − deposit_amount
+           user pays balance (UPI or cash)
+           deposit escrow released to plumber
+           total_paid_by_user = deposit + balance
+
+  Step 10  Service log entry:
+           { booking_id, issue_type, plumber_id, original_quote,
+             revision_amount, start_time, end_time, duration_mins,
+             photos[ ], parts_used[ ], rating }
+
+
+================================================================================
+1.3  CARPENTER
+================================================================================
+
+INPUTS:
+  furniture_type      : chair | table | wardrobe | door | drawer | bed | sofa_frame
+                        | cupboard | almirah | bookshelf
+  problem_description : free text (max 300 chars)
+  photos              : 1–5 images
+  dimensions          : L × W × H in cm (optional; carpenter may measure on-site)
+  quote_preference    : per_job | per_hour | let_carpenter_decide
+
+BASE PRICE RANGES (T3):
+  work_category              T3 lo (₹)   T3 hi (₹)   billing_unit
+  ────────────────────────────────────────────────────────────────────
+  hinge_joint_repair            200          450       per job
+  door_drawer_fix               350          650       per job
+  polish_refinish               700         1400       per piece
+  furniture_repair              500         1000       per job
+  full_refurbish               1400         3200       per piece
+  ────────────────────────────────────────────────────────────────────
+  PER-HOUR rate (T3): ₹250/hr × CITY_TIER_MULTIPLIER
+
+REPAIR vs REFURBISH CLASSIFICATION:
+  system scans problem_description for keywords:
+    repair_signals    : [broken, cracked, hinge, stuck, loose, wobble, chip, scratch]
+    refurbish_signals : [colour gone, full polish, termite, water damage, makeover,
+                         full restore, complete redo]
+  IF count(refurbish_signals) > count(repair_signals):
+    show comparison card:
+      Option A — Repair    : ₹[repair_lo]–₹[repair_hi]   (targeted fix only)
+      Option B — Refurbish : ₹[refurb_lo]–₹[refurb_hi]  (full restoration)
+    user picks one; selection locked before carpenter is contacted
+
+ALGORITHM:
+  Step 1   User uploads photos + types problem_description.
+           System runs keyword scan → suggests repair vs refurbish.
+           User confirms chosen option.
+
+  Step 2   Quote type selection:
+           IF quote_preference == per_job:
+             carpenter sends fixed_price quote (locked at booking; no clock)
+           IF quote_preference == per_hour:
+             carpenter sends hourly_rate + estimated_hours
+             → show user: "~₹[hrs × rate] estimate; actual billed by clock"
+           IF let_carpenter_decide:
+             carpenter chooses and declares in their quote message
+
+  Step 3   Carpenter views booking:
+           sees { furniture_type, description, photos, option_chosen, dimensions_if_given }
+           Carpenter responds:
+           {
+             quote_type       : per_job | per_hour,
+             quoted_price     : ₹N  (or hourly_rate if per_hour),
+             estimated_hours  : H   (only for per_hour),
+             material_note    : "hinges / polish / wood needed — cost extra",
+             available_slot   : date + time range
+           }
+           User: ACCEPT | COUNTER | REJECT
+
+  Step 4A  IF per_job quote accepted:
+           fixed_price locked
+           deposit = ₹0  (no advance for carpenter)
+           start_otp begins job (clock is informational only; payment is fixed)
+
+  Step 4B  IF per_hour quote accepted:
+           hourly_rate locked
+           start_otp: clock_start = timestamp
+           end_otp  : clock_stop  = timestamp
+           billed_hours = ceil((clock_stop − clock_start) / 1800) × 0.5
+             (rounded up to nearest 30 min)
+           labour_charge = billed_hours × hourly_rate × CITY_TIER_MULTIPLIER
+
+  Step 5   Material procurement:
+           IF carpenter buys wood, hinges, polish, hardware:
+             each item → name + qty + price + receipt_photo
+             → appended as line items in live invoice
+           IF single material purchase > ₹500:
+             user pre-approval required in-app before purchase
+
+  Step 6   Completion:
+           after_photo uploaded (shows repaired / restored item clearly)
+           user inspects in-person → enters end_otp if satisfied
+           IF user rejects quality:
+             platform review triggered; carpenter must redo within 2 days at no charge
+
+  Step 7   Invoice:
+           {
+             labour   : fixed_price  (per_job)
+                        OR hours_clocked × hourly_rate  (per_hour),
+             materials: [ {item, qty, price} … ],
+             visit_fee: ₹0  (included in carpenter's labour),
+             total    : labour + materials_total
+           }
+
+
+================================================================================
+1.4  PAINTER
+================================================================================
+
+INPUTS:
+  room_count        : integer 1–20
+  rooms[ ]          : each room → { room_name, length_ft, width_ft, height_ft }
+  paint_type        : distemper | emulsion | enamel | texture
+  surface_condition : new_plaster | old_repaint | damaged_patch
+  colour_choice     : shade selected from in-app colour palette
+  city_tier         : T1 | T2 | T3
+
+PAINT RATE TABLE (₹ per sq.ft, T3 city, before multiplier):
+  paint_type     rate_per_sqft   primer_per_sqft   standard_coats
+  ─────────────────────────────────────────────────────────────────
+  distemper           8               2            1 primer + 2 paint
+  emulsion           14               3            1 primer + 2–3 paint
+  enamel             18               3            1 primer + 2 paint
+  texture            26               4            base coat + texture
+  ─────────────────────────────────────────────────────────────────
+  final_rate    = rate_per_sqft   × CITY_TIER_MULTIPLIER
+  final_primer  = primer_per_sqft × CITY_TIER_MULTIPLIER
+
+SURFACE CONDITION MULTIPLIER (applied to labour rate only; not to primer):
+  new_plaster   → 1.00   (clean surface; no extra prep)
+  old_repaint   → 1.10   (scraping + sanding adds ~10% labour)
+  damaged_patch → 1.30   (crack filling + POP putty adds ~30% labour)
+
+SQFT FORMULA (walls only; standard for painting quotes):
+  wall_sqft_per_room = 2 × height_ft × (length_ft + width_ft)
+  total_wall_sqft    = SUM(wall_sqft_per_room for all rooms)
+  NOTE: doors/windows NOT deducted at estimate stage;
+        painter deducts on-site if user requests (~5–8% typical)
+
+COLOUR PALETTE TOOL:
+  8 families: Arctic White | Warm Cream | Sage Green | Ocean Blue
+              Terracotta | Charcoal | Dusty Rose | Lavender
+  Each family: 4 sub-shades (light → deep)
+  colour_code (hex) saved to booking; shown to painter before visit
+
+ALGORITHM:
+  Step 1   User enters room_count.
+           FOR room i in 1..room_count:
+             prompt: room_name, length_ft, width_ft, height_ft
+             wall_sqft[i] = 2 × height_ft × (length_ft + width_ft)
+           total_sqft = SUM(wall_sqft)
+           display: "Total paintable wall area: [total_sqft] sq.ft"
+
+  Step 2   paint_type selected.
+           labour_rate  = PAINT_TABLE[paint_type].rate_per_sqft   × CITY_MULT
+           primer_rate  = PAINT_TABLE[paint_type].primer_per_sqft × CITY_MULT
+
+  Step 3   surface_condition selected.
+           surface_mult          = SURFACE_MULTIPLIER[surface_condition]
+           effective_labour_rate = labour_rate × surface_mult
+
+  Step 4   auto_estimate:
+           labour_cost      = total_sqft × effective_labour_rate
+           primer_cost      = total_sqft × primer_rate
+           raw_estimate     = labour_cost + primer_cost
+           auto_estimate_lo = round(raw_estimate × 0.90)
+           auto_estimate_hi = round(raw_estimate × 1.15)
+           NOTE: paint tin cost NOT in estimate;
+                 painter buys tins → user approves → added to invoice.
+
+  Step 5   Colour selection shown.
+           User picks shade → colour_code stored in booking_object.
+           Preview: coloured 300 × 180 px wall swatch rendered in-app.
+
+  Step 6   Painter assigned; painter receives:
+           rooms[ ] + total_sqft + paint_type + surface_condition +
+           colour_code + auto_estimate_range + photos_if_any.
+           Painter may adjust estimate ≤ 10% after site visit without approval.
+           IF adjustment > 10%: user approval required before work starts.
+
+  Step 7   Work schedule:
+           approx_daily_capacity = 300 sqft (1 coat for avg room size)
+           estimated_days        = ceil(total_sqft / 300)
+           END OF EACH DAY:
+             painter uploads progress_photo + area_completed_sqft (running total)
+             running_invoice updated: area_done × rate
+
+  Step 8   Completion:
+           final_photo uploaded by painter.
+           User inspects (in-app checklist):
+             [ ] No drips or streaks
+             [ ] Patches covered uniformly
+             [ ] Colour matches chosen shade
+             [ ] Edges (near ceiling/floor) clean
+           IF all passed → end_otp → balance payment released.
+           IF defect found: painter redoes flagged area within 48 hrs at no charge.
+
+  Step 9   Invoice:
+           {
+             rooms[ ], total_sqft_painted, paint_type, surface_condition,
+             colour_code, paint_tins_purchased[ ], labour_per_sqft_rate,
+             days_worked, labour_total, primer_cost, material_cost, total
+           }
+
+
+================================================================================
+1.5  MASON
+================================================================================
+
+INPUTS:
+  job_type        : tile_repair | plaster_patch | wall_crack_fill | boundary_wall
+                    | waterproofing | flooring_new
+  job_description : free text (max 500 chars)
+  photos          : 2–10 images (problem area + any measurements visible)
+  area_sqft       : user's approximate estimate (can be rough)
+  urgency         : normal | urgent
+
+BASE PRICE RANGES (T3, per sqft unless noted):
+  job_type               T3 lo    T3 hi    unit
+  ────────────────────────────────────────────────────────
+  tile_repair               40       80    per sqft
+  plaster_patch             25       55    per sqft
+  wall_crack_fill          150      350    per crack (flat)
+  boundary_wall (brick)    600      900    per running foot
+  waterproofing             70      130    per sqft
+  flooring_new              60      120    per sqft (labour only)
+  ────────────────────────────────────────────────────────
+
+BIDDING ENGINE:
+  bidding_window = 2 hours  (from job post time)
+
+  FOR each bid B:
+    price_competitiveness[B] = (max_bid − B.price) / (max_bid − min_bid)
+      (= 1.0 for lowest bidder; 0.0 for highest bidder)
+    ranking_score[B] = (trust_score[B] × 0.50) + (price_competitiveness[B] × 0.50)
+  sort bids DESC by ranking_score
+  present top 3 to user with: name, trust_score, bid_price, days_est, score
+
+PAYMENT STRUCTURE:
+  advance              = 30% of accepted_bid  (collected at booking)
+  escrow               = 60% of accepted_bid  (released after end_otp)
+  punch_list_holdback  = 10% of accepted_bid  (released 7 days post-completion)
+
+ALGORITHM:
+  Step 1   User posts job: job_type + description + photos + area_sqft.
+           System tag-classifies post; area_sqft shown as "approximate" to masons.
+
+  Step 2   Platform broadcasts to all masons within GEO_RADIUS.primary.
+           bidding_window_start = NOW()
+           bidding_window_end   = NOW() + 7200 s
+           Masons submit bids:
+           {
+             mason_id, quoted_price, estimated_days,
+             material_included (bool), note_to_user
+           }
+           IF material_included == false: platform appends "(Materials billed separately)"
+
+  Step 3   After bidding_window ends (or ≥5 bids received early):
+           ranking_scores computed for all bids
+           top_3 = sort(bids, ranking_score DESC)[:3]
+           user sees top 3 side-by-side:
+             mason name, trust_score, bid_price, days, ranking_score, material note
+
+  Step 4   User selects bid.
+           advance = round(selected_bid.price × 0.30)
+           UPI payment collected.
+           Mason status → 'assigned'.
+
+  Step 5   Job start (start_otp):
+           before_photo[ ] mandatory (all affected areas).
+
+  Step 6   Material procurement (mason logs each purchase):
+           item_name + qty + shop_bill_photo
+           IF single_purchase > ₹1,000: user in-app approval required.
+
+  Step 7   Progress tracking (jobs > 1 day):
+           EACH DAY END:
+             mason uploads progress_photo[ ]
+             marks area_completed_sqft (running total visible to user in-app)
+
+  Step 8   Punch-list (end of final day, before payment):
+           user completes digital checklist:
+             [ ] Tiles aligned and grouted with no hollow sounds
+             [ ] Plastered surface smooth — no visible patches or cracks
+             [ ] Cracks filled flush with wall surface
+             [ ] Curing completed (applicable for cement work)
+             [ ] Area cleaned of debris
+           FOR each FAILED item:
+             mason must redo within agreed window (default 2 working days)
+           WHEN all items PASSED:
+             user enters end_otp
+             escrow 60% released to mason
+             punch_list_holdback 10% released after 7-day defect period
+
+  Step 9   Invoice:
+           {
+             job_type, area_sqft_actual, quoted_price, material_costs[ ],
+             days_worked, advance_paid, escrow_released,
+             holdback_released_date, punchlist_items[ ]
+           }
+
+
+================================================================================
+1.6  WELDER
+================================================================================
+
+INPUTS:
+  item_type           : gate | grill | railing | staircase | tank | furniture_frame
+                        | shed_frame | window_frame
+  job_type            : new_fabrication | repair_existing
+  material_preference : mild_steel | stainless_steel | aluminium | wrought_iron
+  photos              : 2–8 images (existing item or reference design)
+  site_dimensions     : optional at booking; welder measures on-site if fabrication
+
+MATERIAL COST REFERENCE (₹ per kg, approximate market rates):
+  mild_steel        ₹ 65 – 80
+  stainless_steel   ₹180 – 240
+  aluminium         ₹160 – 200
+  wrought_iron      ₹ 90 – 110
+  (actual rate quoted by welder from current market at booking time)
+
+LABOUR RATES (T3, ₹ per hour):
+  repair_work    : ₹350 – 500
+  fabrication    : ₹450 – 650  (skilled; design-to-execution)
+
+ALGORITHM:
+  Step 1   User uploads photos + selects item_type + job_type + material_preference.
+           IF job_type == new_fabrication:
+             system prompts: "Share a reference image or sketch for your design."
+             design_photo stored against booking.
+
+  Step 2   Geo-query welders within 5 km.
+           Filter: has_portable_kit == true
+                   AND skills include material_preference
+           Rank by trust_score.
+
+  Step 3   Welder reviews photos; sends structured quote:
+           {
+             material_type       : confirmed,
+             estimated_weight_kg : N,
+             material_cost       : N × current_rate_per_kg,
+             labour_hours_est    : H,
+             labour_cost_est     : H × labour_rate,
+             total_lo            : material_cost + (labour_cost × 0.90),
+             total_hi            : material_cost + (labour_cost × 1.10),
+             site_visit_needed   : bool,
+             visit_date          : (if needed)
+           }
+           material_cost and labour_cost ALWAYS shown separately in quote.
+
+  Step 4   IF new_fabrication AND site_visit_needed:
+             welder visits for measurement (visit is FREE; ₹50 token deducted later from invoice)
+             welder uploads measurement_sketch_photo after visit
+             final quote issued post-measurement
+
+  Step 5   IF new_fabrication:
+             design_approval step:
+               welder uploads design_sketch or CAD reference photo
+               user: APPROVE | REQUEST_CHANGES
+               max 2 change cycles; beyond that, revised quote required
+             ONCE APPROVED: fabrication begins; cutting starts
+
+  Step 6   start_otp on day of work.
+           Material use log:
+             each stock piece cut → dimensions + weight photographed
+           Structural weld joints photographed at mid-job.
+
+  Step 7   Completion:
+           structural_integrity_photo uploaded
+             (clearly shows main load-bearing joints and weld bead)
+           User physically tests item (open/close gate, press on railing, etc.)
+           IF satisfied → end_otp → payment released
+           IF structural concern raised → platform review; welder re-welds at no charge
+
+  Step 8   Invoice:
+           {
+             item_type, job_type, material_type,
+             material_kg_used, material_cost,
+             labour_hours_actual, labour_rate, labour_total,
+             site_visit_token, design_revision_rounds, total
+           }
+
+
+================================================================================
+1.7  AC REPAIR & SERVICING
+================================================================================
+
+INPUTS:
+  brand        : LG | Samsung | Daikin | Voltas | Carrier | Hitachi | Blue_Star | other
+  model        : text (optional; helps pre-pack spare kit)
+  ac_type      : window | split_1ton | split_1.5ton | split_2ton | cassette
+  service_type : annual_service | repair | gas_refill | new_installation
+  symptom      : not_cooling | noise_vibration | water_leaking | not_starting
+                 | auto_switch_off | remote_not_working
+                 (required only when service_type == repair)
+  amc_active   : bool
+
+FAULT MAP (repair branch):
+  symptom              fault_category              T3 est cost (₹)
+  ────────────────────────────────────────────────────────────────────
+  not_cooling          gas_leak or coil_issue       1200 – 2500
+  noise_vibration      fan_blade or motor_bearing    500 – 1500
+  water_leaking        drain_pipe_block or tray      300 –  700
+  not_starting         capacitor or PCB_fault        800 – 2000
+  auto_switch_off      sensor or gas_low             600 – 1800
+  remote_not_working   remote_battery or IR_sensor   100 –  400
+  ────────────────────────────────────────────────────────────────────
+
+SERVICE PRICING (T3):
+  annual_service (pay-per-visit)    : ₹449 – 699 per unit
+  AMC plan (1 unit, annual)         : ₹1,199  (2 services + priority dispatch)
+  AMC plan (2 units, annual)        : ₹1,999
+  AMC auto-reminder trigger         : 85% of 180-day service interval elapsed
+
+GAS REFILL PRICING (T3):
+  R22  (1 ton)           : ₹1,100 – 1,400
+  R32  (1 ton)           : ₹1,300 – 1,700
+  R410a (1.5–2 ton)     : ₹1,500 – 2,200
+  gas_qty_kg MUST be logged in app (compliance record)
+
+INSTALLATION PRICING (T3, labour only):
+  standard install (pipe run ≤3 ft) : ₹1,200 – 2,000 per unit
+  extra pipe run                     : ₹80 per foot beyond 3 ft
+
+ALGORITHM — BRANCH A: annual_service
+  Step A1  IF amc_active:
+             fetch service_history for this unit
+             days_since_last = today − last_service_date
+             IF days_since_last < 153:
+               show: "Next service due [last_service + 180 days]. Book in advance?"
+             ELSE:
+               proceed directly to booking (overdue reminder)
+           ELSE (pay-per-service): proceed to booking.
+
+  Step A2  Technician pre-packs service kit for brand + model:
+             indoor_coil_wash, outdoor_coil_wash, filter_clean, drain_flush,
+             electrical_check, condenser_fin_straighten
+           Standard TAT: 60–90 minutes.
+
+  Step A3  Post-service checklist logged by technician:
+           {
+             indoor_coil_photo, outdoor_coil_photo,
+             gas_pressure_reading, drain_test_result,
+             filter_status: clean | replace_needed,
+             electrical_ok: bool
+           }
+
+ALGORITHM — BRANCH B: repair
+  Step B1  symptom selected → fault_category = FAULT_MAP[symptom]
+           display: "Likely cause: [fault_category]. Estimated: ₹[range]"
+           (estimate is pre-visit; confirmed by tech on-site)
+
+  Step B2  Brand authorisation check:
+           premium_brands = [Daikin, Hitachi, Carrier, Blue_Star]
+           IF brand IN premium_brands:
+             filter: technician WHERE oem_certified[brand] == true
+             display badge: "OEM-certified technician assigned."
+
+  Step B3  Technician arrives (start_otp).
+           Diagnoses fault → confirms fault_category → sends confirmed_quote.
+           IF confirmed_quote > estimate_hi × 1.20:
+             prompt: "Repair is ₹[N] — higher than estimate. Proceed or cancel?"
+             IF CANCEL: charge visit_fee only; escrow refunded.
+
+  Step B4  IF spare_part needed:
+             tech checks own stock → IF in stock → proceed
+             ELSE: tech queries part_db → nearest supplier lead time shown
+             user approves part_cost before tech procures
+
+  Step B5  Repair → test → end_otp → invoice.
+
+ALGORITHM — BRANCH C: gas_refill
+  Step C1  Leak test FIRST (mandatory protocol):
+           IF leak_found:
+             fix leak (billed separately) → THEN refill
+             (refilling without fixing leak wastes gas and voids refill warranty)
+
+  Step C2  Gas type auto-detected from unit label sticker.
+           Technician logs: gas_type + qty_kg_refilled (mandatory; compliance)
+
+  Step C3  Post-refill test: cooling test + pressure gauge reading logged.
+
+ALGORITHM — BRANCH D: new_installation
+  Step D1  Tech measures wall: bracket position + copper pipe run length (ft).
+           extra_pipe_charge = MAX(0, (run_ft − 3)) × ₹80
+
+  Step D2  Installation sequence:
+           indoor_unit_mounted → outdoor_unit_mounted → copper_pipe_run →
+           drainage_pipe → electrical_wiring → gas_check → test_run
+           each stage photographed.
+
+  Step D3  Test run: cooling_ok + remote_paired + drain_flow_ok → all logged.
+           workmanship_warranty: 30 days.
+
+  Step D4  AMC tracking (if amc_active):
+           service log entry: { unit_id, service_date, tech_id, gas_pressure, parts_replaced[ ] }
+           next_reminder_date = service_date + 153 days (85% of 180)
+
+
+================================================================================
+1.8  WASHING MACHINE REPAIR
+================================================================================
+
+INPUTS:
+  brand        : Samsung | LG | Whirlpool | Bosch | IFB | Haier | Godrej | other
+  model_number : text (optional; enables fault pre-lookup)
+  machine_type : top_load | front_load | semi_automatic
+  symptom      : not_spinning | water_leaking | error_code | not_heating
+                 | not_draining | excessive_vibration | drum_not_rotating
+  error_code   : text (from display panel; only if symptom == error_code)
+
+KNOWN FAULT DATABASE (sample entries):
+  symptom                 likely_fault                  T3 est cost (₹)
+  ────────────────────────────────────────────────────────────────────────
+  not_spinning            motor_brushes or capacitor      600 – 1400
+  water_leaking           door_seal or pump_fault         400 – 1000
+  not_heating             heating_element                 500 – 1200
+  not_draining            pump_clog or drain_hose         300 –  800
+  excessive_vibration     drum_bearing or load_imbalance  500 – 1500
+  drum_not_rotating       belt or drum_spider             700 – 1800
+  ────────────────────────────────────────────────────────────────────────
+
+ERROR CODE MAP (partial, brand-specific):
+  brand       code    fault                        T3 est (₹)
+  ──────────────────────────────────────────────────────────────────
+  LG          E6      door_lock_fault              300 –  600
+  LG          LE      motor_problem                700 – 1600
+  Samsung     dC      door_open_mid_cycle          check latch (often free)
+  Samsung     E3      heating_fault                500 – 1200
+  IFB         DC      door_open                    latch check (often free)
+  Whirlpool   F5      motor_fault                  800 – 1800
+  ──────────────────────────────────────────────────────────────────
+
+ALGORITHM:
+  Step 1   brand + model entered → system queries FAULT_DB.
+           IF model found in DB:
+             show: "Known issues with this model: [list of top 2 faults]"
+             pre-select most likely symptom for user (user can change)
+
+  Step 2   IF symptom == 'error_code':
+             user types error_code text
+             system looks up ERROR_CODE_MAP[brand][code]
+             IF found → show fault_description + estimated cost
+             IF not found → show: "Unknown code — tech diagnoses on-site"
+
+  Step 3   Technician skill filter:
+           IF machine_type == 'front_load' AND symptom == 'water_leaking':
+             pre-note sent to tech: "Bring door seal gasket for [brand] front-load"
+           IF brand IN ['Bosch', 'IFB']:
+             prefer oem_certified technician
+
+  Step 4   Spare kit preparation:
+           spare_kit[brand][machine_type] = platform's common-spares list for that combo
+           technician picks relevant parts before visiting (reduces second trip)
+
+  Step 5   Repair flow:
+           start_otp → tech diagnoses → confirms fault + shows confirmed_quote
+           IF confirmed_quote > estimated_hi × 1.20 → user prompt (proceed / cancel)
+           parts logged → repair done
+
+  Step 6   Post-repair test cycle (mandatory):
+           technician runs QUICK_WASH cycle (min 10 minutes; full wash preferred)
+           result: tech writes test_outcome (pass/fail) in app
+           IF pass → end_otp → invoice
+           IF fail → redo; no extra charge
+
+  Step 7   Invoice:
+           { brand, model, machine_type, fault_confirmed, parts_replaced[ ],
+             labour, visit_fee, test_cycle_pass: bool, total }
+
+
+================================================================================
+1.9  MICROWAVE / INDUCTION REPAIR
+================================================================================
+
+INPUTS:
+  appliance_type : microwave | induction_cooktop | OTG
+  brand          : text
+  symptom        : not_heating | turntable_not_rotating | sparks_inside
+                   | display_not_working | child_lock | door_not_closing
+                   | induction_not_detecting_vessel | burner_error_induction
+
+SELF-DIAGNOSIS TREE (shown BEFORE any booking is confirmed):
+  symptom                         diagnosis_output
+  ─────────────────────────────────────────────────────────────────────────────
+  not_heating                     Likely magnetron failure. Needs technician.
+                                  Est: ₹1,200–2,800 (T3)
+
+  turntable_not_rotating          Turntable motor or coupler worn. Needs tech.
+                                  Est: ₹400–900 (T3)
+
+  sparks_inside                   ⚠ DO NOT USE — coating damage causing arcing.
+                                  Needs technician. Est: ₹600–1,500 (T3)
+
+  child_lock                      ✓ FREE FIX — No booking needed.
+                                  → Hold [Start / Stop] button for 3 seconds.
+                                  → OR check model manual for lock combo.
+                                  IF this resolves: tap "Resolved" — no booking.
+
+  door_not_closing                Door latch or hinge fault. Needs technician.
+                                  Est: ₹300–800 (T3)
+
+  display_not_working             Control panel / fuse fault. Needs technician.
+                                  Est: ₹500–1,400 (T3)
+
+  induction_not_detecting_vessel  First check: use a flat-bottomed magnetic pan.
+                                  IF correct pan and still fails: sensor fault.
+                                  Est: ₹400–900 (T3)
+
+  burner_error_induction          Error code shown — log code; tech maps to fault.
+  ─────────────────────────────────────────────────────────────────────────────
+  IF self-diagnosis resolves issue:
+    no booking needed
+    log as FREE_RESOLUTION
+    rating prompt still shown (was app useful?)
+
+ALGORITHM:
+  Step 1   appliance_type selected → technician_skill_filter set:
+           microwave       → skill tag: microwave_certified
+           induction       → skill tag: induction_certified
+           OTG             → skill tag: small_appliance_certified
+
+  Step 2   Self-diagnosis tree displayed for chosen symptom.
+           IF child_lock or induction_vessel_issue:
+             show resolution steps; user taps RESOLVED or STILL BROKEN.
+             IF RESOLVED → no booking; FREE; session closed.
+             IF STILL BROKEN → continue to booking.
+
+  Step 3   Service mode selected by user:
+           HOME_VISIT:
+             technician visits with toolkit
+             suitable for: sparks, door, turntable, display
+             TAT: same-day or next-day
+           WORKSHOP_SERVICE:
+             user's appliance picked up
+             suitable for: magnetron, complex board faults
+             pickup_fee: ₹49 (deducted from repair invoice if repair done)
+             TAT: 3 working days
+             progress_sms at: pickup | diagnosis_done | repair_done | out_for_delivery
+
+  Step 4   Booking confirmed; tech / workshop assigned.
+
+  Step 5   Workshop flow:
+           appliance received → photographed on arrival
+           tech diagnoses → sends diagnosis_report + confirmed_quote
+           user: APPROVE (repair) | REJECT (return for ₹49 inspection_fee only)
+           IF APPROVE: repair done → tested → dispatched
+
+  Step 6   Home visit flow:
+           start_otp → diagnose → confirm quote → repair → test → end_otp
+
+  Step 7   Invoice:
+           { appliance_type, brand, symptom, fault_confirmed,
+             parts_replaced[ ], labour, pickup_fee (if workshop), total }
+
+
+================================================================================
+1.10  TV REPAIR
+================================================================================
+
+INPUTS:
+  tv_type       : LED | LCD | OLED | QLED | plasma
+  brand         : Samsung | LG | Sony | Mi | OnePlus | TCL | Hisense | other
+  screen_size   : integer (inches)
+  issue_cat     : stb_issue | display_issue | remote_issue | no_signal | board_issue
+  purchase_date : date (optional; for warranty check)
+
+PRE-CLASSIFICATION DECISION TREE:
+  issue_cat       action              outcome + cost
+  ─────────────────────────────────────────────────────────────────────────────
+  stb_issue       checklist_first     NOT a TV fault. In-app checklist:
+                                      1. Check HDMI cable seating
+                                      2. Restart STB (hold power 10 s)
+                                      3. Re-pair remote to STB
+                                      IF resolved → FREE; no booking.
+                                      IF unresolved → book STB tech (separate flow).
+
+  remote_issue    send_replacement    No technician needed.
+                                      Platform dispatches brand-compatible remote.
+                                      Cost: ₹199–499 (brand-specific remote price)
+                                      Delivery: same-day (if before 2 pm) or next-day.
+
+  no_signal       diagnostic_check    In-app signal diagnostic checklist:
+                                      1. Check cable/dish connection
+                                      2. Re-scan channels
+                                      3. Confirm correct input source (HDMI / AV / Antenna)
+                                      IF resolved → FREE.
+                                      IF unresolved → book technician (antenna / tuner).
+                                      Est: ₹300–800 T3.
+
+  display_issue   technician_visit    Screen or panel fault.
+                                      Screen replacement est (T3, parts + labour):
+                                        ≤32"     : ₹4,000 – 10,000
+                                        33–55"   : ₹8,000 – 22,000
+                                        >55"     : ₹18,000 – 40,000
+                                      Panel cost quoted upfront; user approves before order.
+
+  board_issue     technician_visit    Diagnostic_fee: ₹199 (deducted from repair if done).
+                                      Board repair est: ₹1,500 – 5,000 T3
+                                      Board replace est: ₹2,000 – 8,000 T3
+  ─────────────────────────────────────────────────────────────────────────────
+
+WARRANTY CHECK:
+  standard_warranty_months = { Samsung:12, LG:12, Sony:12, Mi:12, default:12 }
+  IF purchase_date provided:
+    warranty_end = purchase_date + warranty_months × 30 days
+    IF today < warranty_end:
+      show: "⚠ This TV may still be under [brand] manufacturer warranty.
+              Warranty service is FREE — claim it first.
+              Proceed with HomeFix only if warranty is void or service centre is far."
+      user must explicitly confirm to continue booking.
+
+ALGORITHM:
+  Step 1   tv_type + brand + screen_size + issue_cat entered.
+  Step 2   Warranty check (if purchase_date given).
+  Step 3   Pre-classification tree executes → action determined.
+  Step 4A  IF action == send_replacement:
+             brand-compatible remote catalogue shown
+             user selects → order placed → tracked delivery
+  Step 4B  IF action == checklist_first or diagnostic_check:
+             in-app checklist displayed
+             IF resolved → session closed (free)
+             IF unresolved → proceed to technician booking
+  Step 4C  IF action == technician_visit:
+             geo-query TV repair techs (3 km primary, 5 km secondary)
+             prefer carry-in capable techs for screen/board repairs
+             quote issued upfront before booking confirmed
+  Step 5   Repair flow: start_otp → diagnose → quote → repair → test → end_otp.
+  Step 6   Invoice: { fault_confirmed, parts_ordered[ ], labour, diagnostic_fee, total }
+
+
+================================================================================
+1.11  WATER PURIFIER SERVICING
+================================================================================
+
+INPUTS:
+  brand             : Kent | Aquaguard | HUL_Pureit | Livpure | Havells | other
+  model             : text
+  last_service_date : date (YYYY-MM-DD)
+  service_type      : filter_change | membrane_replacement | full_service | tds_check_only
+  amc_active        : bool
+
+FILTER LIFE MODEL:
+  avg_filter_life_days = 180  (6 months; platform average)
+  days_since_service   = today − last_service_date
+  filter_pct_used      = (days_since_service / 180) × 100
+
+  THRESHOLD TABLE:
+  filter_pct_used   status            action
+  ─────────────────────────────────────────────────────────────────────
+  < 75%             healthy           "No service needed yet."
+  75–84%            approaching       "Consider scheduling soon."
+  85–99%            due               ⚠ auto-reminder pushed (AMC users)
+  ≥ 100%            overdue           🚨 "Filter past life — quality risk."
+  ─────────────────────────────────────────────────────────────────────
+
+SERVICE PRICING (T3):
+  service_type              T3 price (₹)       notes
+  ──────────────────────────────────────────────────────────────────
+  tds_check_only            FREE               walk-in or doorstep
+  filter_change             349 – 599          pre-packed kit
+  membrane_replacement      799 – 1,499        RO membrane
+  full_service             1,099 – 1,999       all of the above + TDS check
+  ──────────────────────────────────────────────────────────────────
+  AMC discount: 10% off each service.
+  AMC annual fee (1 unit): ₹799.
+
+ALGORITHM:
+  Step 1   brand + model + last_service_date entered.
+           filter_pct_used computed.
+           progress bar rendered with threshold markers shown.
+           IF filter_pct_used ≥ 85 AND amc_active:
+             push notification already sent (auto-triggered); shown as reminder in UI.
+
+  Step 2   service_type selected.
+           IF amc_active: price = base_price × 0.90.
+
+  Step 3   Technician assigned; pre-packs filter kit:
+           compatible_kit = KIT_DB[brand][model]
+           IF model unknown: tech contacts user before visit to verify spec.
+
+  Step 4   Service on-site (start_otp):
+           a. before_photo → unit condition documented.
+           b. TDS_before → measured with TDS meter; value entered in app (mandatory).
+           c. Old filter removal → old_filter_photo uploaded.
+           d. New filter / membrane fitted.
+           e. TDS_after → measured + entered in app.
+           f. System check: flow_rate_ok (bool), leaks_visible (bool).
+           g. after_photo uploaded.
+
+  Step 5   TDS validation:
+           IF TDS_after > TDS_before:
+             flag as anomaly → tech re-checks installation
+           IF TDS_after > 200 ppm (post-RO):
+             recommend membrane_replacement if not done this visit.
+
+  Step 6   Eco-disposal:
+           old filter placed in eco-bag provided by tech.
+           eco_disposal_certificate_number generated.
+           certificate emailed to user as PDF (regulatory compliance).
+
+  Step 7   AMC record update (if amc_active):
+           last_service_date = today
+           next_reminder_date = today + 153 days  (85% of 180)
+
+  Step 8   Service log:
+           {
+             date, tech_id, brand, model, service_type,
+             parts_replaced[ ], tds_before, tds_after,
+             flow_rate_ok, filter_pct_at_service,
+             eco_cert_number, amc_discount_applied
+           }
+
+
+================================================================================
+1.12  GAS STOVE & CHIMNEY REPAIR
+================================================================================
+
+INPUTS:
+  appliance     : gas_stove | chimney
+  burner_count  : 2 | 3 | 4 | 5  [gas stove only]
+
+GAS STOVE issue_type options:
+  burner_not_lighting | regulator_leak | knob_broken | spill_damage | uneven_flame
+
+CHIMNEY issue_type options:
+  not_sucking | noisy | oil_dripping | filter_clogged | motor_fault
+
+PRICING (T3):
+  Gas stove:
+    burner_not_lighting     : ₹149 – 299 per burner
+    regulator_leak          : ₹249 – 499  + EMERGENCY SURGE 1.5×
+    knob_broken             : ₹ 99 – 199 per knob
+    spill_damage            : ₹299 – 599
+    uneven_flame            : ₹149 – 249
+
+  Chimney:
+    deep_clean (FIXED SKU)  : ₹799 flat  (all brands / models; no quote variation)
+    noisy_motor_repair      : ₹599 – 1,099
+    motor_replacement       : ₹1,299 – 2,499
+    mesh_filter_replace     : ₹199 – 499 per filter
+    charcoal_filter_replace : ₹399 – 699
+
+ALGORITHM — GAS STOVE:
+  Step 1   issue_type selected.
+
+  Step 2   IF issue_type == 'regulator_leak':
+           ─────────────────────────────────────────────────────────────────
+           EMERGENCY SAFETY PROTOCOL — shown IMMEDIATELY:
+             "🚨 GAS LEAK DETECTED — follow these steps NOW:
+              1. Turn gas cylinder valve OFF immediately.
+              2. Open all windows and doors.
+              3. Do NOT switch any electrical appliance on or off.
+              4. Do NOT light any flame.
+              5. Evacuate if the smell is very strong."
+           ─────────────────────────────────────────────────────────────────
+           urgency = EMERGENCY  (forced)
+           surge_factor = 1.5 applied to all labour
+           priority_dispatch: nearest available gas-certified tech assigned
+           same_day_guarantee = true
+           platform_agent_alert = true  (passive live monitor on booking)
+
+  Step 3   Technician carries standard stock:
+           { burner_nozzles (2/3/4/5 burner packs), igniters,
+             regulators (ISI-marked), rubber pipes, knobs (standard sizes) }
+
+  Step 4   start_otp on arrival.
+           before_photo: stove top + regulator area documented.
+           Repair performed.
+           after_photo: repaired burner / regulator area.
+
+  Step 5   Flame test (mandatory post-repair for all gas stove jobs):
+           tech ignites EACH burner:
+             expected: steady BLUE flame
+             fail:     yellow / orange flame = incomplete combustion → redo
+           flame_test_photo uploaded for each repaired burner.
+           IF any burner fails: redo at no extra charge before end_otp issued.
+
+  Step 6   Same-day guarantee enforcement (emergencies):
+           IF assigned tech cannot arrive within 4 hours:
+             escalate to secondary tech pool automatically
+             user notified of reassignment + new ETA.
+
+  Step 7   Invoice (gas stove):
+           { issue_type, burners_repaired, parts_replaced[ ],
+             emergency_surge_applied (bool), flame_test_passed (bool), total }
+
+ALGORITHM — CHIMNEY:
+  Step 1   issue_type selected.
+
+  Step 2   IF issue_type IN [not_sucking, oil_dripping, filter_clogged]:
+             service = chimney_deep_clean
+             price = ₹799 FIXED (no quote variation; pre-set SKU)
+             no bidding or quote negotiation; user books directly.
+
+  Step 3   Technician carries cleaning kit:
+           { industrial degreaser, microfibre cloths, pressure wash nozzle,
+             replacement mesh filter (if needed), charcoal filter (if needed) }
+
+  Step 4   Deep clean procedure:
+           a. baffle filters removed → soaked in degreaser
+           b. chimney body interior cleaned
+           c. motor fan cleaned
+           d. filters rinsed + dried (or replaced if damaged)
+           e. all components reassembled
+
+  Step 5   IF issue_type == 'noisy' or 'motor_fault':
+             diagnose: fan_blade_bent vs motor_bearing_worn vs capacitor
+             quote issued after diagnosis; user approves before parts ordered.
+
+  Step 6   Suction test (post-service for all chimney jobs):
+           tech holds A4 paper under chimney hood at medium fan speed
+           PASS: paper is firmly held by suction (photographed)
+           FAIL: re-check blockage → redo
+
+  Step 7   Filter recommendation:
+           IF mesh filter: clean (washable); replace if torn
+           IF charcoal filter (age > 4 months): replacement recommended (mandatory note)
+
+  Step 8   Invoice (chimney):
+           { issue_type, deep_clean: bool, motor_work: bool,
+             filters_replaced[ ], suction_test_passed: bool,
+             degreaser_used_ml, total }
+
+
+================================================================================
+1.13  INVERTER & UPS SERVICING
+================================================================================
+
+INPUTS:
+  brand              : Luminous | Microtek | Exide | Su-Kam | APC | Schneider | other
+  battery_brand      : Luminous | Exide | Amaron | other
+  battery_count      : 1 | 2 | 3 | 4
+  battery_age_yr     : integer (0–10; user's estimate)
+  last_service_date  : date
+  issue              : not_charging | low_backup | alarm_beeping
+                       | battery_bulging | no_output | display_fault
+
+MAINTENANCE SCHEDULE:
+  quarterly_interval = 90 days
+  IF today − last_service_date > 90: push "Inverter quarterly check overdue"
+
+SERVICE MENU & PRICING (T3):
+  service                    T3 price (₹)     notes
+  ──────────────────────────────────────────────────────────────────────
+  battery_water_topup        ₹149/battery     distilled water included; 15-min job
+  terminal_cleaning          ₹ 99/unit        rust removal + grease application
+  load_test                  ₹ 99 standalone  (FREE with any other service)
+  battery_replacement        market price − buyback  (see table below)
+  inverter_pcb_repair        ₹399 – 1,199
+  ──────────────────────────────────────────────────────────────────────
+
+BATTERY BUYBACK TABLE (T3 approximate; premium brand = Exide, Amaron, Luminous):
+  battery_age_yr    premium_brand (₹)    standard_brand (₹)
+  ─────────────────────────────────────────────────────────
+  0 – 2              800 – 1,200          500 – 800
+  3 – 4              400 –   700          200 – 400
+  5+                 100 –   250           50 – 150
+  bulging / dead       0 (scrap)            0 (scrap)
+  ─────────────────────────────────────────────────────────
+  net_cost = new_battery_price − buyback_value
+
+ALGORITHM:
+  Step 1   User registers inverter + battery (brand, purchase date) on first use.
+           quarterly_reminder_date = last_service_date + 90 days (auto-set).
+
+  Step 2   Issue selected → service route:
+
+  ── battery_water_topup ──
+  Step W1  SKU booked: ₹149 per battery.
+  Step W2  Tech arrives with distilled water + hydrometer.
+  Step W3  Each cell: water level topped up.
+  Step W4  Hydrometer reading per battery logged:
+             specific_gravity ≥ 1.250 → Healthy
+             1.200 – 1.249             → Marginal — monitor
+             < 1.200                   → Poor — recommend replacement
+  Step W5  TAT: 15 min per battery; all readings logged in service record.
+
+  ── load_test ──
+  Step L1  Tech connects load meter.
+  Step L2  Records: backup_time_mins at measured_load_watts.
+  Step L3  ideal_backup = battery_count × 90 min  (at 300W standard load; rough)
+           IF backup_time < ideal_backup × 0.60:
+             show: "⚠ Battery at <60% capacity. Replacement recommended soon."
+           ELSE IF backup_time < ideal_backup × 0.80:
+             show: "Battery at 60–80%. Plan replacement in 3–6 months."
+           ELSE:
+             show: "Battery healthy. Next test in 90 days."
+           load_test_result logged in service record.
+
+  ── battery_replacement ──
+  Step R1  User confirms battery_age_yr + battery_brand.
+  Step R2  buyback_value = BUYBACK_TABLE[age_bracket][brand_tier]
+  Step R3  Display to user:
+             "New battery       : ₹[new_price]
+              Buyback on old    : −₹[buyback_value]
+              You pay           : ₹[new_price − buyback]"
+  Step R4  User confirms → tech brings new battery (same AH and voltage spec).
+  Step R5  Old battery collected → eco-disposal + buyback credit settled in-app.
+  Step R6  Post-install: full charge test run → backup_hours measured → logged.
+
+  ── UPS (computer UPS) branch ──
+  Step U1  Downtime minimised: if UPS is fully dead →
+             tech brings replacement loan_unit (select techs carry stock)
+             user's UPS taken for repair
+  Step U2  PCB / battery diagnosis → repair or replace quoted.
+
+  Step 8   Invoice:
+           {
+             service_items[ ], batteries_serviced, buyback_applied,
+             hydrometer_readings[ ], load_test_result,
+             distilled_water_ml, total
+           }
+
+
+================================================================================
+1.14  MOSQUITO NET INSTALLATION
+================================================================================
+
+INPUTS:
+  window_count  : integer 1–20
+  windows[ ]    : each → { window_id, width_cm, height_cm,
+                            window_type: sliding | casement | fixed }
+  material      : fibreglass | aluminium | stainless_steel
+  frame_type    : fixed | sliding | magnetic | velcro
+  city_tier     : T1 | T2 | T3
+
+MATERIAL RATE TABLE (₹ per sq.ft of net area, T3 before multiplier):
+  material            T3_rate/sqft    description
+  ─────────────────────────────────────────────────────────────────────
+  fibreglass             ₹ 25         budget; light; standard durability
+  aluminium              ₹ 45         sturdy; rust-resistant
+  stainless_steel        ₹ 70         premium; long life; pet-resistant
+  ─────────────────────────────────────────────────────────────────────
+  final_rate = T3_rate × CITY_TIER_MULTIPLIER[city_tier]
+
+INSTALLATION FEE PER WINDOW (T3):
+  fixed      : ₹150
+  sliding    : ₹200
+  magnetic   : ₹250
+  velcro     : ₹180
+
+FRAME EXTRA PER WINDOW (T3):
+  fixed      :  ₹  0
+  sliding    :  ₹ 50
+  magnetic   :  ₹ 80
+  velcro     :  ₹ 30
+
+AR MEASUREMENT (in-app camera feature):
+  user points phone at window → edge-detection overlays W × H bounding box
+  auto-populates width_cm + height_cm in booking form
+  accuracy: ±2 cm  (user can manually adjust before confirming)
+
+SQFT CALCULATION:
+  area_sqft_per_window = (width_cm × height_cm) / 929.03
+  total_sqft           = SUM(area_sqft for all windows)
+
+QUOTE FORMULA:
+  material_cost  = total_sqft × final_material_rate
+  install_cost   = window_count × INSTALL_FEE[frame_type]  × CITY_MULT
+  frame_extra    = window_count × FRAME_EXTRA[frame_type]  × CITY_MULT
+  total_quote    = material_cost + install_cost + frame_extra
+  deposit        = round(total_quote × 0.30)  (covers fabrication material cost)
+
+ALGORITHM:
+  Step 1   User enters window_count.
+           OPTION A — AR mode: camera opened → auto-detect W × H per window.
+           OPTION B — Manual: enter width_cm × height_cm per window.
+           window_type per window recorded (affects frame compatibility).
+
+  Step 2   Material selection:
+           3 options displayed side-by-side:
+             { material_name, rate_per_sqft, durability, weight, pet_safe, total_preview }
+           user selects material.
+
+  Step 3   Frame type selection:
+           fixed    → permanent; cheapest
+           sliding  → opens/closes; best for large windows
+           magnetic → snap-on / snap-off; easy to remove seasonally
+           velcro   → softest edge; easiest temporary option
+
+  Step 4   Quote auto-calculated and itemised:
+           FOR each window i:
+             area_sqft[i] = (width_cm[i] × height_cm[i]) / 929.03
+           total_sqft   = SUM(area_sqft)
+           total_quote  = (total_sqft × final_material_rate)
+                        + (window_count × INSTALL_FEE[frame_type] × CITY_MULT)
+                        + (window_count × FRAME_EXTRA[frame_type] × CITY_MULT)
+           itemised display:
+             Material  (total_sqft sqft × ₹[rate])   : ₹[material_cost]
+             Install   (window_count windows × ₹[fee]): ₹[install_cost]
+             Frame     (window_count × ₹[extra])      : ₹[frame_extra]
+             TOTAL                                     : ₹[total_quote]
+
+  Step 5   Booking confirmed.
+           deposit = 30% collected.
+           fabrication_start = booking_date
+           fabrication_TAT   = 2–3 working days
+           installation_date = booking_date + 3 days (default)
+           nets labelled by window number (W1, W2…) in workshop.
+
+  Step 6   Installation day:
+           each net fitted in sequence.
+           AFTER each window:
+             photo from inside + photo from outside uploaded.
+             user checks: fit, no gaps at edges, smooth slide (if sliding frame).
+
+  Step 7   User sign-off (in-app per window):
+           FOR each window: CONFIRM FIT | FLAG ISSUE
+           IF flagged: re-fabricate that net (1-day turnaround).
+           WHEN all windows confirmed: balance payment collected + released.
+
+  Step 8   Invoice:
+           {
+             windows[ ], material, frame_type, total_sqft,
+             material_cost, install_cost, frame_extra,
+             deposit_paid, balance_paid, total
+           }
+
+
+================================================================================
+1.15  GLASS PANE REPLACEMENT
+================================================================================
+
+INPUTS:
+  glass_type        : clear | frosted | tinted | toughened | wire_glass | one_way
+  location          : window_pane | door_panel | tabletop | partition | showcase
+  width_cm          : number
+  height_cm         : number
+  thickness         : 4mm | 5mm | 8mm | 12mm | toughened_8mm | toughened_12mm
+  reference_photo   : image with coin or ruler in frame (mandatory; for scale)
+  fragile_insurance : bool (opt-in ₹50 add-on; covers transit breakage)
+  old_glass_removal : bool (default true; included in quote)
+
+THICKNESS × MATERIAL PRICE TABLE (₹ per sq.ft, T3, material + cutting):
+  thickness            T3 rate (₹)    typical use
+  ─────────────────────────────────────────────────────────────────────────
+  4mm clear                 60        small windows, photo frames
+  5mm clear / frosted       80        standard windows and doors
+  8mm clear                120        large windows, door panels
+  12mm clear               180        structural panels, heavy doors
+  toughened 8mm            200        bathrooms, shower enclosures, railings
+  toughened 12mm           280        storefronts, heavy partitions
+  ─────────────────────────────────────────────────────────────────────────
+  glass_type add-on (per sqft, T3):
+    frosted effect : +₹15    tinted effect : +₹20    wire inlay : +₹35
+    one-way film   : +₹45    (add to base thickness price above)
+
+INSTALLATION FEE (T3, based on pane area):
+  area_sqft < 3     : ₹200
+  3 ≤ area_sqft < 6 : ₹350
+  area_sqft ≥ 6     : ₹500
+
+FRAGILE INSURANCE:
+  cost  : ₹50 flat add-on
+  covers: accidental breakage of new pane during transit + installation
+  claim : platform replaces pane at no extra charge within 24 hours
+
+OLD GLASS DISPOSAL:
+  included in installation_fee (labour for safe removal + recycling)
+  disposal shown as "₹0 — included" in itemised invoice
+
+SQFT CALCULATION:
+  area_sqft = (width_cm × height_cm) / 929.03
+
+QUOTE FORMULA:
+  base_glass_rate  = THICKNESS_TABLE[thickness] × CITY_MULT
+  type_addon       = GLASS_TYPE_ADDON[glass_type] × CITY_MULT
+  material_cost    = area_sqft × (base_glass_rate + type_addon)
+  install_fee      = INSTALL_FEE_TABLE[area_sqft_bracket] × CITY_MULT
+  insurance        = 50  IF fragile_insurance ELSE 0
+  total            = material_cost + install_fee + insurance
+
+ALGORITHM:
+  Step 1   User enters glass_type + location + width_cm + height_cm + thickness.
+           area_sqft = (width_cm × height_cm) / 929.03
+           live price auto-updates as any field changes.
+
+  Step 2   Price auto-calculated (shown live, updates on every field change):
+           material_cost = area_sqft × (base_glass_rate + type_addon) × CITY_MULT
+           install_fee   = INSTALL_FEE_TABLE[bracket] × CITY_MULT
+           display itemised breakdown + total.
+
+  Step 3   Fragile insurance toggle (default OFF):
+           IF ON: +₹50 shown; explained as "replacement guarantee if broken in transit"
+
+  Step 4   Reference photo upload:
+           mandatory (prevents wrong size being cut)
+           user places coin or ruler in photo for scale reference
+           IF photo missing: booking blocked
+
+  Step 5   Glass shop query:
+           platform queries GLASS_SHOP_DB:
+             shops within 10 km WHERE glass_type IN stock AND thickness IN stock
+           fastest_available_shop selected (stock + lead_time minimised)
+           stock_status shown to user: "In stock at [shop_name], [X] km away"
+
+  Step 6   Cutting + delivery scheduled:
+           glass cut at shop to exact (width_cm × height_cm) ± 1 mm tolerance
+           IF tolerance exceeded → recut before delivery
+           delivery_window:
+             booked before 12 pm → same-day delivery
+             booked after 12 pm  → next-day delivery
+
+  Step 7   Installation:
+           old glass removed → before_photo (frame with broken glass documented)
+           new glass fitted → sealed with putty / silicone / rubber bead
+             (method depends on location and frame material)
+           after_photo uploaded: new pane in situ, edges sealed
+
+  Step 8   User inspection:
+           check: no chips, no cracks, aligned within frame, secure when tapped
+           IF damaged during transit AND insurance active:
+             replacement triggered immediately; no extra charge
+           IF satisfied → end_otp → balance payment released
+
+  Step 9   Invoice:
+           {
+             glass_type, thickness, dimensions_cm, area_sqft,
+             material_cost, glass_type_addon, install_fee,
+             fragile_insurance_included (bool),
+             old_glass_removed (bool), shop_name, total
+           }
+
+
+================================================================================
+END OF CATEGORY 1 — HOUSEHOLD REPAIR & MAINTENANCE
+================================================================================
