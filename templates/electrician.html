@@ -1,0 +1,969 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HomeFix — Electrician Booking (Live Demo) | Full Moon Computing</title>
+<meta name="description" content="Interactive demo of the HomeFix electrician booking flow — built to spec 1.1: complexity tiers, city-tier pricing, emergency surge, trust-ranked pros, OTP escrow, parts logging and auto-invoicing.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#1a2e4a">
+<!--
+  © 2026 Full Moon Computing — https://fullmooncomputing.in
+  Interactive booking-app demo for Category 1.1 Electrician.
+  Every price, tier and rule follows 1_HOUSEHOLD_REPAIR_MAINTENANCE.txt
+-->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1a2e4a;--navy2:#243b55;--blue:#2563eb;--sky:#0ea5e9;--orange:#f97316;
+  --green:#16a34a;--red:#ef4444;--amber:#f59e0b;--teal:#0d9488;
+  --paper:#eef2f7;--ink:#0f172a;--muted:#64748b;--line:#e2e8f0;--soft:#f1f5f9;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);
+  background:radial-gradient(900px 500px at 80% -10%,rgba(37,99,235,.22),transparent),
+             radial-gradient(700px 400px at 0% 100%,rgba(249,115,22,.12),transparent),var(--navy);
+  line-height:1.6;min-height:100vh;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+
+/* ============ Top bar ============ */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;max-width:1180px;margin:0 auto;}
+.brand{display:flex;align-items:center;gap:.55rem;color:#fff;font-weight:800;font-size:1.25rem;}
+.brand .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--blue),var(--sky));display:grid;place-items:center;font-size:1.05rem;}
+.brand em{color:var(--orange);font-style:normal;}
+.topbar .back{color:#c7cad2;font-size:.85rem;font-weight:600;display:inline-flex;gap:.4rem;align-items:center;}
+.topbar .back:hover{color:#fff;}
+
+/* ============ Layout ============ */
+.wrap{max-width:1180px;margin:0 auto;padding:1rem 1.5rem 3rem;display:grid;grid-template-columns:380px 1fr;gap:2.5rem;align-items:start;}
+@media(max-width:920px){.wrap{grid-template-columns:1fr;gap:2rem;}}
+
+/* ============ Phone ============ */
+.phone-col{position:sticky;top:1rem;justify-self:center;}
+@media(max-width:920px){.phone-col{position:static;}}
+.phone{width:360px;max-width:90vw;height:740px;background:#fff;border-radius:40px;
+  border:11px solid #0b1220;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 2px rgba(255,255,255,.05);
+  overflow:hidden;position:relative;display:flex;flex-direction:column;}
+.phone .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:26px;background:#0b1220;border-radius:0 0 18px 18px;z-index:50;}
+.phone .statusbar{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:.72rem;font-weight:700;color:var(--ink);flex-shrink:0;}
+.phone .statusbar .sig{display:flex;gap:5px;align-items:center;}
+
+/* app header inside phone */
+.app-head{background:var(--navy);color:#fff;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
+.app-head .ah-back{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:1rem;display:grid;place-items:center;}
+.app-head .ah-back:disabled{opacity:.3;}
+.app-head .ah-title{font-size:.95rem;font-weight:700;flex:1;}
+.app-head .ah-step{font-size:.66rem;color:#9aa3b2;background:rgba(255,255,255,.08);padding:3px 9px;border-radius:20px;font-weight:600;}
+
+/* progress rail */
+.rail{height:4px;background:#e7ebf1;flex-shrink:0;}
+.rail-fill{height:100%;background:linear-gradient(90deg,var(--blue),var(--sky));width:8%;transition:width .45s cubic-bezier(.4,0,.2,1);}
+
+/* screen area */
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--soft);position:relative;}
+.screen::-webkit-scrollbar{width:0;}
+.scr{padding:1.1rem 1.1rem 5.5rem;animation:slideIn .4s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(18px);}to{opacity:1;transform:translateX(0);}}
+.scr h2{font-size:1.18rem;font-weight:800;letter-spacing:-.01em;margin-bottom:.2rem;}
+.scr .sub{font-size:.8rem;color:var(--muted);margin-bottom:1rem;}
+
+/* job cards */
+.opt{background:#fff;border:1.5px solid var(--line);border-radius:14px;padding:.85rem .9rem;display:flex;align-items:center;gap:.75rem;margin-bottom:.6rem;transition:all .18s;width:100%;text-align:left;}
+.opt:hover{border-color:var(--blue);transform:translateY(-1px);box-shadow:0 6px 16px rgba(37,99,235,.1);}
+.opt.sel{border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+.opt .oic{width:42px;height:42px;border-radius:11px;background:var(--soft);display:grid;place-items:center;font-size:1.25rem;flex-shrink:0;}
+.opt.sel .oic{background:var(--blue);}
+.opt .otx{flex:1;min-width:0;}
+.opt .onm{font-size:.88rem;font-weight:700;line-height:1.25;}
+.opt .ods{font-size:.7rem;color:var(--muted);}
+.opt .opr{font-size:.82rem;font-weight:800;color:var(--blue);white-space:nowrap;}
+.opt .chk{width:20px;height:20px;border-radius:50%;border:2px solid var(--line);flex-shrink:0;display:grid;place-items:center;}
+.opt.sel .chk{background:var(--blue);border-color:var(--blue);color:#fff;font-size:.7rem;}
+
+.cplx{display:inline-flex;align-items:center;gap:.35rem;font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:20px;margin-top:3px;}
+.cplx.t1{background:#dcfce7;color:#15803d;}
+.cplx.t2{background:#fef3c7;color:#b45309;}
+.cplx.t3{background:#fee2e2;color:#b91c1c;}
+
+/* city tier pills */
+.tier-row{display:grid;grid-template-columns:repeat(3,1fr);gap:.6rem;margin:.4rem 0 1rem;}
+.tier{background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:.8rem .5rem;text-align:center;transition:all .18s;}
+.tier:hover{border-color:var(--blue);}
+.tier.sel{border-color:var(--blue);background:#eff6ff;box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+.tier .tn{font-size:1rem;font-weight:800;}
+.tier .tm{font-size:.66rem;color:var(--muted);font-weight:600;}
+.tier .tc{font-size:.62rem;color:var(--muted);margin-top:2px;line-height:1.2;}
+.tier.sel .tn{color:var(--blue);}
+
+.gps{background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:.85rem;display:flex;align-items:center;gap:.7rem;margin-bottom:.5rem;}
+.gps .gic{width:38px;height:38px;border-radius:10px;background:#eff6ff;display:grid;place-items:center;font-size:1.1rem;}
+.gps .gtx{flex:1;min-width:0;}
+.gps .gl{font-size:.82rem;font-weight:700;}
+.gps .gd{font-size:.68rem;color:var(--muted);}
+.gps .gbadge{font-size:.6rem;font-weight:700;color:var(--green);background:#dcfce7;padding:3px 8px;border-radius:20px;}
+
+/* estimate card */
+.est{background:linear-gradient(135deg,var(--navy),var(--navy2));color:#fff;border-radius:18px;padding:1.2rem;margin-bottom:1rem;position:relative;overflow:hidden;}
+.est::after{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(37,99,235,.4),transparent 70%);}
+.est .el{font-size:.7rem;color:#9aa3b2;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.est .ev{font-size:2rem;font-weight:800;letter-spacing:-.02em;margin:.1rem 0;}
+.est .ed{font-size:.72rem;color:#b6bac3;position:relative;z-index:2;}
+.est .ebrk{margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.12);font-size:.72rem;color:#cdd2da;position:relative;z-index:2;}
+.est .ebrk div{display:flex;justify-content:space-between;padding:2px 0;}
+.est .ebrk b{color:#fff;font-weight:700;}
+
+/* urgency toggle */
+.urg{display:grid;grid-template-columns:1fr 1fr;gap:.6rem;margin-bottom:1rem;}
+.urgc{background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:.85rem;text-align:left;transition:all .18s;}
+.urgc.sel{border-color:var(--blue);background:#eff6ff;}
+.urgc.emerg.sel{border-color:var(--red);background:#fef2f2;}
+.urgc .un{font-size:.86rem;font-weight:700;display:flex;align-items:center;gap:.35rem;}
+.urgc .ud{font-size:.68rem;color:var(--muted);margin-top:2px;}
+
+.alert{background:#fef2f2;border:1px solid #fecaca;border-radius:12px;padding:.7rem .8rem;display:flex;gap:.6rem;margin-bottom:1rem;animation:pop .3s;}
+.alert.warn{background:#fffbeb;border-color:#fde68a;}
+.alert .ai{font-size:1.1rem;flex-shrink:0;}
+.alert .at{font-size:.74rem;line-height:1.45;color:#7f1d1d;}
+.alert.warn .at{color:#92400e;}
+@keyframes pop{from{transform:scale(.96);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+/* geo radar */
+.radar{height:200px;position:relative;display:grid;place-items:center;margin:.5rem 0 1rem;}
+.radar .rings{position:absolute;width:180px;height:180px;}
+.radar .ring{position:absolute;border-radius:50%;border:1.5px solid rgba(37,99,235,.25);inset:0;animation:ripple 2.4s ease-out infinite;}
+.radar .ring:nth-child(2){animation-delay:.8s;}
+.radar .ring:nth-child(3){animation-delay:1.6s;}
+@keyframes ripple{0%{transform:scale(.2);opacity:1;}100%{transform:scale(1);opacity:0;}}
+.radar .me{width:46px;height:46px;border-radius:50%;background:var(--blue);display:grid;place-items:center;font-size:1.3rem;z-index:5;box-shadow:0 6px 18px rgba(37,99,235,.5);}
+.radar .blip{position:absolute;width:30px;height:30px;border-radius:50%;background:#fff;border:2px solid var(--orange);display:grid;place-items:center;font-size:.85rem;box-shadow:0 4px 10px rgba(0,0,0,.15);opacity:0;animation:blipin .4s forwards;}
+@keyframes blipin{to{opacity:1;}}
+.radar-status{text-align:center;font-size:.78rem;color:var(--muted);font-weight:600;}
+
+/* pro cards */
+.pro{background:#fff;border:1.5px solid var(--line);border-radius:15px;padding:.85rem;margin-bottom:.7rem;transition:all .18s;}
+.pro:hover{border-color:var(--blue);box-shadow:0 8px 20px rgba(0,0,0,.07);transform:translateY(-1px);}
+.pro.sel{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.12);}
+.pro-top{display:flex;align-items:center;gap:.7rem;}
+.pro .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:1.3rem;color:#fff;flex-shrink:0;font-weight:700;}
+.pro .pnm{font-size:.9rem;font-weight:700;}
+.pro .pmeta{font-size:.68rem;color:var(--muted);display:flex;gap:.5rem;flex-wrap:wrap;}
+.star{color:var(--amber);}
+.rankbadge{font-size:.58rem;font-weight:800;color:#fff;background:var(--green);padding:2px 7px;border-radius:20px;letter-spacing:.03em;}
+.pro-bar{margin-top:.55rem;display:flex;gap:.5rem;align-items:center;}
+.tsbar{flex:1;height:6px;background:var(--soft);border-radius:6px;overflow:hidden;}
+.tsbar i{display:block;height:100%;background:linear-gradient(90deg,var(--green),#4ade80);border-radius:6px;}
+.tsval{font-size:.72rem;font-weight:800;color:var(--green);}
+
+/* generic info rows */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:1rem;margin-bottom:.8rem;}
+.card h3{font-size:.82rem;font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+.kv{display:flex;justify-content:space-between;font-size:.78rem;padding:.28rem 0;border-bottom:1px dashed var(--line);}
+.kv:last-child{border-bottom:none;}
+.kv .k{color:var(--muted);}
+.kv .v{font-weight:700;}
+.kv .v.em{color:var(--red);}
+.kv.total{border-top:2px solid var(--ink);margin-top:.4rem;padding-top:.5rem;font-size:.95rem;}
+.kv.total .v{color:var(--blue);}
+
+/* OTP */
+.otp-wrap{text-align:center;padding:1rem 0;}
+.otp-code{font-family:'JetBrains Mono',monospace;font-size:2.1rem;font-weight:700;letter-spacing:.5rem;color:var(--blue);background:#eff6ff;border-radius:14px;padding:.8rem;margin:.6rem 0;border:2px dashed var(--blue);}
+.otp-in{display:flex;gap:.5rem;justify-content:center;margin:.8rem 0;}
+.otp-in input{width:42px;height:52px;border:2px solid var(--line);border-radius:12px;text-align:center;font-size:1.4rem;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--ink);}
+.otp-in input:focus{outline:none;border-color:var(--blue);background:#eff6ff;}
+
+/* parts logging */
+.part-row{display:flex;align-items:center;gap:.5rem;background:#fff;border:1px solid var(--line);border-radius:11px;padding:.6rem .7rem;margin-bottom:.5rem;animation:pop .25s;}
+.part-row .pdot{width:30px;height:30px;border-radius:8px;background:var(--soft);display:grid;place-items:center;font-size:.9rem;}
+.part-row .pinfo{flex:1;min-width:0;}
+.part-row .ppn{font-size:.8rem;font-weight:700;}
+.part-row .ppq{font-size:.66rem;color:var(--muted);}
+.part-row .ppp{font-size:.82rem;font-weight:800;}
+.addpart{width:100%;border:1.5px dashed var(--blue);background:#eff6ff;color:var(--blue);border-radius:11px;padding:.7rem;font-weight:700;font-size:.8rem;margin-top:.3rem;}
+.addpart:hover{background:#dbeafe;}
+
+/* live timer */
+.timer{background:#fff;border:1px solid var(--line);border-radius:14px;padding:.9rem;text-align:center;margin-bottom:.8rem;}
+.timer .tl{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+.timer .tv{font-family:'JetBrains Mono',monospace;font-size:1.8rem;font-weight:700;color:var(--ink);}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:5px;animation:pa 1.4s infinite;}
+@keyframes pa{0%{box-shadow:0 0 0 0 rgba(22,163,74,.6);}70%{box-shadow:0 0 0 7px rgba(22,163,74,0);}100%{box-shadow:0 0 0 0 rgba(22,163,74,0);}}
+
+/* completion / success */
+.done{text-align:center;padding:2rem 1rem;}
+.done .big{width:88px;height:88px;border-radius:50%;background:var(--green);display:grid;place-items:center;font-size:2.6rem;color:#fff;margin:0 auto 1rem;animation:popB .5s cubic-bezier(.2,1.3,.5,1);}
+@keyframes popB{from{transform:scale(0);}to{transform:scale(1);}}
+.done h2{margin-bottom:.3rem;}
+
+/* rating stars */
+.rate{display:flex;gap:.4rem;justify-content:center;margin:1rem 0;}
+.rate span{font-size:2.1rem;color:#cbd5e1;transition:transform .12s;}
+.rate span:hover{transform:scale(1.2);}
+.rate span.on{color:var(--amber);}
+
+/* footer CTA inside phone bottom bar */
+.cta-bar{position:absolute;bottom:0;left:0;right:0;padding:.85rem 1.1rem;background:#fff;border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.06);}
+.btn-main{width:100%;background:var(--blue);color:#fff;border:none;border-radius:13px;padding:.95rem;font-weight:800;font-size:.92rem;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:.45rem;}
+.btn-main:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.btn-main:disabled{background:#cbd5e1;color:#94a3b8;transform:none;cursor:not-allowed;}
+.btn-main.emerg{background:var(--red);}
+.btn-main.green{background:var(--green);}
+.btn-ghost2{width:100%;background:transparent;color:var(--muted);border:none;padding:.5rem;font-size:.76rem;font-weight:600;margin-top:.15rem;}
+
+/* ============ Right column : spec narration ============ */
+.info-col{color:#fff;}
+.info-col .eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:rgba(16,185,129,.15);color:#6ee7b7;padding:6px 14px;border-radius:999px;font-size:.74rem;font-weight:700;margin-bottom:1rem;}
+.info-col .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:#34d399;animation:pa 1.6s infinite;}
+.info-col h1{font-size:2.4rem;font-weight:800;line-height:1.1;letter-spacing:-.02em;margin-bottom:.7rem;}
+.info-col h1 em{color:var(--orange);font-style:normal;}
+.info-col .lead{color:#b6bac3;font-size:1rem;max-width:520px;margin-bottom:1.6rem;}
+
+.flow-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.6rem;}
+.flow-item{display:flex;gap:.8rem;align-items:flex-start;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:.7rem .85rem;transition:all .3s;opacity:.45;}
+.flow-item.active{opacity:1;background:rgba(37,99,235,.18);border-color:rgba(37,99,235,.4);transform:translateX(4px);}
+.flow-item.done{opacity:.85;}
+.flow-item .fnum{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.1);display:grid;place-items:center;font-size:.72rem;font-weight:800;flex-shrink:0;}
+.flow-item.active .fnum{background:var(--blue);}
+.flow-item.done .fnum{background:var(--green);}
+.flow-item .ftx{flex:1;}
+.flow-item .ftt{font-size:.84rem;font-weight:700;line-height:1.3;}
+.flow-item .fds{font-size:.72rem;color:#9aa3b2;line-height:1.4;}
+.flow-item.active .fds{color:#cdd2da;}
+
+.spec-note{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#cbd5e1;line-height:1.8;margin-bottom:1rem;}
+.spec-note .sh{color:var(--orange);font-weight:600;}
+.spec-note .sk{color:#6ee7b7;}
+.spec-note .sv{color:var(--amber);font-weight:600;}
+.spec-note .sc{color:#64748b;}
+
+.minibar{display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:.4rem;}
+.minibar .mb .n{font-size:1.4rem;font-weight:800;}
+.minibar .mb .l{font-size:.72rem;color:#9aa3b2;}
+
+.demo-tag{display:inline-block;background:rgba(249,115,22,.15);color:#fdba74;font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:8px;margin-top:1.2rem;}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(40px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:11px;font-weight:600;font-size:.85rem;opacity:0;transition:.3s;z-index:600;box-shadow:0 10px 30px rgba(0,0,0,.3);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:560px){
+  .info-col h1{font-size:1.9rem;}
+  .wrap{padding:1rem .8rem 3rem;}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/templates/household-repair.html" class="brand"><span class="logo">🔧</span> Home<em>Fix</em></a>
+  <a href="/templates/household-repair.html" class="back">← All services</a>
+</div>
+
+<div class="wrap">
+
+  <!-- ============ PHONE ============ -->
+  <div class="phone-col">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="statusbar">
+        <span id="clock">9:41</span>
+        <span class="sig">📶 🔋 100%</span>
+      </div>
+      <div class="app-head">
+        <button class="ah-back" id="ahBack" onclick="goBack()" disabled>←</button>
+        <div class="ah-title" id="ahTitle">⚡ Electrician</div>
+        <div class="ah-step" id="ahStep">Step 1 / 13</div>
+      </div>
+      <div class="rail"><div class="rail-fill" id="rail"></div></div>
+      <div class="screen" id="screen"><!-- screens injected here --></div>
+    </div>
+  </div>
+
+  <!-- ============ NARRATION ============ -->
+  <div class="info-col">
+    <span class="eyebrow"><span class="dot"></span> Live interactive demo · spec 1.1</span>
+    <h1>Book an <em>electrician</em><br>in 13 spec-driven steps.</h1>
+    <p class="lead">Tap through the real HomeFix booking flow on the phone. Every number you see — base price, city-tier multiplier, emergency surge, trust-ranked pros, OTP escrow and the final invoice — is computed live from the Category&nbsp;1.1 algorithm.</p>
+
+    <div class="minibar" style="margin-bottom:1.6rem;">
+      <div class="mb"><div class="n">5</div><div class="l">Job types</div></div>
+      <div class="mb"><div class="n">×1.5</div><div class="l">Emergency surge</div></div>
+      <div class="mb"><div class="n">3.5+</div><div class="l">Min trust score</div></div>
+      <div class="mb"><div class="n">OTP</div><div class="l">Escrow release</div></div>
+    </div>
+
+    <div class="flow-list" id="flowList"></div>
+
+    <div class="spec-note" id="specNote">
+      <span class="sh">// current step — spec reference</span><br>
+      <span class="sc">select a job type to begin…</span>
+    </div>
+
+    <span class="demo-tag">🔧 Demo template by Full Moon Computing — not a real booking</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ══════════════════════════════════════════════════════════════
+   SPEC DATA — Category 1.1 Electrician (from 1_HOUSEHOLD_REPAIR_MAINTENANCE.txt)
+   ══════════════════════════════════════════════════════════════ */
+const CITY_MULT = { T1:1.30, T2:1.10, T3:1.00 };
+const VISIT_FEE = { T1:100, T2:75, T3:50 };
+const EMERGENCY_SURGE = 1.5;
+const TRUST_MIN = 3.5;
+
+const JOBS = [
+  { id:'fan_install_repair',  name:'Fan install / repair', desc:'Ceiling, exhaust or table fan', base:170, cplx:'T1', cl:'Simple',  ic:'🌀' },
+  { id:'switch_socket_repair',name:'Switch / socket repair',desc:'Single point, standard face plate',base:90,cplx:'T1', cl:'Simple',  ic:'🔌' },
+  { id:'new_socket_point',    name:'New socket point',     desc:'Point + conduit run up to 2 m',  base:120,cplx:'T1', cl:'Simple',  ic:'➕' },
+  { id:'wiring_work',         name:'Wiring work',          desc:'Per circuit, conduit included',  base:450,cplx:'T2', cl:'Moderate',ic:'🧵' },
+  { id:'mcb_fusebox',         name:'MCB / fuse-box work',  desc:'MCB replacement or fuse box',    base:280,cplx:'T2', cl:'Moderate',ic:'🎛️' },
+];
+
+/* mock pro pool — trust_score = avg_rating*.4 + completion*.3 + response*.2 + repeat*.1 */
+const PRO_POOL = [
+  { name:'Ramesh Yadav',   av:'RY', col:'#2563eb', rating:4.8, completion:4.9, response:4.7, repeat:4.6, jobs:412, dist:0.9 },
+  { name:'Suresh Kumar',   av:'SK', col:'#0d9488', rating:4.6, completion:4.7, response:4.9, repeat:4.4, jobs:288, dist:1.4 },
+  { name:'Imran Shaikh',   av:'IS', col:'#f97316', rating:4.7, completion:4.5, response:4.4, repeat:4.8, jobs:351, dist:2.1 },
+  { name:'Anil Verma',     av:'AV', col:'#7c3aed', rating:4.3, completion:4.6, response:4.2, repeat:4.0, jobs:176, dist:2.6 },
+  { name:'Deepak Patil',   av:'DP', col:'#dc2626', rating:4.1, completion:4.0, response:3.9, repeat:3.8, jobs:97,  dist:2.9 },
+];
+function trustScore(p){
+  return +(p.rating*0.40 + p.completion*0.30 + p.response*0.20 + p.repeat*0.10).toFixed(2);
+}
+
+const PART_OPTIONS = [
+  { name:'Copper wire (1.5mm)', unit:45, qty:'3 m',  ic:'🧵' },
+  { name:'Modular socket 16A',  unit:120,qty:'1 pc', ic:'🔌' },
+  { name:'MCB 32A (ISI)',       unit:240,qty:'1 pc', ic:'🎛️' },
+  { name:'Insulation tape',     unit:25, qty:'1 roll',ic:'🩹' },
+  { name:'Ceiling fan capacitor',unit:90,qty:'1 pc', ic:'⚙️' },
+  { name:'Wall switch plate',   unit:60, qty:'1 pc', ic:'🔲' },
+];
+
+/* flow narration list */
+const FLOW = [
+  { t:'Select job type', d:'System maps job → complexity tier' },
+  { t:'Resolve city tier', d:'GPS → T1/T2/T3 multiplier' },
+  { t:'Show estimate range', d:'base × mult, ±lo/hi band' },
+  { t:'Urgency check', d:'Emergency → 1.5× surge on labour' },
+  { t:'Geo-query pros', d:'≤3 km, verified, trust ≥ 3.5' },
+  { t:'Rank candidates', d:'Trust-score formula, top 3' },
+  { t:'Confirm booking', d:'₹0 deposit, escrow = estimate_lo' },
+  { t:'Start OTP', d:'Pro arrives → clock begins' },
+  { t:'Log parts', d:'Each part + receipt → live invoice' },
+  { t:'Quote revision', d:'Extra scope → user approves' },
+  { t:'Completion', d:'After-photo → end OTP' },
+  { t:'Auto invoice', d:'labour + parts + visit fee' },
+  { t:'Pay & rate', d:'UPI → escrow released → ⭐' },
+];
+
+/* ══════════════════════════════════════════════════════════════
+   STATE
+   ══════════════════════════════════════════════════════════════ */
+const S = {
+  step:1,
+  job:null,
+  tier:'T2',          // default Pune-ish T2; auto-detected then overridable
+  urgency:'normal',
+  base:0, lo:0, hi:0, surge:1,
+  pros:[], pro:null,
+  parts:[],
+  clockStart:null, durationMin:38,  // demo fixed duration
+  rating:0,
+};
+
+/* ══════════════════════════════════════════════════════════════
+   HELPERS
+   ══════════════════════════════════════════════════════════════ */
+const $ = id => document.getElementById(id);
+const r = n => Math.round(n);
+function inr(n){ return '₹'+n.toLocaleString('en-IN'); }
+
+function recalcEstimate(){
+  const j = S.job; if(!j) return;
+  S.surge = (S.urgency==='emergency') ? EMERGENCY_SURGE : 1;
+  S.base  = r(j.base * CITY_MULT[S.tier] * S.surge);
+  S.lo    = r(S.base * 0.88);
+  S.hi    = r(S.base * 1.18);
+}
+
+function toast(msg){
+  const t=$('toast'); t.textContent=msg; t.classList.add('show');
+  clearTimeout(t._t); t._t=setTimeout(()=>t.classList.remove('show'),2600);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NARRATION (right column flow + spec note)
+   ══════════════════════════════════════════════════════════════ */
+function renderFlow(){
+  $('flowList').innerHTML = FLOW.map((f,i)=>{
+    const n=i+1;
+    const cls = n===S.step ? 'active' : (n<S.step ? 'done':'');
+    const mark = n<S.step ? '✓' : n;
+    return `<div class="flow-item ${cls}">
+      <div class="fnum">${mark}</div>
+      <div class="ftx"><div class="ftt">${f.t}</div><div class="fds">${f.d}</div></div>
+    </div>`;
+  }).join('');
+}
+
+function specNote(html){ $('specNote').innerHTML = html; }
+
+/* ══════════════════════════════════════════════════════════════
+   CHROME (header, rail, back btn)
+   ══════════════════════════════════════════════════════════════ */
+function chrome(){
+  $('ahStep').textContent = `Step ${S.step} / 13`;
+  $('rail').style.width = (S.step/13*100)+'%';
+  $('ahBack').disabled = (S.step<=1 || S.step>=13);
+  renderFlow();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCREEN ROUTER
+   ══════════════════════════════════════════════════════════════ */
+function render(){
+  chrome();
+  const fns=[null,scr1,scr2,scr3,scr4,scr5,scr6,scr7,scr8,scr9,scr10,scr11,scr12,scr13];
+  $('screen').innerHTML = fns[S.step]();
+  $('screen').scrollTop = 0;
+  if(S.step===5) runRadar();
+  if(S.step===8) startTimer();
+}
+function go(n){ S.step=n; render(); }
+function goBack(){ if(S.step>1 && S.step<13){ S.step--; render(); } }
+
+/* ── Step 1: job select ── */
+function scr1(){
+  specNote(`<span class="sh">// STEP 1 — job_type selection</span><br>
+    <span class="sk">complexity_tier</span> = COMPLEXITY_MAP[job_type]<br>
+    <span class="sc">T1 Simple → fan, switch, new socket</span><br>
+    <span class="sc">T2 Moderate → wiring, mcb_fusebox</span>`);
+  return `<div class="scr">
+    <h2>What needs fixing?</h2>
+    <p class="sub">Pick a job — we'll show the complexity tier instantly.</p>
+    ${JOBS.map(j=>`
+      <button class="opt ${S.job&&S.job.id===j.id?'sel':''}" onclick="pickJob('${j.id}')">
+        <div class="oic">${j.ic}</div>
+        <div class="otx">
+          <div class="onm">${j.name}</div>
+          <div class="ods">${j.desc}</div>
+          <span class="cplx ${j.cplx.toLowerCase()}">${j.cplx} · ${j.cl}</span>
+        </div>
+        <div class="opr">${inr(j.base)}<div style="font-size:.6rem;color:var(--muted);font-weight:600;text-align:right;">base</div></div>
+      </button>`).join('')}
+    <div class="cta-bar">
+      <button class="btn-main" id="b1" onclick="go(2)" ${S.job?'':'disabled'}>Continue →</button>
+    </div>
+  </div>`;
+}
+function pickJob(id){
+  S.job = JOBS.find(j=>j.id===id);
+  recalcEstimate();
+  render();
+  toast(`This is a ${S.job.cplx} (${S.job.cl}) complexity job.`);
+}
+
+/* ── Step 2: city tier ── */
+function scr2(){
+  specNote(`<span class="sh">// STEP 2 — GPS → city_tier</span><br>
+    <span class="sk">CITY_TIER_MULTIPLIER</span><br>
+    <span class="sk">T1</span> = <span class="sv">1.30</span> <span class="sc">metros</span><br>
+    <span class="sk">T2</span> = <span class="sv">1.10</span> <span class="sc">tier-2 cities</span><br>
+    <span class="sk">T3</span> = <span class="sv">1.00</span> <span class="sc">all other towns</span>`);
+  const tiers=[
+    {id:'T1',m:'×1.30',c:'Mumbai · Delhi · Bengaluru'},
+    {id:'T2',m:'×1.10',c:'Pune · Jaipur · Indore'},
+    {id:'T3',m:'×1.00',c:'All other towns'},
+  ];
+  return `<div class="scr">
+    <h2>Where are you?</h2>
+    <p class="sub">GPS auto-detected your city tier. You can override it.</p>
+    <div class="gps">
+      <div class="gic">📍</div>
+      <div class="gtx"><div class="gl">Kothrud, Pune</div><div class="gd">18.5074° N, 73.8077° E</div></div>
+      <span class="gbadge">GPS ✓</span>
+    </div>
+    <div class="tier-row">
+      ${tiers.map(t=>`
+        <button class="tier ${S.tier===t.id?'sel':''}" onclick="pickTier('${t.id}')">
+          <div class="tn">${t.id}</div><div class="tm">${t.m}</div><div class="tc">${t.c}</div>
+        </button>`).join('')}
+    </div>
+    <div class="alert warn"><span class="ai">ℹ️</span><span class="at">Pune is a <b>T2</b> city — labour priced at <b>×1.10</b> the T3 base. Border towns show a manual picker.</span></div>
+    <div class="cta-bar">
+      <button class="btn-main" onclick="go(3)">See my estimate →</button>
+    </div>
+  </div>`;
+}
+function pickTier(t){ S.tier=t; recalcEstimate(); render(); toast(`City tier ${t} → ${CITY_MULT[t]}× multiplier`); }
+
+/* ── Step 3: estimate ── */
+function scr3(){
+  recalcEstimate();
+  const j=S.job;
+  specNote(`<span class="sh">// STEP 3 — base estimate (pre-urgency)</span><br>
+    base = <span class="sv">${j.base}</span> × <span class="sv">${CITY_MULT[S.tier]}</span> = <span class="sv">${r(j.base*CITY_MULT[S.tier])}</span><br>
+    estimate_lo = base × <span class="sv">0.88</span> = <span class="sv">${r(j.base*CITY_MULT[S.tier]*0.88)}</span><br>
+    estimate_hi = base × <span class="sv">1.18</span> = <span class="sv">${r(j.base*CITY_MULT[S.tier]*1.18)}</span>`);
+  // show pre-surge values here (urgency applied next step)
+  const b=r(j.base*CITY_MULT[S.tier]);
+  return `<div class="scr">
+    <h2>Your estimate</h2>
+    <p class="sub">${j.name} · ${S.tier} city · before urgency</p>
+    <div class="est">
+      <div class="el">Estimated labour</div>
+      <div class="ev">${inr(r(b*0.88))} – ${inr(r(b*1.18))}</div>
+      <div class="ed">Range shown before urgency &amp; before parts</div>
+      <div class="ebrk">
+        <div><span>T3 base price</span><b>${inr(j.base)}</b></div>
+        <div><span>City tier ${S.tier} ×${CITY_MULT[S.tier]}</span><b>${inr(b)}</b></div>
+        <div><span>Visit fee (${S.tier})</span><b>${inr(VISIT_FEE[S.tier])}</b></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📋 What's included</h3>
+      <div class="kv"><span class="k">Labour (skilled electrician)</span><span class="v">✓</span></div>
+      <div class="kv"><span class="k">Parts (wire, sockets, MCB…)</span><span class="v">billed at cost</span></div>
+      <div class="kv"><span class="k">Before &amp; after photos</span><span class="v">✓</span></div>
+      <div class="kv"><span class="k">OTP escrow protection</span><span class="v">✓</span></div>
+    </div>
+    <div class="cta-bar">
+      <button class="btn-main" onclick="go(4)">Next: urgency →</button>
+    </div>
+  </div>`;
+}
+
+/* ── Step 4: urgency ── */
+function scr4(){
+  recalcEstimate();
+  const j=S.job;
+  specNote(`<span class="sh">// STEP 4 — urgency check</span><br>
+    IF urgency == EMERGENCY:<br>
+    &nbsp;&nbsp;surge_factor = <span class="sv">1.5</span> <span class="sc">(labour only)</span><br>
+    &nbsp;&nbsp;base *= 1.5 → re-band lo/hi<br>
+    <span class="sc">// never applied to parts or visit fee</span>`);
+  const showSurge = S.urgency==='emergency';
+  return `<div class="scr">
+    <h2>How urgent is it?</h2>
+    <p class="sub">Emergency adds a 1.5× surge on labour only.</p>
+    <div class="urg">
+      <button class="urgc ${S.urgency==='normal'?'sel':''}" onclick="pickUrg('normal')">
+        <div class="un">🕐 Normal</div><div class="ud">Today or scheduled</div>
+      </button>
+      <button class="urgc emerg ${S.urgency==='emergency'?'sel':''}" onclick="pickUrg('emergency')">
+        <div class="un">🚨 Emergency</div><div class="ud">No power / sparks now</div>
+      </button>
+    </div>
+    ${showSurge?`<div class="alert"><span class="ai">🚨</span><span class="at"><b>Emergency surge 1.5× applied to labour.</b> Parts and visit fee are never surged.</span></div>`:''}
+    <div class="est">
+      <div class="el">Updated labour estimate</div>
+      <div class="ev">${inr(S.lo)} – ${inr(S.hi)}</div>
+      <div class="ed">${showSurge?'🚨 includes 1.5× emergency surge':'standard rate, no surge'}</div>
+      <div class="ebrk">
+        <div><span>Base × ${S.tier} (${CITY_MULT[S.tier]})</span><b>${inr(r(j.base*CITY_MULT[S.tier]))}</b></div>
+        ${showSurge?`<div><span>Emergency surge ×1.5</span><b class="" style="color:#fca5a5">${inr(S.base)}</b></div>`:''}
+        <div><span>Visit fee (no surge)</span><b>${inr(VISIT_FEE[S.tier])}</b></div>
+      </div>
+    </div>
+    <div class="cta-bar">
+      <button class="btn-main ${showSurge?'emerg':''}" onclick="go(5)">Find electricians →</button>
+    </div>
+  </div>`;
+}
+function pickUrg(u){ S.urgency=u; recalcEstimate(); render(); if(u==='emergency') toast('🚨 Emergency surge 1.5× applied to labour.'); }
+
+/* ── Step 5: geo radar + ranked pros ── */
+function scr5(){
+  specNote(`<span class="sh">// STEP 5 — geo-query</span><br>
+    candidates = pros WHERE<br>
+    &nbsp;&nbsp;distance ≤ <span class="sv">3 km</span> (primary)<br>
+    &nbsp;&nbsp;verified_license == <span class="sv">true</span><br>
+    &nbsp;&nbsp;trust_score ≥ <span class="sv">3.5</span><br>
+    <span class="sc">// < 2 found → expand to 5 km</span>`);
+  return `<div class="scr">
+    <h2>Finding electricians…</h2>
+    <p class="sub">Verified pros within 3 km · trust ≥ 3.5</p>
+    <div class="radar" id="radar">
+      <div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+      <div class="me">⚡</div>
+    </div>
+    <div class="radar-status" id="radarStatus">📡 Scanning 3 km radius…</div>
+    <div id="proList" style="margin-top:1rem;"></div>
+    <div class="cta-bar" id="step5cta" style="display:none;">
+      <button class="btn-main" id="b5" onclick="go(6)" disabled>Select a pro to continue</button>
+    </div>
+  </div>`;
+}
+function runRadar(){
+  // build candidate list per spec: filter trust >= 3.5, sort by trust desc, top 3
+  const cands = PRO_POOL
+    .map(p=>({ ...p, trust:trustScore(p) }))
+    .filter(p=>p.trust>=TRUST_MIN && p.dist<=3)
+    .sort((a,b)=>b.trust-a.trust);
+  S.pros = cands.slice(0,3);
+
+  // drop blips
+  const radar=$('radar');
+  const positions=[[ -55,-30],[60,-10],[ -20,55],[45,48],[-60,40]];
+  S.pros.forEach((p,i)=>{
+    setTimeout(()=>{
+      const b=document.createElement('div');
+      b.className='blip'; b.textContent=p.av[0];
+      b.style.transform=`translate(${positions[i][0]}px,${positions[i][1]}px)`;
+      radar.appendChild(b);
+    }, 500 + i*450);
+  });
+
+  setTimeout(()=>{
+    $('radarStatus').innerHTML = `✅ <b>${S.pros.length} verified pros</b> found — ranked by trust score`;
+    renderProList();
+    $('step5cta').style.display='block';
+  }, 500 + S.pros.length*450 + 400);
+}
+function renderProList(){
+  $('proList').innerHTML = S.pros.map((p,i)=>`
+    <div class="pro ${S.pro&&S.pro.name===p.name?'sel':''}" onclick="pickPro(${i})">
+      <div class="pro-top">
+        <div class="av" style="background:${p.col}">${p.av}</div>
+        <div style="flex:1">
+          <div class="pnm">${p.name} ${i===0?'<span class="rankbadge">TOP MATCH</span>':''}</div>
+          <div class="pmeta">
+            <span class="star">★ ${p.rating}</span>
+            <span>📍 ${p.dist} km</span>
+            <span>🔧 ${p.jobs} jobs</span>
+          </div>
+        </div>
+      </div>
+      <div class="pro-bar">
+        <div class="tsbar"><i style="width:${p.trust/5*100}%"></i></div>
+        <span class="tsval">${p.trust}</span>
+      </div>
+    </div>`).join('');
+}
+function pickPro(i){
+  S.pro = S.pros[i];
+  renderProList();
+  const b=$('b5'); b.disabled=false; b.textContent=`Book ${S.pro.name.split(' ')[0]} →`;
+  toast(`Selected ${S.pro.name} · trust ${S.pro.trust}`);
+}
+
+/* ── Step 6: rank explainer / confirm booking ── (spec steps 6-7) */
+function scr6(){
+  const p=S.pro;
+  specNote(`<span class="sh">// STEPS 6–7 — rank &amp; confirm</span><br>
+    rank_score = avg_rating×<span class="sv">.40</span> + completion×<span class="sv">.30</span><br>
+    &nbsp;&nbsp;+ response×<span class="sv">.20</span> + repeat×<span class="sv">.10</span><br>
+    deposit = <span class="sv">₹0</span> <span class="sc">(electrician)</span><br>
+    escrow_hold = estimate_lo = <span class="sv">${inr(S.lo)}</span>`);
+  return `<div class="scr">
+    <h2>Confirm booking</h2>
+    <p class="sub">Review your trust-ranked match before booking.</p>
+    <div class="pro sel">
+      <div class="pro-top">
+        <div class="av" style="background:${p.col}">${p.av}</div>
+        <div style="flex:1">
+          <div class="pnm">${p.name} <span class="rankbadge">TRUST ${p.trust}</span></div>
+          <div class="pmeta"><span class="star">★ ${p.rating}</span><span>📍 ${p.dist} km away</span><span>🔧 ${p.jobs} jobs</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>📊 Trust score breakdown</h3>
+      <div class="kv"><span class="k">Avg rating × 0.40</span><span class="v">${(p.rating*0.4).toFixed(2)}</span></div>
+      <div class="kv"><span class="k">Completion rate × 0.30</span><span class="v">${(p.completion*0.3).toFixed(2)}</span></div>
+      <div class="kv"><span class="k">Response time × 0.20</span><span class="v">${(p.response*0.2).toFixed(2)}</span></div>
+      <div class="kv"><span class="k">Repeat hire × 0.10</span><span class="v">${(p.repeat*0.1).toFixed(2)}</span></div>
+      <div class="kv total"><span class="k">Trust score</span><span class="v">${p.trust} / 5.0</span></div>
+    </div>
+    <div class="card">
+      <h3>💳 Payment terms</h3>
+      <div class="kv"><span class="k">Advance deposit</span><span class="v" style="color:var(--green)">₹0</span></div>
+      <div class="kv"><span class="k">Escrow hold (estimate_lo)</span><span class="v">${inr(S.lo)}</span></div>
+      <div class="kv"><span class="k">Released on</span><span class="v">end OTP ✓</span></div>
+    </div>
+    <div class="cta-bar">
+      <button class="btn-main green" onclick="go(7)">Confirm booking →</button>
+    </div>
+  </div>`;
+}
+
+/* ── Step 7: pro en route / arrival ── */
+function scr7(){
+  const p=S.pro;
+  specNote(`<span class="sh">// STEP 7 — booking confirmed</span><br>
+    status = <span class="sv">'en_route'</span><br>
+    start_otp generated → sent to user<br>
+    <span class="sc">// pro enters on arrival → clock starts</span>`);
+  return `<div class="scr">
+    <div class="done" style="padding-top:1.5rem;">
+      <div class="big" style="background:var(--blue);font-size:2rem;">🛵</div>
+      <h2>${p.name.split(' ')[0]} is on the way!</h2>
+      <p class="sub">ETA 12 min · ${p.dist} km away</p>
+    </div>
+    <div class="card">
+      <h3>🔐 Your start OTP</h3>
+      <p style="font-size:.74rem;color:var(--muted);margin-bottom:.4rem;">Share this with the electrician on arrival. The billing clock starts only after they enter it.</p>
+      <div class="otp-code">4 8 2 1</div>
+      <div class="kv"><span class="k">Booking ID</span><span class="v">#HF-EL-${Math.floor(10000+Math.random()*89999)}</span></div>
+      <div class="kv"><span class="k">Job</span><span class="v">${S.job.name}</span></div>
+    </div>
+    <div class="alert warn"><span class="ai">📸</span><span class="at">The pro must upload a <b>before-photo</b> before any work can begin — proof of condition.</span></div>
+    <div class="cta-bar">
+      <button class="btn-main" onclick="go(8)">⚡ Pro arrived — enter OTP</button>
+    </div>
+  </div>`;
+}
+
+/* ── Step 8: start OTP + live job + parts ── */
+let timerInt=null;
+function scr8(){
+  specNote(`<span class="sh">// STEPS 8–9 — start OTP + parts log</span><br>
+    clock_start = arrival timestamp<br>
+    FOR each part: name + unit_price + qty<br>
+    &nbsp;&nbsp;→ receipt_photo → live invoice<br>
+    <span class="sc">// before_photo mandatory to proceed</span>`);
+  const partsTotal = S.parts.reduce((a,p)=>a+p.unit,0);
+  return `<div class="scr">
+    <h2>Work in progress</h2>
+    <p class="sub">${S.pro.name} · ${S.job.name}</p>
+    <div class="timer">
+      <div class="tl"><span class="live-dot"></span>Billable time</div>
+      <div class="tv" id="tv">00:00</div>
+    </div>
+    <div class="card">
+      <h3>🔩 Parts logged <span style="margin-left:auto;font-size:.7rem;color:var(--muted);font-weight:600;">live invoice</span></h3>
+      <div id="partsList">
+        ${S.parts.length? S.parts.map(p=>partRow(p)).join('') : '<p style="font-size:.74rem;color:var(--muted);text-align:center;padding:.6rem;">No parts added yet</p>'}
+      </div>
+      ${S.parts.length?`<div class="kv total"><span class="k">Parts subtotal</span><span class="v">${inr(partsTotal)}</span></div>`:''}
+      <button class="addpart" onclick="addPart()">+ Add a part (pro logs with receipt)</button>
+    </div>
+    <div class="alert warn"><span class="ai">🔧</span><span class="at">If extra scope is found, the pro raises a <b>revision request</b> — you approve the added cost before work continues.</span></div>
+    <div class="cta-bar">
+      <button class="btn-main green" onclick="finishJob()">Job done → generate end OTP</button>
+    </div>
+  </div>`;
+}
+function partRow(p){
+  return `<div class="part-row">
+    <div class="pdot">${p.ic}</div>
+    <div class="pinfo"><div class="ppn">${p.name}</div><div class="ppq">${p.qty} · receipt ✓</div></div>
+    <div class="ppp">${inr(p.unit)}</div>
+  </div>`;
+}
+function addPart(){
+  const avail = PART_OPTIONS.filter(o=>!S.parts.find(p=>p.name===o.name));
+  if(!avail.length){ toast('All sample parts already logged.'); return; }
+  S.parts.push(avail[0]);
+  render();
+  toast(`Logged: ${avail[0].name} ${inr(avail[0].unit)}`);
+}
+function startTimer(){
+  if(timerInt) clearInterval(timerInt);
+  if(!S.clockStart) S.clockStart = Date.now();
+  const tv=$('tv'); if(!tv) return;
+  timerInt=setInterval(()=>{
+    const el=$('tv'); if(!el){clearInterval(timerInt);return;}
+    const secs=Math.floor((Date.now()-S.clockStart)/1000);
+    // speed up demo: 1 real sec = ~1 displayed min, cap at duration
+    const m=Math.min(secs, S.durationMin);
+    el.textContent = String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');
+  },1000);
+}
+function finishJob(){
+  if(timerInt) clearInterval(timerInt);
+  go(9);
+}
+
+/* ── Step 9: revision (skippable) → here we show completion/end OTP entry ── */
+function scr9(){
+  specNote(`<span class="sh">// STEPS 10–11 — revision &amp; completion</span><br>
+    after_photo uploaded by pro<br>
+    pro taps "Job done" → end_otp sent<br>
+    user enters end_otp → status = <span class="sv">'completed'</span>`);
+  return `<div class="scr">
+    <h2>Confirm completion</h2>
+    <p class="sub">Pro uploaded the after-photo. Enter the end OTP to release escrow.</p>
+    <div class="card">
+      <h3>📸 After-photo received</h3>
+      <div style="height:120px;border-radius:11px;background:linear-gradient(135deg,#1e293b,#334155);display:grid;place-items:center;color:#94a3b8;font-size:.8rem;">📷 work_completed.jpg</div>
+    </div>
+    <div class="otp-wrap">
+      <p style="font-size:.78rem;color:var(--muted);">Enter the 4-digit end OTP sent to your phone</p>
+      <div class="otp-in" id="otpIn">
+        <input maxlength="1" inputmode="numeric" data-i="0" oninput="otpStep(this)">
+        <input maxlength="1" inputmode="numeric" data-i="1" oninput="otpStep(this)">
+        <input maxlength="1" inputmode="numeric" data-i="2" oninput="otpStep(this)">
+        <input maxlength="1" inputmode="numeric" data-i="3" oninput="otpStep(this)">
+      </div>
+      <button class="btn-ghost2" onclick="autofillOtp()">🔑 Auto-fill demo OTP (7 3 9 5)</button>
+    </div>
+    <div class="cta-bar">
+      <button class="btn-main green" id="otpBtn" onclick="go(10)" disabled>Verify &amp; complete →</button>
+    </div>
+  </div>`;
+}
+function otpStep(el){
+  el.value=el.value.replace(/\D/g,'');
+  const inputs=[...document.querySelectorAll('#otpIn input')];
+  const i=+el.dataset.i;
+  if(el.value && i<3) inputs[i+1].focus();
+  const filled=inputs.every(x=>x.value);
+  $('otpBtn').disabled=!filled;
+}
+function autofillOtp(){
+  const inputs=[...document.querySelectorAll('#otpIn input')];
+  ['7','3','9','5'].forEach((d,i)=>inputs[i].value=d);
+  $('otpBtn').disabled=false;
+  toast('End OTP verified ✓');
+}
+
+/* ── Step 10: invoice ── (spec step 12) */
+function scr10(){
+  const j=S.job;
+  const labour=S.base;
+  const partsTotal=S.parts.reduce((a,p)=>a+p.unit,0);
+  const visit=VISIT_FEE[S.tier];
+  const total=labour+partsTotal+visit;
+  S._total=total; S._labour=labour; S._parts=partsTotal; S._visit=visit;
+  specNote(`<span class="sh">// STEP 12 — auto invoice</span><br>
+    labour = <span class="sv">${inr(labour)}</span> ${S.surge>1?'<span class="sc">(1.5× surge)</span>':''}<br>
+    parts_total = <span class="sv">${inr(partsTotal)}</span><br>
+    visit_fee = <span class="sv">${inr(visit)}</span><br>
+    total = <span class="sv">${inr(total)}</span>`);
+  return `<div class="scr">
+    <h2>Invoice</h2>
+    <p class="sub">Auto-generated · PDF emailed to you</p>
+    <div class="card">
+      <h3>🧾 #HF-EL · ${j.name}</h3>
+      <div class="kv"><span class="k">Labour ${S.surge>1?'<span style="color:var(--red)">(Emergency 1.5×)</span>':''}</span><span class="v ${S.surge>1?'em':''}">${inr(labour)}</span></div>
+      ${S.parts.map(p=>`<div class="kv"><span class="k">${p.name} (${p.qty})</span><span class="v">${inr(p.unit)}</span></div>`).join('')}
+      ${S.parts.length?`<div class="kv"><span class="k">Parts subtotal</span><span class="v">${inr(partsTotal)}</span></div>`:''}
+      <div class="kv"><span class="k">Visit fee (${S.tier})</span><span class="v">${inr(visit)}</span></div>
+      <div class="kv total"><span class="k">Total payable</span><span class="v">${inr(total)}</span></div>
+    </div>
+    <div class="card">
+      <h3>✅ Verified record</h3>
+      <div class="kv"><span class="k">Start OTP verified</span><span class="v" style="color:var(--green)">✓</span></div>
+      <div class="kv"><span class="k">End OTP verified</span><span class="v" style="color:var(--green)">✓</span></div>
+      <div class="kv"><span class="k">Before &amp; after photos</span><span class="v" style="color:var(--green)">✓ logged</span></div>
+      <div class="kv"><span class="k">Duration</span><span class="v">${S.durationMin} mins</span></div>
+    </div>
+    <div class="cta-bar">
+      <button class="btn-main" onclick="go(11)">Pay ${inr(total)} →</button>
+    </div>
+  </div>`;
+}
+
+/* ── Step 11: payment (UPI) ── */
+function scr11(){
+  specNote(`<span class="sh">// STEP 13 — payment</span><br>
+    UPI → QR generated in-app<br>
+    escrow released on scan confirmation<br>
+    <span class="sc">// cash → pro marks paid → platform confirms</span>`);
+  return `<div class="scr">
+    <h2>Pay securely</h2>
+    <p class="sub">Escrow releases to the pro only after payment confirms.</p>
+    <div class="card" style="text-align:center;">
+      <h3 style="justify-content:center;">📲 Scan to pay ${inr(S._total)}</h3>
+      <div style="width:160px;height:160px;margin:.6rem auto;border-radius:14px;background:
+        repeating-linear-gradient(0deg,#0f172a 0 8px,#fff 8px 16px),
+        repeating-linear-gradient(90deg,rgba(15,23,42,.6) 0 8px,transparent 8px 16px);
+        border:6px solid #fff;box-shadow:0 0 0 1px var(--line);"></div>
+      <p style="font-size:.72rem;color:var(--muted)">UPI · GPay · PhonePe · Paytm</p>
+    </div>
+    <button class="opt" style="justify-content:center;" onclick="go(12)">
+      <div class="oic">💵</div><div class="otx"><div class="onm">Pay by cash instead</div><div class="ods">Pro marks paid → platform confirms</div></div>
+    </button>
+    <div class="cta-bar">
+      <button class="btn-main green" onclick="go(12)">✓ Payment received (demo)</button>
+    </div>
+  </div>`;
+}
+
+/* ── Step 12: success → rating ── */
+function scr12(){
+  specNote(`<span class="sh">// post-payment — rating prompt</span><br>
+    escrow released to pro<br>
+    rating: <span class="sv">1–5</span> stars + optional text<br>
+    <span class="sc">// shown 10 min after payment</span>`);
+  return `<div class="scr">
+    <div class="done">
+      <div class="big">✓</div>
+      <h2>Job complete!</h2>
+      <p class="sub">Escrow released to ${S.pro.name}. Total paid ${inr(S._total)}.</p>
+    </div>
+    <div class="card">
+      <h3 style="justify-content:center;">⭐ Rate ${S.pro.name.split(' ')[0]}</h3>
+      <div class="rate" id="rate">
+        ${[1,2,3,4,5].map(n=>`<span data-n="${n}" onclick="setRate(${n})">★</span>`).join('')}
+      </div>
+      <p style="font-size:.74rem;color:var(--muted);text-align:center;" id="rateLbl">Tap a star</p>
+    </div>
+    <div class="cta-bar">
+      <button class="btn-main green" onclick="go(13)">Submit &amp; finish →</button>
+    </div>
+  </div>`;
+}
+function setRate(n){
+  S.rating=n;
+  document.querySelectorAll('#rate span').forEach(s=>s.classList.toggle('on', +s.dataset.n<=n));
+  const lbls=['','Poor','Fair','Good','Great','Excellent!'];
+  $('rateLbl').textContent=lbls[n];
+}
+
+/* ── Step 13: recap / restart ── */
+function scr13(){
+  specNote(`<span class="sh">// flow complete ✓</span><br>
+    <span class="sc">all 13 steps of spec 1.1 executed</span><br>
+    booking_id logged · invoice emailed<br>
+    <span class="sk">trust_score</span> updated for pro`);
+  return `<div class="scr">
+    <div class="done">
+      <div class="big" style="background:var(--blue);font-size:2.2rem;">⚡</div>
+      <h2>That's the full flow!</h2>
+      <p class="sub">You completed all 13 steps of the Electrician spec.</p>
+    </div>
+    <div class="card">
+      <h3>📦 Booking summary</h3>
+      <div class="kv"><span class="k">Service</span><span class="v">${S.job.name}</span></div>
+      <div class="kv"><span class="k">City tier</span><span class="v">${S.tier} (×${CITY_MULT[S.tier]})</span></div>
+      <div class="kv"><span class="k">Urgency</span><span class="v">${S.urgency==='emergency'?'🚨 Emergency':'Normal'}</span></div>
+      <div class="kv"><span class="k">Pro</span><span class="v">${S.pro.name} · ${S.pro.trust}★</span></div>
+      <div class="kv"><span class="k">Parts logged</span><span class="v">${S.parts.length}</span></div>
+      <div class="kv"><span class="k">Your rating</span><span class="v">${S.rating?('★'.repeat(S.rating)):'—'}</span></div>
+      <div class="kv total"><span class="k">Total paid</span><span class="v">${inr(S._total||0)}</span></div>
+    </div>
+    <div class="cta-bar">
+      <button class="btn-main" onclick="restart()">↺ Try another booking</button>
+    </div>
+  </div>`;
+}
+function restart(){
+  Object.assign(S,{step:1,job:null,tier:'T2',urgency:'normal',base:0,lo:0,hi:0,surge:1,
+    pros:[],pro:null,parts:[],clockStart:null,rating:0,_total:0});
+  render();
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CLOCK + INIT
+   ══════════════════════════════════════════════════════════════ */
+function tickClock(){
+  const d=new Date();
+  $('clock').textContent = d.getHours()%12||12 + ':' + String(d.getMinutes()).padStart(2,'0');
+}
+setInterval(tickClock,10000); tickClock();
+render();
+</script>
+</body>
+</html>

@@ -137,6 +137,8 @@
         .sim-btn:disabled{opacity:.5;cursor:not-allowed;}
         .rst-btn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--sv-muted);border-radius:8px;padding:8px 12px;font-size:.8rem;cursor:pointer;font-family:inherit;}
         .rst-btn:hover{background:rgba(255,255,255,.1);color:#fff;}
+        .demo-cta{display:flex;align-items:center;gap:.6rem;background:linear-gradient(135deg,var(--blue),var(--sky));color:#fff;border-radius:12px;padding:14px 18px;font-size:.88rem;font-weight:700;text-decoration:none;margin-bottom:1.6rem;box-shadow:0 10px 26px rgba(37,99,235,.32);transition:all .2s;}
+        .demo-cta:hover{transform:translateY(-2px);box-shadow:0 14px 32px rgba(37,99,235,.45);filter:brightness(1.05);}
 
         /* Spec line renderer */
         .spec-body{font-family:'JetBrains Mono',monospace;font-size:.76rem;line-height:1.9;color:var(--sv-text);}
@@ -374,6 +376,11 @@ const ICONS = {
     '1.14':'🪟','1.15':'🔲'
 };
 
+/* services that have a full interactive booking-app demo */
+const DEMOS = {
+    '1.1':'/templates/electrician.html'
+};
+
 /* ════════════════════════════════════════════════════════
    PHASE DETECTOR
    ════════════════════════════════════════════════════════ */
@@ -593,6 +600,7 @@ function showService(idx){
     const panel=document.getElementById('svcContent');
 
     const stepsCount=s.steps.length;
+    const demoUrl=DEMOS[s.id];
     panel.innerHTML=`
         <div class="ctn-header">
             <div class="ctn-icon">${ICONS[s.id]||'🔹'}</div>
@@ -607,6 +615,7 @@ function showService(idx){
                 <button class="rst-btn" onclick="resetSim()">↺ Reset</button>
             </div>
         </div>
+        ${demoUrl?`<a href="${demoUrl}" class="demo-cta">📱 Try the live booking app — interactive demo of this exact flow →</a>`:''}
         <div class="spec-body" id="specBody">${renderLines(s.raw)}</div>`;
 
     // scroll to top
