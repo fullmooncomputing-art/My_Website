@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ScrapCycle — Scrap / Kabadi Pickup (Live Demo) | Full Moon Computing</title>
+<meta name="description" content="Interactive demo of the doorstep scrap & kabadi pickup flow — built to spec 10.8: live locked rate card, certified-scale weighing, CPCB e-waste handling, NIST 800-88 data destruction certificates and instant UPI payout.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#14532d">
+<!--
+  © 2026 Full Moon Computing — https://fullmooncomputing.in
+  Interactive booking-app demo for Category 10.8 Scrap / Kabadi Pickup.
+  Every rate, weight and rule follows 10_CLEANING_SANITATION.txt
+-->
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --forest:#14532d;--forest2:#166534;--green:#16a34a;--green2:#22c55e;--lime:#84cc16;
+  --blue:#2563eb;--amber:#f59e0b;--orange:#f97316;--red:#ef4444;--teal:#0d9488;
+  --paper:#eef3ee;--ink:#0f1a12;--muted:#5b6b5f;--line:#dbe5dd;--soft:#f1f6f1;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink);
+  background:radial-gradient(900px 500px at 80% -10%,rgba(34,197,94,.22),transparent),
+             radial-gradient(700px 400px at 0% 100%,rgba(132,204,22,.14),transparent),var(--forest);
+  line-height:1.6;min-height:100vh;}
+a{text-decoration:none;color:inherit;}
+button{font-family:inherit;cursor:pointer;}
+
+/* top bar */
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 1.5rem;max-width:1180px;margin:0 auto;}
+.brand{display:flex;align-items:center;gap:.55rem;color:#fff;font-weight:800;font-size:1.25rem;}
+.brand .logo{width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,var(--green),var(--lime));display:grid;place-items:center;font-size:1.05rem;}
+.brand em{color:var(--lime);font-style:normal;}
+.topbar .back{color:#bcd8c4;font-size:.85rem;font-weight:600;display:inline-flex;gap:.4rem;align-items:center;}
+.topbar .back:hover{color:#fff;}
+
+/* layout */
+.wrap{max-width:1180px;margin:0 auto;padding:1rem 1.5rem 3rem;display:grid;grid-template-columns:380px 1fr;gap:2.5rem;align-items:start;}
+@media(max-width:920px){.wrap{grid-template-columns:1fr;gap:2rem;}}
+
+/* phone */
+.phone-col{position:sticky;top:1rem;justify-self:center;}
+@media(max-width:920px){.phone-col{position:static;}}
+.phone{width:360px;max-width:90vw;height:740px;background:#fff;border-radius:40px;
+  border:11px solid #0a160d;box-shadow:0 40px 80px rgba(0,0,0,.5),0 0 0 2px rgba(255,255,255,.05);
+  overflow:hidden;position:relative;display:flex;flex-direction:column;}
+.phone .notch{position:absolute;top:0;left:50%;transform:translateX(-50%);width:150px;height:26px;background:#0a160d;border-radius:0 0 18px 18px;z-index:50;}
+.phone .statusbar{height:40px;display:flex;align-items:center;justify-content:space-between;padding:0 22px;font-size:.72rem;font-weight:700;color:var(--ink);flex-shrink:0;}
+.phone .statusbar .sig{display:flex;gap:5px;align-items:center;}
+
+.app-head{background:var(--forest);color:#fff;padding:.75rem 1rem;display:flex;align-items:center;gap:.6rem;flex-shrink:0;}
+.app-head .ah-back{width:30px;height:30px;border-radius:9px;background:rgba(255,255,255,.12);border:none;color:#fff;font-size:1rem;display:grid;place-items:center;}
+.app-head .ah-back:disabled{opacity:.3;}
+.app-head .ah-title{font-size:.95rem;font-weight:700;flex:1;}
+.app-head .ah-step{font-size:.66rem;color:#a6c3ad;background:rgba(255,255,255,.1);padding:3px 9px;border-radius:20px;font-weight:600;}
+
+.rail{height:4px;background:#dde8e0;flex-shrink:0;}
+.rail-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--lime));width:10%;transition:width .45s cubic-bezier(.4,0,.2,1);}
+
+.screen{flex:1;overflow-y:auto;overflow-x:hidden;background:var(--soft);position:relative;}
+.screen::-webkit-scrollbar{width:0;}
+.scr{padding:1.1rem 1.1rem 5.5rem;animation:slideIn .4s ease;}
+@keyframes slideIn{from{opacity:0;transform:translateX(18px);}to{opacity:1;transform:translateX(0);}}
+.scr h2{font-size:1.18rem;font-weight:800;letter-spacing:-.01em;margin-bottom:.2rem;}
+.scr .sub{font-size:.8rem;color:var(--muted);margin-bottom:1rem;}
+
+/* category multiselect */
+.cat-tile{background:#fff;border:1.5px solid var(--line);border-radius:13px;padding:.7rem .8rem;display:flex;align-items:center;gap:.7rem;margin-bottom:.55rem;transition:all .16s;width:100%;text-align:left;}
+.cat-tile:hover{border-color:var(--green);}
+.cat-tile.sel{border-color:var(--green);background:#f0fdf4;box-shadow:0 0 0 3px rgba(22,163,74,.12);}
+.cat-tile .cic{width:38px;height:38px;border-radius:10px;background:var(--soft);display:grid;place-items:center;font-size:1.15rem;flex-shrink:0;}
+.cat-tile.sel .cic{background:#dcfce7;}
+.cat-tile .ctx{flex:1;min-width:0;}
+.cat-tile .cnm{font-size:.84rem;font-weight:700;line-height:1.2;}
+.cat-tile .crt{font-size:.68rem;color:var(--muted);}
+.cat-tile .vol{font-size:.56rem;font-weight:700;padding:1px 6px;border-radius:10px;margin-left:5px;}
+.vol.low{background:#dcfce7;color:#15803d;}
+.vol.medium{background:#fef3c7;color:#b45309;}
+.vol.high{background:#ffedd5;color:#c2410c;}
+.vol.very_high{background:#fee2e2;color:#b91c1c;}
+.cat-tile .chk{width:22px;height:22px;border-radius:7px;border:2px solid var(--line);flex-shrink:0;display:grid;place-items:center;font-size:.75rem;color:transparent;}
+.cat-tile.sel .chk{background:var(--green);border-color:var(--green);color:#fff;}
+.cat-tile .haz{font-size:.6rem;color:var(--red);font-weight:700;}
+
+/* weight input rows */
+.wt-row{background:#fff;border:1px solid var(--line);border-radius:11px;padding:.55rem .7rem;display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;}
+.wt-row .wic{font-size:1.1rem;}
+.wt-row .wnm{flex:1;font-size:.8rem;font-weight:600;}
+.wt-row .wctrl{display:flex;align-items:center;gap:.3rem;}
+.wt-row .stp{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--soft);font-size:1rem;font-weight:700;color:var(--ink);display:grid;place-items:center;}
+.wt-row .stp:hover{background:#e2eae3;}
+.wt-row .wval{width:46px;text-align:center;font-weight:800;font-size:.9rem;font-family:'JetBrains Mono',monospace;}
+.wt-row .wunit{font-size:.66rem;color:var(--muted);}
+
+/* estimate card */
+.est{background:linear-gradient(135deg,var(--forest),var(--forest2));color:#fff;border-radius:18px;padding:1.2rem;margin-bottom:1rem;position:relative;overflow:hidden;}
+.est::after{content:'';position:absolute;right:-30px;top:-30px;width:120px;height:120px;background:radial-gradient(circle,rgba(34,197,94,.45),transparent 70%);}
+.est .el{font-size:.7rem;color:#a6c3ad;font-weight:600;letter-spacing:.06em;text-transform:uppercase;}
+.est .ev{font-size:1.9rem;font-weight:800;letter-spacing:-.02em;margin:.1rem 0;}
+.est .ed{font-size:.72rem;color:#c8dccd;position:relative;z-index:2;}
+.est .ebrk{margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(255,255,255,.14);font-size:.72rem;color:#d7e6da;position:relative;z-index:2;}
+.est .ebrk div{display:flex;justify-content:space-between;padding:2px 0;}
+.est .ebrk b{color:#fff;font-weight:700;}
+
+/* rate-lock banner */
+.lock{background:#ecfdf5;border:1px solid #a7f3d0;border-radius:12px;padding:.7rem .8rem;display:flex;gap:.6rem;margin-bottom:1rem;}
+.lock .li{font-size:1.05rem;}
+.lock .lt{font-size:.73rem;line-height:1.45;color:#065f46;}
+
+/* generic cards / kv */
+.card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:1rem;margin-bottom:.8rem;}
+.card h3{font-size:.82rem;font-weight:700;margin-bottom:.6rem;display:flex;align-items:center;gap:.4rem;}
+.kv{display:flex;justify-content:space-between;font-size:.78rem;padding:.28rem 0;border-bottom:1px dashed var(--line);gap:.6rem;}
+.kv:last-child{border-bottom:none;}
+.kv .k{color:var(--muted);}
+.kv .v{font-weight:700;text-align:right;}
+.kv.total{border-top:2px solid var(--ink);margin-top:.4rem;padding-top:.5rem;font-size:1rem;}
+.kv.total .v{color:var(--green);}
+
+/* alerts */
+.alert{background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:.7rem .8rem;display:flex;gap:.6rem;margin-bottom:1rem;animation:pop .3s;}
+.alert.info{background:#eff6ff;border-color:#bfdbfe;}
+.alert.danger{background:#fef2f2;border-color:#fecaca;}
+.alert .ai{font-size:1.1rem;flex-shrink:0;}
+.alert .at{font-size:.74rem;line-height:1.45;color:#92400e;}
+.alert.info .at{color:#1e40af;}
+.alert.danger .at{color:#991b1b;}
+@keyframes pop{from{transform:scale(.96);opacity:0;}to{transform:scale(1);opacity:1;}}
+
+/* e-waste item picker */
+.ew-item{background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:.65rem .75rem;margin-bottom:.55rem;}
+.ew-top{display:flex;align-items:center;gap:.6rem;}
+.ew-top .eic{width:34px;height:34px;border-radius:9px;background:var(--soft);display:grid;place-items:center;font-size:1.05rem;}
+.ew-top .enm{flex:1;font-size:.82rem;font-weight:700;}
+.ew-top .epay{font-size:.74rem;font-weight:800;color:var(--green);}
+.ew-data{margin-top:.5rem;display:flex;align-items:center;gap:.5rem;font-size:.7rem;color:var(--muted);}
+.toggle{width:38px;height:22px;border-radius:20px;background:#cbd5cf;position:relative;transition:.2s;flex-shrink:0;border:none;}
+.toggle.on{background:var(--green);}
+.toggle::after{content:'';position:absolute;width:16px;height:16px;border-radius:50%;background:#fff;top:3px;left:3px;transition:.2s;}
+.toggle.on::after{left:19px;}
+
+/* radar */
+.radar{height:200px;position:relative;display:grid;place-items:center;margin:.5rem 0 1rem;}
+.radar .rings{position:absolute;width:180px;height:180px;}
+.radar .ring{position:absolute;border-radius:50%;border:1.5px solid rgba(22,163,74,.28);inset:0;animation:ripple 2.4s ease-out infinite;}
+.radar .ring:nth-child(2){animation-delay:.8s;}
+.radar .ring:nth-child(3){animation-delay:1.6s;}
+@keyframes ripple{0%{transform:scale(.2);opacity:1;}100%{transform:scale(1);opacity:0;}}
+.radar .me{width:46px;height:46px;border-radius:50%;background:var(--green);display:grid;place-items:center;font-size:1.3rem;z-index:5;box-shadow:0 6px 18px rgba(22,163,74,.5);}
+.radar .blip{position:absolute;width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid var(--forest);display:grid;place-items:center;font-size:.95rem;box-shadow:0 4px 10px rgba(0,0,0,.15);opacity:0;animation:blipin .4s forwards;}
+@keyframes blipin{to{opacity:1;}}
+.radar-status{text-align:center;font-size:.78rem;color:var(--muted);font-weight:600;}
+
+/* pro card */
+.pro{background:#fff;border:1.5px solid var(--line);border-radius:15px;padding:.85rem;margin-bottom:.7rem;}
+.pro-top{display:flex;align-items:center;gap:.7rem;}
+.pro .av{width:46px;height:46px;border-radius:50%;display:grid;place-items:center;font-size:1.1rem;color:#fff;flex-shrink:0;font-weight:700;}
+.pro .pnm{font-size:.9rem;font-weight:700;}
+.pro .pmeta{font-size:.68rem;color:var(--muted);display:flex;gap:.5rem;flex-wrap:wrap;}
+.star{color:var(--amber);}
+.badge-cert{display:inline-flex;align-items:center;gap:3px;font-size:.58rem;font-weight:700;color:#fff;background:var(--green);padding:2px 7px;border-radius:20px;}
+
+/* scale display */
+.scale{background:#0a160d;border-radius:16px;padding:1.1rem;text-align:center;margin-bottom:1rem;border:3px solid #1a3320;}
+.scale .sl{font-size:.62rem;color:#5b8a66;text-transform:uppercase;letter-spacing:.1em;font-weight:600;}
+.scale .sv{font-family:'JetBrains Mono',monospace;font-size:2.6rem;font-weight:700;color:var(--green2);text-shadow:0 0 12px rgba(34,197,94,.5);letter-spacing:.04em;}
+.scale .su{font-size:1rem;color:#5b8a66;}
+
+/* weighing list */
+.weigh-row{background:#fff;border:1px solid var(--line);border-radius:11px;padding:.6rem .7rem;display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;transition:.2s;}
+.weigh-row.done{border-color:var(--green);background:#f0fdf4;}
+.weigh-row .wic2{font-size:1.05rem;}
+.weigh-row .winf{flex:1;}
+.weigh-row .wn2{font-size:.8rem;font-weight:700;}
+.weigh-row .wd2{font-size:.66rem;color:var(--muted);}
+.weigh-row .wstat{font-size:.72rem;font-weight:800;}
+.weigh-row .wstat.wait{color:var(--muted);}
+.weigh-row .wstat.ok{color:var(--green);}
+
+/* timer/payout */
+.payout-big{text-align:center;padding:1rem 0;}
+.payout-big .pl{font-size:.74rem;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;font-weight:600;}
+.payout-big .pv{font-size:2.6rem;font-weight:800;color:var(--green);letter-spacing:-.02em;}
+
+/* upi countdown */
+.upi-count{font-family:'JetBrains Mono',monospace;font-size:1.6rem;font-weight:700;color:var(--green);text-align:center;}
+.live-dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:5px;animation:pa 1.4s infinite;}
+@keyframes pa{0%{box-shadow:0 0 0 0 rgba(22,163,74,.6);}70%{box-shadow:0 0 0 7px rgba(22,163,74,0);}100%{box-shadow:0 0 0 0 rgba(22,163,74,0);}}
+
+/* cert card */
+.cert{background:linear-gradient(135deg,#1e293b,#334155);color:#fff;border-radius:14px;padding:1rem;margin-bottom:.7rem;position:relative;overflow:hidden;}
+.cert .ct{font-size:.82rem;font-weight:800;display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem;}
+.cert .crow{display:flex;justify-content:space-between;font-size:.7rem;padding:.18rem 0;color:#cbd5e1;font-family:'JetBrains Mono',monospace;}
+.cert .crow b{color:#fff;}
+.cert .seal{position:absolute;right:-10px;bottom:-10px;font-size:4rem;opacity:.12;}
+
+/* done */
+.done{text-align:center;padding:1.6rem 1rem;}
+.done .big{width:88px;height:88px;border-radius:50%;background:var(--green);display:grid;place-items:center;font-size:2.6rem;color:#fff;margin:0 auto 1rem;animation:popB .5s cubic-bezier(.2,1.3,.5,1);}
+@keyframes popB{from{transform:scale(0);}to{transform:scale(1);}}
+.done h2{margin-bottom:.3rem;}
+
+/* cta */
+.cta-bar{position:absolute;bottom:0;left:0;right:0;padding:.85rem 1.1rem;background:#fff;border-top:1px solid var(--line);box-shadow:0 -6px 20px rgba(0,0,0,.06);}
+.btn-main{width:100%;background:var(--green);color:#fff;border:none;border-radius:13px;padding:.95rem;font-weight:800;font-size:.92rem;transition:all .18s;display:flex;align-items:center;justify-content:center;gap:.45rem;}
+.btn-main:hover{filter:brightness(1.08);transform:translateY(-1px);}
+.btn-main:disabled{background:#cbd5cf;color:#8a9a8e;transform:none;cursor:not-allowed;}
+.btn-ghost2{width:100%;background:transparent;color:var(--muted);border:none;padding:.5rem;font-size:.76rem;font-weight:600;margin-top:.15rem;}
+
+/* right column narration */
+.info-col{color:#fff;}
+.info-col .eyebrow{display:inline-flex;align-items:center;gap:.5rem;background:rgba(132,204,22,.16);color:#bef264;padding:6px 14px;border-radius:999px;font-size:.74rem;font-weight:700;margin-bottom:1rem;}
+.info-col .eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--lime);animation:pa 1.6s infinite;}
+.info-col h1{font-size:2.4rem;font-weight:800;line-height:1.1;letter-spacing:-.02em;margin-bottom:.7rem;}
+.info-col h1 em{color:var(--lime);font-style:normal;}
+.info-col .lead{color:#bcd8c4;font-size:1rem;max-width:520px;margin-bottom:1.6rem;}
+
+.flow-list{display:flex;flex-direction:column;gap:.5rem;margin-bottom:1.6rem;}
+.flow-item{display:flex;gap:.8rem;align-items:flex-start;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:13px;padding:.7rem .85rem;transition:all .3s;opacity:.45;}
+.flow-item.active{opacity:1;background:rgba(22,163,74,.2);border-color:rgba(34,197,94,.45);transform:translateX(4px);}
+.flow-item.done{opacity:.85;}
+.flow-item .fnum{width:26px;height:26px;border-radius:8px;background:rgba(255,255,255,.1);display:grid;place-items:center;font-size:.72rem;font-weight:800;flex-shrink:0;}
+.flow-item.active .fnum{background:var(--green);}
+.flow-item.done .fnum{background:var(--green2);}
+.flow-item .ftt{font-size:.84rem;font-weight:700;line-height:1.3;}
+.flow-item .fds{font-size:.72rem;color:#a6c3ad;line-height:1.4;}
+.flow-item.active .fds{color:#d7e6da;}
+
+.spec-note{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:1.1rem;font-family:'JetBrains Mono',monospace;font-size:.72rem;color:#cbd5e1;line-height:1.8;margin-bottom:1rem;}
+.spec-note .sh{color:var(--lime);font-weight:600;}
+.spec-note .sk{color:#6ee7b7;}
+.spec-note .sv2{color:var(--amber);font-weight:600;}
+.spec-note .sc{color:#5b8a66;}
+
+.minibar{display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:.4rem;}
+.minibar .mb .n{font-size:1.4rem;font-weight:800;}
+.minibar .mb .l{font-size:.72rem;color:#a6c3ad;}
+.demo-tag{display:inline-block;background:rgba(132,204,22,.16);color:#bef264;font-size:.72rem;font-weight:700;padding:5px 12px;border-radius:8px;margin-top:1.2rem;}
+
+.toast{position:fixed;left:50%;bottom:26px;transform:translateX(-50%) translateY(40px);background:var(--ink);color:#fff;padding:11px 20px;border-radius:11px;font-weight:600;font-size:.85rem;opacity:0;transition:.3s;z-index:600;box-shadow:0 10px 30px rgba(0,0,0,.3);}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+
+@media(max-width:560px){.info-col h1{font-size:1.9rem;}.wrap{padding:1rem .8rem 3rem;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a href="/Indian_Services_Platform.html" class="brand"><span class="logo">♻️</span> Scrap<em>Cycle</em></a>
+  <a href="/Indian_Services_Platform.html" class="back">← Back to platform</a>
+</div>
+
+<div class="wrap">
+
+  <!-- PHONE -->
+  <div class="phone-col">
+    <div class="phone">
+      <div class="notch"></div>
+      <div class="statusbar"><span id="clock">9:41</span><span class="sig">📶 🔋 100%</span></div>
+      <div class="app-head">
+        <button class="ah-back" id="ahBack" onclick="goBack()" disabled>←</button>
+        <div class="ah-title" id="ahTitle">♻️ Scrap Pickup</div>
+        <div class="ah-step" id="ahStep">Step 1 / 10</div>
+      </div>
+      <div class="rail"><div class="rail-fill" id="rail"></div></div>
+      <div class="screen" id="screen"></div>
+    </div>
+  </div>
+
+  <!-- NARRATION -->
+  <div class="info-col">
+    <span class="eyebrow"><span class="dot"></span> Live interactive demo · spec 10.8</span>
+    <h1>Sell your <em>scrap</em><br>at a fair, locked rate.</h1>
+    <p class="lead">Tap through the real doorstep kabadi-pickup flow. Today's market rate is locked at booking, every weighing is on a Legal-Metrology certified scale, e-waste routes to CPCB recyclers with NIST data-wipe certificates, and you're paid by UPI in 60 seconds.</p>
+
+    <div class="minibar" style="margin-bottom:1.6rem;">
+      <div class="mb"><div class="n">🔒</div><div class="l">Rate locked at booking</div></div>
+      <div class="mb"><div class="n">⚖️</div><div class="l">Certified scale</div></div>
+      <div class="mb"><div class="n">3.8+</div><div class="l">Min trust score</div></div>
+      <div class="mb"><div class="n">60s</div><div class="l">UPI payout</div></div>
+    </div>
+
+    <div class="flow-list" id="flowList"></div>
+
+    <div class="spec-note" id="specNote">
+      <span class="sh">// current step — spec reference</span><br>
+      <span class="sc">select scrap categories to begin…</span>
+    </div>
+
+    <span class="demo-tag">♻️ Demo template by Full Moon Computing — not a real booking</span>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+/* ══════════════════════════════════════════════════════════════
+   SPEC DATA — Category 10.8 Scrap / Kabadi Pickup
+   (from 10_CLEANING_SANITATION.txt). T3 rates; "locked" = today's rate.
+   ══════════════════════════════════════════════════════════════ */
+const CATS = [
+  { id:'newspaper',       name:'Newspaper',        ic:'📰', lo:12, hi:18, rate:15,  vol:'low',       note:'clean, bundled' },
+  { id:'books_magazines', name:'Books / Magazines',ic:'📚', lo:8,  hi:14, rate:11,  vol:'low',       note:'' },
+  { id:'cardboard',       name:'Cardboard',        ic:'📦', lo:6,  hi:12, rate:9,   vol:'low',       note:'flattened' },
+  { id:'plastic_bottles', name:'Plastic bottles (PET)',ic:'🍾',lo:10,hi:16,rate:13, vol:'medium',    note:'' },
+  { id:'plastic_other',   name:'Plastic (HDPE/PP)', ic:'🥤', lo:6,  hi:12, rate:9,   vol:'medium',    note:'' },
+  { id:'glass',           name:'Glass',            ic:'🫙', lo:1,  hi:3,  rate:2,   vol:'low',       note:'no broken' },
+  { id:'metal_iron',      name:'Iron / Steel',     ic:'🔩', lo:25, hi:40, rate:32,  vol:'high',      note:'LME-linked' },
+  { id:'metal_copper',    name:'Copper',           ic:'🟠', lo:400,hi:550,rate:475, vol:'very_high', note:'LME-linked' },
+  { id:'metal_aluminium', name:'Aluminium',        ic:'🥫', lo:70, hi:120,rate:95,  vol:'high',      note:'' },
+  { id:'rubber',          name:'Rubber',           ic:'🛞', lo:10, hi:20, rate:15,  vol:'low',       note:'' },
+  { id:'clothes_rags',    name:'Clothes / Rags',   ic:'👕', lo:5,  hi:10, rate:7,   vol:'low',       note:'' },
+  { id:'batteries',       name:'Batteries (lead-acid)',ic:'🔋',lo:80,hi:120,rate:100,vol:'high',     note:'hazardous', haz:true },
+  { id:'e_waste',         name:'E-waste (electronics)',ic:'💻',lo:0, hi:0,  rate:0,   vol:'',          note:'CPCB recycler · quoted by item', ewaste:true },
+];
+
+const EW_ITEMS = [
+  { id:'working_laptop',    name:'Working laptop',    ic:'💻', lo:500, hi:2000, pay:1200, dataDevice:true },
+  { id:'non_working_laptop',name:'Dead laptop',       ic:'💻', lo:200, hi:800,  pay:450,  dataDevice:true },
+  { id:'mobile_phone',      name:'Mobile phone',      ic:'📱', lo:50,  hi:500,  pay:250,  dataDevice:true },
+  { id:'desktop_tower',     name:'Desktop tower',     ic:'🖥️', lo:200, hi:600,  pay:400,  dataDevice:true },
+  { id:'flat_screen_monitor',name:'Flat monitor',     ic:'🖵', lo:100, hi:400,  pay:220,  dataDevice:false },
+  { id:'printer',           name:'Printer',           ic:'🖨️', lo:50,  hi:200,  pay:110,  dataDevice:false },
+];
+
+const KABADIWALAS = [
+  { name:'Salim Ansari', av:'SA', col:'#16a34a', rating:4.7, trust:4.5, dist:1.2, cal:'2 mo', cpcb:true,  pickups:840 },
+  { name:'Vijay Rathod', av:'VR', col:'#0d9488', rating:4.5, trust:4.2, dist:2.4, cal:'4 mo', cpcb:true,  pickups:512 },
+  { name:'Mohan Das',    av:'MD', col:'#f97316', rating:4.3, trust:3.9, dist:3.1, cal:'5 mo', cpcb:false, pickups:289 },
+];
+
+const FLOW = [
+  { t:'Select categories', d:'Enter rough weight per category' },
+  { t:'E-waste handling', d:'Photos → CPCB quote + data wipe' },
+  { t:'Dispatch kabadiwala', d:'≤7 km, certified scale, trust ≥ 3.8' },
+  { t:'Arrival & tare', d:'Scale cert shown · zeroed to 0.0 kg' },
+  { t:'Weigh per category', d:'Display faces you → confirm each' },
+  { t:'Payout computation', d:'weight × locked rate, itemised' },
+  { t:'Instant UPI payout', d:'Platform → you in 60 seconds' },
+  { t:'E-waste handover', d:'Data wiped → certificate issued' },
+  { t:'Load-out', d:'Material loaded · you confirm' },
+  { t:'Receipt + reminder', d:'PDF receipt · 30-day reminder' },
+];
+
+/* ══════════════════════════════════════════════════════════════ STATE */
+const S = {
+  step:1,
+  sel:{},          // catId -> estimated kg
+  ewItems:{},      // ewId -> { qty:1, data:bool }
+  kab:null,
+  actual:{},       // catId -> actual weighed kg
+  weighIdx:0,
+  total:0, ewTotal:0,
+};
+
+const $ = id => document.getElementById(id);
+const r = n => Math.round(n);
+const inr = n => '₹'+Math.round(n).toLocaleString('en-IN');
+const hasEwaste = () => !!S.sel['e_waste'];
+const ewChosen = () => Object.keys(S.ewItems).filter(k=>S.ewItems[k]);
+const ewHasData = () => ewChosen().some(k=>EW_ITEMS.find(e=>e.id===k).dataDevice);
+
+function toast(m){const t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2600);}
+
+/* estimate range from selected categories (excluding e-waste, quoted separately) */
+function estRange(){
+  let lo=0,hi=0;
+  for(const id in S.sel){
+    const c=CATS.find(x=>x.id===id); if(!c||c.ewaste) continue;
+    lo += S.sel[id]*c.lo; hi += S.sel[id]*c.hi;
+  }
+  return {lo,hi};
+}
+function lockedScrapTotal(){ // using locked rate × actual (or estimated) weight
+  let t=0;
+  for(const id in S.sel){
+    const c=CATS.find(x=>x.id===id); if(!c||c.ewaste) continue;
+    const w = (S.actual[id]!=null)?S.actual[id]:S.sel[id];
+    t += w*c.rate;
+  }
+  return t;
+}
+function ewTotal(){ return ewChosen().reduce((a,k)=>a+EW_ITEMS.find(e=>e.id===k).pay,0); }
+
+/* ══════════════════════════════════════════════════════════════ NARRATION */
+function renderFlow(){
+  $('flowList').innerHTML = FLOW.map((f,i)=>{
+    const n=i+1, cls = n===S.step?'active':(n<S.step?'done':''), mark = n<S.step?'✓':n;
+    return `<div class="flow-item ${cls}"><div class="fnum">${mark}</div>
+      <div><div class="ftt">${f.t}</div><div class="fds">${f.d}</div></div></div>`;
+  }).join('');
+}
+function specNote(h){ $('specNote').innerHTML=h; }
+
+function chrome(){
+  $('ahStep').textContent=`Step ${S.step} / 10`;
+  $('rail').style.width=(S.step/10*100)+'%';
+  $('ahBack').disabled=(S.step<=1||S.step>=10);
+  renderFlow();
+}
+
+/* ══════════════════════════════════════════════════════════════ ROUTER */
+function render(){
+  chrome();
+  const fns=[null,scr1,scr2,scr3,scr4,scr5,scr6,scr7,scr8,scr9,scr10];
+  $('screen').innerHTML=fns[S.step]();
+  $('screen').scrollTop=0;
+  if(S.step===3) runRadar();
+  if(S.step===7) runUpi();
+}
+function go(n){ S.step=n; render(); }
+function goBack(){ if(S.step>1&&S.step<10){ S.step--; render(); } }
+
+/* ── Step 1: categories + weights ── */
+function scr1(){
+  specNote(`<span class="sh">// STEP 1 — categories + rate card</span><br>
+    live_rate_card = <span class="sv2">today's locked rates</span><br>
+    estimated_payout = Σ(weight × rate)<br>
+    <span class="sc">// rate pulled 7am daily, locked all day</span>`);
+  const e=estRange();
+  const anySel=Object.keys(S.sel).length>0;
+  return `<div class="scr">
+    <h2>What scrap do you have?</h2>
+    <p class="sub">Tap categories, then set a rough weight. Today's rate is locked.</p>
+    ${CATS.map(c=>{
+      const on=S.sel[c.id]!=null;
+      const rateLbl = c.ewaste?'by item':`₹${c.lo}–${c.hi}/kg`;
+      return `<button class="cat-tile ${on?'sel':''}" onclick="toggleCat('${c.id}')">
+        <div class="cic">${c.ic}</div>
+        <div class="ctx">
+          <div class="cnm">${c.name}${c.haz?' <span class="haz">⚠ hazardous</span>':''}</div>
+          <div class="crt">${rateLbl}${c.vol?`<span class="vol ${c.vol}">${c.vol.replace('_',' ')}</span>`:''}</div>
+        </div>
+        <div class="chk">✓</div>
+      </button>`;
+    }).join('')}
+    ${anySel?`<div style="margin-top:1rem;font-size:.74rem;font-weight:700;color:var(--muted);">ESTIMATED WEIGHT</div>`:''}
+    <div id="wtList">${weightInputs()}</div>
+    ${(anySel && (e.lo||e.hi))?`<div class="est" style="margin-top:1rem;">
+      <div class="el">Estimated payout (scrap)</div>
+      <div class="ev">${inr(e.lo)} – ${inr(e.hi)}</div>
+      <div class="ed">${hasEwaste()?'+ e-waste quoted separately by photo':'based on your weight estimate'}</div>
+    </div>`:''}
+    <div class="cta-bar"><button class="btn-main" onclick="step1Next()" ${anySel?'':'disabled'}>Continue →</button></div>
+  </div>`;
+}
+function weightInputs(){
+  const ids=Object.keys(S.sel).filter(id=>!CATS.find(c=>c.id===id).ewaste);
+  if(!ids.length) return '';
+  return ids.map(id=>{
+    const c=CATS.find(x=>x.id===id);
+    return `<div class="wt-row">
+      <span class="wic">${c.ic}</span><span class="wnm">${c.name}</span>
+      <div class="wctrl">
+        <button class="stp" onclick="bumpWt('${id}',-1)">−</button>
+        <span class="wval" id="wt-${id}">${S.sel[id]}</span>
+        <button class="stp" onclick="bumpWt('${id}',1)">+</button>
+        <span class="wunit">kg</span>
+      </div></div>`;
+  }).join('');
+}
+function toggleCat(id){
+  if(S.sel[id]!=null) delete S.sel[id];
+  else S.sel[id]= CATS.find(c=>c.id===id).ewaste ? 0 : 5;
+  render();
+}
+function bumpWt(id,d){ S.sel[id]=Math.max(1,(S.sel[id]||0)+d); render(); }
+function step1Next(){ go(2); }
+
+/* ── Step 2: e-waste ── */
+function scr2(){
+  if(!hasEwaste()){
+    specNote(`<span class="sh">// STEP 2 — e-waste handling</span><br>
+      <span class="sc">no e-waste selected → step skipped</span><br>
+      <span class="sc">// regular kabadiwala can collect all items</span>`);
+    return `<div class="scr">
+      <h2>E-waste handling</h2>
+      <p class="sub">Only applies if you have electronics.</p>
+      <div class="alert info"><span class="ai">ℹ️</span><span class="at">You didn't select any e-waste, so this step is skipped. E-waste must go to <b>CPCB-authorised recyclers</b>, never a regular kabadiwala.</span></div>
+      <div class="card"><h3>♻️ Why it matters</h3>
+        <p style="font-size:.76rem;color:var(--muted);line-height:1.5;">Electronics contain hazardous materials. ScrapCycle routes every e-waste item to a Central Pollution Control Board authorised recycler, and wipes data-bearing devices to NIST 800-88 standard before handover.</p></div>
+      <div class="cta-bar"><button class="btn-main" onclick="go(3)">Find a kabadiwala →</button></div>
+    </div>`;
+  }
+  specNote(`<span class="sh">// STEP 2 — e-waste quote + data wipe</span><br>
+    item_photos → CPCB quote in <span class="sv2">2 hrs</span><br>
+    IF data_bearing: <span class="sk">NIST 800-88</span> wipe<br>
+    → data_destruction_certificate per device`);
+  const chosen=ewChosen();
+  return `<div class="scr">
+    <h2>Your e-waste</h2>
+    <p class="sub">Add electronics. We quote from photos, wipe data, and route to CPCB recyclers.</p>
+    ${EW_ITEMS.map(e=>{
+      const on=!!S.ewItems[e.id];
+      return `<div class="ew-item">
+        <div class="ew-top">
+          <div class="eic">${e.ic}</div>
+          <div class="enm">${e.name}<div style="font-size:.64rem;color:var(--muted);font-weight:500;">₹${e.lo}–${e.hi} · quoted by photo</div></div>
+          <button class="toggle ${on?'on':''}" onclick="toggleEw('${e.id}')" aria-label="toggle"></button>
+        </div>
+        ${on && e.dataDevice?`<div class="ew-data">🔒 Data-bearing device — NIST 800-88 wipe + certificate included</div>`:''}
+      </div>`;
+    }).join('')}
+    ${chosen.length?`<div class="alert"><span class="ai">📸</span><span class="at">Photos uploaded. Indicative quote: <b>${inr(ewTotal())}</b>. Final payout confirmed within 2 hours after photo review.</span></div>`:''}
+    ${ewHasData()?`<div class="alert info"><span class="ai">🔒</span><span class="at">Selected devices store data. A <b>NIST 800-88 (3-pass)</b> wipe is performed before handover, with a destruction certificate per device.</span></div>`:''}
+    <div class="cta-bar"><button class="btn-main" onclick="go(3)">${chosen.length?'Accept quote & continue →':'Skip — find kabadiwala →'}</button></div>
+  </div>`;
+}
+function toggleEw(id){ if(S.ewItems[id]) delete S.ewItems[id]; else S.ewItems[id]={qty:1}; render(); }
+
+/* ── Step 3: dispatch radar ── */
+function scr3(){
+  specNote(`<span class="sh">// STEP 3 — geo-query kabadiwala</span><br>
+    distance ≤ <span class="sv2">7 km</span><br>
+    handles all selected categories<br>
+    ${hasEwaste()?'<span class="sk">CPCB_certified</span> (e-waste) · ':''}scale calib < <span class="sv2">6 mo</span><br>
+    trust_score ≥ <span class="sv2">3.8</span>`);
+  return `<div class="scr">
+    <h2>Finding a kabadiwala…</h2>
+    <p class="sub">Within 7 km · certified scale · trust ≥ 3.8${hasEwaste()?' · CPCB certified':''}</p>
+    <div class="radar" id="radar">
+      <div class="rings"><div class="ring"></div><div class="ring"></div><div class="ring"></div></div>
+      <div class="me">♻️</div>
+    </div>
+    <div class="radar-status" id="radarStatus">📡 Scanning 7 km radius…</div>
+    <div id="kabBox" style="margin-top:1rem;"></div>
+    <div class="cta-bar" id="s3cta" style="display:none;"><button class="btn-main" id="b3" onclick="go(4)">Confirm pickup →</button></div>
+  </div>`;
+}
+function runRadar(){
+  // filter per spec: trust>=3.8, dist<=7, cpcb if e-waste
+  const pool=KABADIWALAS.filter(k=>k.trust>=3.8 && k.dist<=7 && (!hasEwaste()||k.cpcb)).sort((a,b)=>b.trust-a.trust);
+  S.kab=pool[0];
+  const radar=$('radar'); const pos=[[-55,-30],[60,-10],[-20,55]];
+  pool.forEach((k,i)=>setTimeout(()=>{
+    const b=document.createElement('div'); b.className='blip'; b.textContent=k.av[0];
+    b.style.transform=`translate(${pos[i][0]}px,${pos[i][1]}px)`; radar.appendChild(b);
+  },500+i*450));
+  setTimeout(()=>{
+    $('radarStatus').innerHTML=`✅ <b>${S.kab.name}</b> matched — best trust nearby`;
+    $('kabBox').innerHTML=kabCard(S.kab);
+    $('s3cta').style.display='block';
+  },500+pool.length*450+400);
+}
+function kabCard(k){
+  return `<div class="pro">
+    <div class="pro-top">
+      <div class="av" style="background:${k.col}">${k.av}</div>
+      <div style="flex:1">
+        <div class="pnm">${k.name}</div>
+        <div class="pmeta"><span class="star">★ ${k.rating}</span><span>📍 ${k.dist} km</span><span>♻️ ${k.pickups} pickups</span></div>
+      </div>
+    </div>
+    <div style="margin-top:.55rem;display:flex;gap:.4rem;flex-wrap:wrap;">
+      <span class="badge-cert">⚖️ Scale cert · calib ${k.cal}</span>
+      ${k.cpcb?'<span class="badge-cert">♻️ CPCB authorised</span>':''}
+      <span class="badge-cert">🛡️ Trust ${k.trust}</span>
+    </div>
+  </div>`;
+}
+
+/* ── Step 4: arrival + tare ── */
+function scr4(){
+  specNote(`<span class="sh">// STEP 4 — arrival & tare</span><br>
+    show: digital scale certificate<br>
+    Step A: zero scale → <span class="sv2">0.0 kg</span><br>
+    zero_tare_photo (display faces customer)`);
+  return `<div class="scr">
+    <h2>${S.kab.name.split(' ')[0]} has arrived</h2>
+    <p class="sub">Scale certificate shown, then zeroed in front of you.</p>
+    ${kabCard(S.kab)}
+    <div class="card">
+      <h3>⚖️ Legal Metrology certificate</h3>
+      <div class="kv"><span class="k">Scale type</span><span class="v">Digital platform 100 kg</span></div>
+      <div class="kv"><span class="k">Calibration date</span><span class="v">${S.kab.cal} ago</span></div>
+      <div class="kv"><span class="k">Certificate</span><span class="v" style="color:var(--green)">✓ valid (&lt; 6 mo)</span></div>
+    </div>
+    <div class="scale">
+      <div class="sl">Scale display · tared</div>
+      <div class="sv">0.0</div>
+      <div class="su">kg</div>
+    </div>
+    <div class="alert info"><span class="ai">📸</span><span class="at">A <b>zero-tare photo</b> is logged — the display reads 0.0 kg before any material is placed.</span></div>
+    <div class="cta-bar"><button class="btn-main" onclick="go(5)">Start weighing →</button></div>
+  </div>`;
+}
+
+/* ── Step 5: weigh per category ── */
+function scr5(){
+  specNote(`<span class="sh">// STEP 5 — weigh per category</span><br>
+    each category weighed separately<br>
+    reading photographed, display faces you<br>
+    confirm in-app · <span class="sv2">1 free re-weigh</span> on dispute`);
+  const ids=Object.keys(S.sel).filter(id=>!CATS.find(c=>c.id===id).ewaste);
+  // generate actual weights once
+  ids.forEach(id=>{ if(S.actual[id]==null){ const est=S.sel[id]; S.actual[id]=Math.max(1,+(est*(0.9+Math.random()*0.25)).toFixed(1)); }});
+  const cur=ids[S.weighIdx];
+  const c=cur?CATS.find(x=>x.id===cur):null;
+  const allDone=S.weighIdx>=ids.length;
+  return `<div class="scr">
+    <h2>Weighing</h2>
+    <p class="sub">${allDone?'All categories weighed and confirmed.':`Item ${S.weighIdx+1} of ${ids.length} · ${c.name}`}</p>
+    ${!allDone?`
+      <div class="scale">
+        <div class="sl">${c.name} · live reading</div>
+        <div class="sv">${S.actual[cur].toFixed(1)}</div>
+        <div class="su">kg × ${inr(c.rate)}/kg</div>
+      </div>
+      <div class="alert"><span class="ai">⚖️</span><span class="at">Display faces you. Estimated ${S.sel[cur]} kg → actual <b>${S.actual[cur].toFixed(1)} kg</b>. Payout: <b>${inr(S.actual[cur]*c.rate)}</b></span></div>
+    `:''}
+    <div style="margin-top:.4rem;">${ids.map((id,i)=>{
+      const cc=CATS.find(x=>x.id===id); const done=i<S.weighIdx;
+      return `<div class="weigh-row ${done?'done':''}">
+        <span class="wic2">${cc.ic}</span>
+        <div class="winf"><div class="wn2">${cc.name}</div><div class="wd2">${done?`${S.actual[id].toFixed(1)} kg × ${inr(cc.rate)}`:`est. ${S.sel[id]} kg`}</div></div>
+        <div class="wstat ${done?'ok':'wait'}">${done?inr(S.actual[id]*cc.rate):'…'}</div>
+      </div>`;
+    }).join('')}</div>
+    <div class="cta-bar">
+      ${!allDone
+        ? `<button class="btn-main" onclick="confirmWeigh()">Confirm ${c.name} weight ✓</button><button class="btn-ghost2" onclick="reweigh()">⚖️ Dispute & re-weigh (1 free)</button>`
+        : `<button class="btn-main" onclick="go(6)">See payout →</button>`}
+    </div>
+  </div>`;
+}
+function confirmWeigh(){ S.weighIdx++; render(); toast('Weight confirmed ✓'); }
+function reweigh(){
+  const ids=Object.keys(S.sel).filter(id=>!CATS.find(c=>c.id===id).ewaste);
+  const cur=ids[S.weighIdx]; const est=S.sel[cur];
+  S.actual[cur]=Math.max(1,+(est*(0.95+Math.random()*0.2)).toFixed(1));
+  render(); toast('Re-weighed (free) — new reading shown');
+}
+
+/* ── Step 6: payout computation ── */
+function scr6(){
+  const scrap=lockedScrapTotal(); const ew=hasEwaste()?ewTotal():0;
+  S.total=scrap+ew; S.ewTotal=ew;
+  specNote(`<span class="sh">// STEP 6 — payout computation</span><br>
+    payout = Σ(weight × locked_rate)<br>
+    scrap = <span class="sv2">${inr(scrap)}</span>${ew?` + e-waste <span class="sv2">${inr(ew)}</span>`:''}<br>
+    total = <span class="sv2">${inr(S.total)}</span>`);
+  const ids=Object.keys(S.sel).filter(id=>!CATS.find(c=>c.id===id).ewaste);
+  return `<div class="scr">
+    <h2>Your payout</h2>
+    <p class="sub">Itemised at today's locked rate.</p>
+    <div class="card">
+      <h3>🧾 Breakdown</h3>
+      ${ids.map(id=>{const c=CATS.find(x=>x.id===id);return `<div class="kv"><span class="k">${c.ic} ${c.name} · ${S.actual[id].toFixed(1)}kg × ${inr(c.rate)}</span><span class="v">${inr(S.actual[id]*c.rate)}</span></div>`;}).join('')}
+      ${ew?`<div class="kv"><span class="k">💻 E-waste (CPCB) · ${ewChosen().length} item(s)</span><span class="v">${inr(ew)}</span></div>`:''}
+      <div class="kv total"><span class="k">Total payout</span><span class="v">${inr(S.total)}</span></div>
+    </div>
+    <div class="lock"><span class="li">🔒</span><span class="lt">Paid at the <b>rate locked at booking</b> — you keep this rate even if the market dropped today.</span></div>
+    <div class="cta-bar"><button class="btn-main" onclick="go(7)">Accept & get paid →</button></div>
+  </div>`;
+}
+
+/* ── Step 7: UPI payout ── */
+let upiTimer=null;
+function scr7(){
+  specNote(`<span class="sh">// STEP 7 — instant UPI payout</span><br>
+    platform → customer via UPI<br>
+    within <span class="sv2">60 seconds</span> of acceptance<br>
+    <span class="sc">// never cash — prevents short-changing</span>`);
+  return `<div class="scr">
+    <div class="payout-big" style="padding-top:1.4rem;">
+      <div class="pl">Paying to your UPI</div>
+      <div class="pv">${inr(S.total)}</div>
+    </div>
+    <div class="card" style="text-align:center;">
+      <h3 style="justify-content:center;">⚡ Instant transfer</h3>
+      <p style="font-size:.74rem;color:var(--muted);margin-bottom:.5rem;">Platform pays you directly — no cash, no haggling.</p>
+      <div class="upi-count" id="upiCount"><span class="live-dot"></span>processing… 60s</div>
+    </div>
+    <div id="upiDone" style="display:none;">
+      <div class="alert info"><span class="ai">✅</span><span class="at">Sent to <b>you@upi</b> · ref <b id="upiRef"></b></span></div>
+    </div>
+    <div class="cta-bar"><button class="btn-main" id="b7" onclick="go(8)" disabled>Continue →</button></div>
+  </div>`;
+}
+function runUpi(){
+  let s=60; const el=$('upiCount');
+  if(upiTimer) clearInterval(upiTimer);
+  upiTimer=setInterval(()=>{
+    s-=12; const e=$('upiCount'); if(!e){clearInterval(upiTimer);return;}
+    if(s<=0){
+      clearInterval(upiTimer);
+      e.innerHTML='✅ Paid in 5 seconds';
+      const d=$('upiDone'); if(d){d.style.display='block';$('upiRef').textContent='UPI'+Math.floor(1e8+Math.random()*8e8);}
+      const b=$('b7'); if(b)b.disabled=false;
+    } else { e.innerHTML=`<span class="live-dot"></span>processing… ${s}s`; }
+  },500);
+}
+
+/* ── Step 8: e-waste handover + cert ── */
+function scr8(){
+  if(!hasEwaste()||!ewChosen().length){
+    specNote(`<span class="sh">// STEP 8 — e-waste handover</span><br>
+      <span class="sc">no e-waste → nothing to hand over</span>`);
+    return `<div class="scr">
+      <h2>E-waste handover</h2>
+      <p class="sub">Only applies if you sold electronics.</p>
+      <div class="alert info"><span class="ai">ℹ️</span><span class="at">No e-waste in this pickup — nothing to hand over.</span></div>
+      <div class="cta-bar"><button class="btn-main" onclick="go(9)">Continue →</button></div>
+    </div>`;
+  }
+  specNote(`<span class="sh">// STEP 8 — e-waste handover</span><br>
+    ${ewHasData()?'data_bearing → wipe FIRST<br>cert generated pre-handover<br>':''}handover_receipt: item + serial + cert_id`);
+  const dataItems=ewChosen().map(k=>EW_ITEMS.find(e=>e.id===k)).filter(e=>e.dataDevice);
+  return `<div class="scr">
+    <h2>E-waste handover</h2>
+    <p class="sub">${ewHasData()?'Data wiped before handover. Certificates issued per device.':'Items routed to CPCB recycler.'}</p>
+    ${dataItems.map((e,i)=>`
+      <div class="cert">
+        <div class="ct">🔒 Data Destruction Certificate</div>
+        <div class="crow"><span>Device</span><b>${e.name}</b></div>
+        <div class="crow"><span>Serial</span><b>SN-${Math.floor(1e6+Math.random()*9e6)}</b></div>
+        <div class="crow"><span>Method</span><b>NIST 800-88 · 3-pass</b></div>
+        <div class="crow"><span>Cert ID</span><b>DDC-${Date.now().toString().slice(-6)}${i}</b></div>
+        <div class="crow"><span>Agent</span><b>${S.kab.name}</b></div>
+        <div class="seal">🛡️</div>
+      </div>`).join('')}
+    <div class="alert info"><span class="ai">📲</span><span class="at">Certificates sent via WhatsApp + email. Platform retains a copy for <b>3 years</b>.</span></div>
+    <div class="cta-bar"><button class="btn-main" onclick="go(9)">Confirm handover →</button></div>
+  </div>`;
+}
+
+/* ── Step 9: load-out ── */
+function scr9(){
+  specNote(`<span class="sh">// STEP 9 — load-out</span><br>
+    kabadiwala loads accepted material<br>
+    customer confirms "All material collected"<br>
+    load_photo: vehicle with material`);
+  return `<div class="scr">
+    <h2>Loading up</h2>
+    <p class="sub">Confirm everything's been collected.</p>
+    <div class="card">
+      <h3>📦 Load photo</h3>
+      <div style="height:130px;border-radius:11px;background:linear-gradient(135deg,#1e293b,#334155);display:grid;place-items:center;color:#94a3b8;font-size:.8rem;">🛺 vehicle_loaded.jpg</div>
+    </div>
+    <div class="card">
+      <h3>✅ Collected</h3>
+      ${Object.keys(S.sel).filter(id=>!CATS.find(c=>c.id===id).ewaste).map(id=>{const c=CATS.find(x=>x.id===id);return `<div class="kv"><span class="k">${c.ic} ${c.name}</span><span class="v" style="color:var(--green)">${S.actual[id].toFixed(1)} kg ✓</span></div>`;}).join('')}
+      ${(hasEwaste()&&ewChosen().length)?`<div class="kv"><span class="k">💻 E-waste items</span><span class="v" style="color:var(--green)">${ewChosen().length} ✓</span></div>`:''}
+    </div>
+    <div class="cta-bar"><button class="btn-main" onclick="go(10)">✓ All material collected</button></div>
+  </div>`;
+}
+
+/* ── Step 10: receipt + reminder ── */
+function scr10(){
+  specNote(`<span class="sh">// STEP 10 — receipt + reminder</span><br>
+    category_breakdown + e_waste + cert_ids<br>
+    total_payout + UPI_reference → PDF<br>
+    next_pickup_reminder = <span class="sv2">+30 days</span>`);
+  const ids=Object.keys(S.sel).filter(id=>!CATS.find(c=>c.id===id).ewaste);
+  const totalKg=ids.reduce((a,id)=>a+S.actual[id],0);
+  return `<div class="scr">
+    <div class="done">
+      <div class="big">✓</div>
+      <h2>Pickup complete!</h2>
+      <p class="sub">${inr(S.total)} paid to your UPI.</p>
+    </div>
+    <div class="card">
+      <h3>🧾 Receipt #SC-${Math.floor(10000+Math.random()*89999)}</h3>
+      <div class="kv"><span class="k">Categories</span><span class="v">${ids.length}${hasEwaste()&&ewChosen().length?` + ${ewChosen().length} e-waste`:''}</span></div>
+      <div class="kv"><span class="k">Total weight</span><span class="v">${totalKg.toFixed(1)} kg</span></div>
+      ${S.ewTotal?`<div class="kv"><span class="k">E-waste payout</span><span class="v">${inr(S.ewTotal)}</span></div>`:''}
+      ${ewHasData()?`<div class="kv"><span class="k">Data wipe certs</span><span class="v" style="color:var(--green)">issued ✓</span></div>`:''}
+      <div class="kv"><span class="k">Kabadiwala</span><span class="v">${S.kab.name}</span></div>
+      <div class="kv total"><span class="k">Total paid</span><span class="v">${inr(S.total)}</span></div>
+    </div>
+    <div class="lock"><span class="li">🔔</span><span class="lt">We'll remind you in <b>30 days</b> — "Build up your scrap again!"</span></div>
+    <div class="cta-bar"><button class="btn-main" onclick="restart()">↺ New pickup</button></div>
+  </div>`;
+}
+function restart(){
+  Object.assign(S,{step:1,sel:{},ewItems:{},kab:null,actual:{},weighIdx:0,total:0,ewTotal:0});
+  render();
+}
+
+/* clock + init */
+function tickClock(){const d=new Date();$('clock').textContent=(d.getHours()%12||12)+':'+String(d.getMinutes()).padStart(2,'0');}
+setInterval(tickClock,10000); tickClock();
+render();
+</script>
+</body>
+</html>
