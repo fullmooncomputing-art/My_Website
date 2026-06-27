@@ -75,6 +75,8 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .svc-header-text{flex:1;}
 .tmpl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--cc-active);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;transition:all .2s;flex-shrink:0;}
 .tmpl-btn:hover{filter:brightness(1.15);transform:translateY(-2px);box-shadow:0 6px 18px -4px var(--cc-active-a);}
+.demo-app-btn{display:flex;align-items:center;gap:8px;margin:0 20px 14px;padding:13px 18px;background:linear-gradient(135deg,#2563eb,#0ea5e9);color:#fff;border-radius:11px;font-size:13px;font-weight:700;text-decoration:none;box-shadow:0 8px 22px -6px rgba(37,99,235,.6);transition:all .2s;}
+.demo-app-btn:hover{transform:translateY(-2px);filter:brightness(1.08);box-shadow:0 12px 28px -6px rgba(37,99,235,.7);}
 .svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;}
 .svc-btn{background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:11px;padding:14px;cursor:pointer;text-align:left;position:relative;overflow:hidden;transition:all .2s;color:var(--text);animation:scaleIn .4s ease both;}
 .svc-btn:hover{border-color:var(--cc-active);background:var(--surface2);transform:translateY(-3px) scale(1.02);box-shadow:0 8px 24px -6px var(--cc-active-a);}
@@ -194,6 +196,7 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
       <div class="inp-label">Inputs</div>
       <div class="inp-tags" id="f-inputs"></div>
     </div>
+    <a id="f-demo" class="demo-app-btn" target="_blank" style="display:none;">📱 Try the live booking app — interactive demo of this flow →</a>
     <div class="flow-ctrl">
       <button class="sim-btn" id="sim-btn" onclick="simulate()">▶ Simulate Flow</button>
       <button class="rst-btn" onclick="resetFlow()">↺ Reset</button>
@@ -318,6 +321,11 @@ const TEMPLATES = {
   0: '/templates/household-repair.html',
 };
 
+// per-service interactive booking-app demos (keyed by svc.id)
+const SVC_DEMOS = {
+  '1.1': '/templates/electrician.html',
+};
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let DATA = [];
 let activeCat = null;
@@ -399,6 +407,12 @@ function openFlow(ci, si) {
   document.getElementById('f-id').textContent    = svc.id;
   document.getElementById('f-title').textContent = `${SVC_ICONS[svc.id]||''} ${svc.name}`;
   document.getElementById('f-cat').textContent   = cat.n;
+
+  // interactive booking-app demo link (only for services that have one)
+  const demoEl = document.getElementById('f-demo');
+  const demoUrl = SVC_DEMOS[svc.id];
+  if (demoUrl) { demoEl.href = demoUrl; demoEl.style.display = 'flex'; }
+  else { demoEl.style.display = 'none'; }
 
   // inputs
   const inpEl = document.getElementById('f-inputs');
