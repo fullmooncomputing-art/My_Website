@@ -72,6 +72,9 @@ body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(
 .svc-header-icon{font-size:44px;}
 .svc-header h2{font-size:18px;font-weight:800;}
 .svc-header p{color:var(--text2);font-size:12px;margin-top:3px;}
+.svc-header-text{flex:1;}
+.tmpl-btn{display:inline-flex;align-items:center;gap:6px;background:var(--cc-active);color:#fff;border:none;border-radius:9px;padding:9px 16px;font-size:12px;font-weight:700;cursor:pointer;text-decoration:none;white-space:nowrap;transition:all .2s;flex-shrink:0;}
+.tmpl-btn:hover{filter:brightness(1.15);transform:translateY(-2px);box-shadow:0 6px 18px -4px var(--cc-active-a);}
 .svc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px;}
 .svc-btn{background:var(--surface);border:1px solid rgba(255,255,255,0.06);border-radius:11px;padding:14px;cursor:pointer;text-align:left;position:relative;overflow:hidden;transition:all .2s;color:var(--text);animation:scaleIn .4s ease both;}
 .svc-btn:hover{border-color:var(--cc-active);background:var(--surface2);transform:translateY(-3px) scale(1.02);box-shadow:0 8px 24px -6px var(--cc-active-a);}
@@ -310,6 +313,11 @@ function guessPhase(detail) {
   return {label:'EXECUTE', icon:'⚙️'};
 }
 
+// ── TEMPLATE LINKS (category index → demo URL) ────────────────────────────────
+const TEMPLATES = {
+  0: '/templates/household-repair.html',
+};
+
 // ── STATE ─────────────────────────────────────────────────────────────────────
 let DATA = [];
 let activeCat = null;
@@ -344,14 +352,16 @@ function showServices(ci) {
   cv.style.display = 'none';
   sv.style.cssText = `display:block;--cc-active:${cat.color};--cc-active-a:${cat.color}44`;
 
+  const tmplUrl = TEMPLATES[ci];
   sv.innerHTML = `
     <button class="back-btn" onclick="showCats()">← Back to Categories</button>
     <div class="svc-header" style="--cc:${cat.color}">
       <span class="svc-header-icon">${cat.icon}</span>
-      <div>
+      <div class="svc-header-text">
         <h2>${cat.n}</h2>
         <p>${cat.services.length} services — click any to see algorithm flow</p>
       </div>
+      ${tmplUrl ? `<a href="${tmplUrl}" target="_blank" class="tmpl-btn">🖥 View Live Demo →</a>` : ''}
     </div>
     <div class="svc-grid" id="svc-grid"></div>`;
 
