@@ -113,6 +113,14 @@ async function sbDelete(table, query) {
   });
   if (!r.ok) throw new Error('supabase DELETE ' + r.status + ' ' + (await r.text()));
 }
+async function sbPatch(table, query, patch) {
+  const r = await fetch(sbBase() + '/rest/v1/' + table + '?' + query, {
+    method: 'PATCH',
+    headers: sbHeaders({ 'Prefer': 'return=minimal' }),
+    body: JSON.stringify(patch),
+  });
+  if (!r.ok) throw new Error('supabase PATCH ' + r.status + ' ' + (await r.text()));
+}
 
 const eq = (v) => 'eq.' + encodeURIComponent(v);
 
@@ -233,6 +241,46 @@ async function activateAccount(auth, machine) {
   return { code: 'OK', lease, refresh: auth.refreshToken };
 }
 
+// ---- paid-key model: issue + look up random keys ----
+// A license key is a long random string you generate after a payment. It is
+// stored in license_keys and confirmed server-side on activation (no signature
+// in the key itself — the SIGNED thing is the lease the server returns).
+
+// Charset for keys: alphanumerics (minus look-alikes 0/O/1/l/I) + a set of
+// special characters that are safe in emails, JSON and URLs. ~68 symbols.
+const KEY_CHARSET = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%*-_=+?';
+
+/** A cryptographically-random key of `len` chars (default 65). */
+function randomKey(len = 65) {
+  const bytes = crypto.randomBytes(len);
+  let s = '';
+  for (let i = 0; i < len; i++) s += KEY_CHARSET[bytes[i] % KEY_CHARSET.length];
+  return s;
+}
+
+/** Generate + store a new license key. Returns { id, key }. */
+async function issueKey({ email, seats, note }) {
+  const id = crypto.randomUUID();
+  const key = randomKey(65);
+  await sbUpsert('license_keys',
+    { id, key, email: email || null, seats: seats && seats >= 1 ? seats : 1, note: note || null, active: true },
+    'id');
+  return { id, key };
+}
+
+/** Look up a key. Returns { id, seats, active, email } or null. */
+async function lookupKey(key) {
+  if (!key) return null;
+  const rows = await sbGet('license_keys?key=' + eq(key) + '&select=id,seats,active,email');
+  if (rows.length === 0) return null;
+  return { id: rows[0].id, seats: Number(rows[0].seats) || 1, active: rows[0].active !== false, email: rows[0].email || '' };
+}
+
+/** Revoke (active=false) or restore (active=true) a key. */
+async function setKeyActive(key, active) {
+  await sbPatch('license_keys', 'key=' + eq(key), { active: !!active });
+}
+
 // ---- request/response helpers matching the desktop client's text protocol ----
 
 /** Parse an x-www-form-urlencoded (or JSON) body into a plain object,
@@ -263,5 +311,6 @@ module.exports = {
   isRevoked, grantSeat, releaseSeat, seatUsage, setRevoked,
   passwordGrant, refreshGrant, getEntitlement, activateAccount,
   resolveUser, listDevices,
+  randomKey, issueKey, lookupKey, setKeyActive,
   readForm, sendText,
 };

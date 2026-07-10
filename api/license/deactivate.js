@@ -1,6 +1,5 @@
-// POST /api/license/deactivate   body: key=<licenseKey>&machine=<fingerprint>
-// Frees this machine's seat. -> "OK" | "BAD_KEY"
-// Serves the desktop client's License.deactivateOnline() call.
+// POST /api/license/deactivate   body: key=<passkey>&machine=<fingerprint>
+// Frees this machine's seat for the key.  -> "OK" | "BAD_KEY"
 const L = require('../_lib/license.js');
 
 module.exports = async function handler(req, res) {
@@ -12,10 +11,10 @@ module.exports = async function handler(req, res) {
   if (req.method !== 'POST') return L.sendText(res, 405, 'ERROR');
   try {
     const body = L.readForm(req);
-    const info = L.verifyKey(String(body.key || ''));
+    const k = await L.lookupKey(String(body.key || '').trim());
     const machine = String(body.machine || '');
-    if (!info) return L.sendText(res, 200, 'BAD_KEY');
-    await L.releaseSeat(info.id, machine);
+    if (!k) return L.sendText(res, 200, 'BAD_KEY');
+    await L.releaseSeat(k.id, machine);
     return L.sendText(res, 200, 'OK');
   } catch (e) {
     console.error('deactivate error:', e.message);
