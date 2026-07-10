@@ -38,6 +38,19 @@
         <p class="sub">Issue and manage cad2d license keys. Keep this page and your admin token private.</p>
 
         <div class="card">
+            <h2>Installer download</h2>
+            <p class="muted" style="margin:0 0 0.8rem;">CAD2D <b>1.0.0</b> — Linux (amd64) <code>.deb</code>, ~54&nbsp;MB. Inert until activated with a key you issue below.</p>
+            <div class="row">
+                <a id="dlLink" href="https://github.com/fullmooncomputing-art/My_Website/releases/download/v1.0.0/cad2d-licensed_1.0.0_amd64.deb" download style="text-decoration:none;">
+                    <button>⬇ Download .deb</button>
+                </a>
+                <button class="ghost" onclick="copyDl()">Copy download link</button>
+            </div>
+            <div class="out" id="dlOut"></div>
+            <p class="muted" style="margin:0.9rem 0 0;">Install: <code>sudo dpkg -i cad2d-licensed_1.0.0_amd64.deb</code> — then <b>Help ▸ License…</b> in the app to activate.</p>
+        </div>
+
+        <div class="card">
             <h2>Admin token</h2>
             <input id="token" type="password" placeholder="Your CAD2D_ADMIN_TOKEN" autocomplete="off">
             <label style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.7rem;">
@@ -112,6 +125,10 @@
             } finally { $('genBtn').disabled = false; }
         }
         function copyKey() { navigator.clipboard.writeText($('kb').textContent); }
+        function copyDl() {
+            navigator.clipboard.writeText($('dlLink').href);
+            setOut('dlOut', 'Download link copied to clipboard.', 'ok');
+        }
 
         async function checkKey() {
             const key = $('mkey').value.trim();
