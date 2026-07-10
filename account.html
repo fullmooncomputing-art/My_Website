@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Account — Full Moon Computing</title>
+    <meta name="description" content="Sign in to manage your cad2d license and activated devices.">
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .account-wrap { max-width: 620px; margin: 0 auto; padding: 3rem 1.25rem 4rem; }
+        .account-card {
+            background: #1a1a2e; border: 1px solid rgba(255,215,0,0.25);
+            border-radius: 20px; padding: 2.25rem; box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+        }
+        .account-card h1 { color: #ffd700; font-size: 1.6rem; margin: 0 0 0.35rem; }
+        .account-card .sub { color: rgba(255,255,255,0.55); font-size: 0.9rem; margin: 0 0 1.6rem; }
+        .fld { margin-bottom: 1rem; }
+        .fld label { display: block; color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 0.4rem; }
+        .fld input {
+            width: 100%; padding: 0.75rem 1rem; background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #fff;
+            font-size: 0.95rem; outline: none; box-sizing: border-box;
+        }
+        .fld input:focus { border-color: #ffd700; }
+        .btn-primary {
+            width: 100%; padding: 0.85rem; background: linear-gradient(135deg,#ffd700,#ffaa00);
+            color: #1a1a2e; border: none; border-radius: 10px; font-weight: 700; font-size: 0.98rem;
+            cursor: pointer; transition: transform 0.15s;
+        }
+        .btn-primary:hover { transform: scale(1.02); }
+        .btn-primary:disabled { opacity: 0.6; cursor: default; transform: none; }
+        .link-btn { background: none; border: none; color: #ffd700; cursor: pointer; font-size: 0.88rem; text-decoration: underline; padding: 0; }
+        .msg { font-size: 0.85rem; margin: 0.9rem 0 0; min-height: 1.1rem; text-align: center; }
+        .msg.err { color: #ff6b6b; } .msg.okmsg { color: #5cd67a; }
+        .row-between { display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+        .badge { display: inline-block; padding: 0.25rem 0.7rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; }
+        .badge.on { background: rgba(92,214,122,0.15); color: #5cd67a; }
+        .badge.off { background: rgba(255,107,107,0.15); color: #ff6b6b; }
+        .device {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px; padding: 0.75rem 1rem; margin-top: 0.6rem;
+        }
+        .device code { color: rgba(255,255,255,0.85); font-size: 0.85rem; }
+        .device small { color: rgba(255,255,255,0.45); display: block; font-size: 0.72rem; margin-top: 0.15rem; }
+        .device button { background: transparent; border: 1px solid rgba(255,107,107,0.5); color: #ff6b6b; border-radius: 8px; padding: 0.4rem 0.8rem; font-size: 0.8rem; cursor: pointer; }
+        .device button:hover { background: rgba(255,107,107,0.12); }
+        .muted { color: rgba(255,255,255,0.55); font-size: 0.9rem; line-height: 1.6; }
+        .divider { height: 1px; background: rgba(255,255,255,0.1); margin: 1.5rem 0; }
+    </style>
+</head>
+<body>
+    <!-- Navigation (matches the rest of the site) -->
+    <nav aria-label="Main navigation">
+        <div class="nav-container">
+            <a href="index.html" class="logo">
+                <div class="moon-icon" aria-hidden="true"></div>
+                Full Moon Computing
+            </a>
+            <button class="mobile-menu-btn" onclick="toggleMenu()" aria-label="Toggle navigation menu" aria-expanded="false" aria-controls="navLinks">☰</button>
+            <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Toggle dark mode">🌙</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="portfolio.html">Portfolio</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="contact.html">Contact</a></li>
+                <li><a href="account.html" class="active">Account</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <main class="account-wrap" id="main-content">
+        <!-- Signed-out: sign in / sign up -->
+        <div class="account-card" id="authCard" style="display:none;">
+            <h1 id="authTitle">Sign in</h1>
+            <p class="sub" id="authSub">Access your cad2d license and devices.</p>
+            <div class="fld">
+                <label for="email">Email</label>
+                <input id="email" type="email" autocomplete="email" placeholder="you@example.com">
+            </div>
+            <div class="fld">
+                <label for="password">Password</label>
+                <input id="password" type="password" autocomplete="current-password" placeholder="••••••••">
+            </div>
+            <button class="btn-primary" id="authBtn" onclick="submitAuth()">Sign in</button>
+            <p class="msg" id="authMsg"></p>
+            <div class="divider"></div>
+            <p class="muted" style="text-align:center;margin:0;">
+                <span id="toggleText">Don't have an account?</span>
+                <button class="link-btn" id="toggleBtn" onclick="toggleMode()">Create one</button>
+            </p>
+        </div>
+
+        <!-- Signed-in: license + devices -->
+        <div class="account-card" id="acctCard" style="display:none;">
+            <div class="row-between">
+                <div>
+                    <h1 style="margin-bottom:0.15rem;">My Account</h1>
+                    <p class="sub" id="acctEmail" style="margin:0;"></p>
+                </div>
+                <button class="link-btn" onclick="doSignOut()">Sign out</button>
+            </div>
+            <div class="divider"></div>
+
+            <div class="row-between">
+                <strong style="color:#fff;">cad2d license</strong>
+                <span class="badge" id="licBadge"></span>
+            </div>
+            <p class="muted" id="licLine" style="margin:0.6rem 0 0;"></p>
+
+            <div id="devicesSection" style="display:none;">
+                <div class="divider"></div>
+                <div class="row-between">
+                    <strong style="color:#fff;">Activated devices</strong>
+                    <span class="muted" id="seatCount"></span>
+                </div>
+                <div id="deviceList"></div>
+                <p class="muted" style="margin:0.9rem 0 0;font-size:0.82rem;">
+                    Remove a device to free a seat, then sign in on the new computer from inside cad2d.
+                </p>
+            </div>
+        </div>
+
+        <!-- Loading / not configured -->
+        <div class="account-card" id="loadingCard">
+            <p class="muted" id="loadingMsg" style="text-align:center;margin:0;">Loading…</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>&copy; 2026 Full Moon Computing. All rights reserved.</p>
+        <p>Professional Web Services for Growing Businesses</p>
+        <div class="footer-links">
+            <a href="terms.html">Terms &amp; Conditions</a> |
+            <a href="disclaimer.html">Disclaimer</a>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        let sb = null;
+        let mode = 'signin';   // or 'signup'
+
+        const $ = (id) => document.getElementById(id);
+        function show(card) {
+            for (const c of ['authCard', 'acctCard', 'loadingCard']) $(c).style.display = c === card ? 'block' : 'none';
+        }
+        function setMsg(text, kind) { const m = $('authMsg'); m.textContent = text || ''; m.className = 'msg' + (kind ? ' ' + kind : ''); }
+
+        async function boot() {
+            let cfg;
+            try { cfg = await fetch('/api/config').then(r => r.json()); } catch { cfg = {}; }
+            if (!cfg.supabaseUrl || !cfg.supabaseAnonKey) {
+                $('loadingMsg').textContent = 'Accounts aren’t configured yet. Please check back soon.';
+                return;
+            }
+            sb = window.supabase.createClient(cfg.supabaseUrl, cfg.supabaseAnonKey);
+            sb.auth.onAuthStateChange(() => render());
+            render();
+        }
+
+        async function render() {
+            const { data: { session } } = await sb.auth.getSession();
+            if (session) renderAccount(session); else { applyMode(); show('authCard'); }
+        }
+
+        function toggleMode() { mode = mode === 'signin' ? 'signup' : 'signin'; setMsg(''); applyMode(); }
+        function applyMode() {
+            const signup = mode === 'signup';
+            $('authTitle').textContent = signup ? 'Create account' : 'Sign in';
+            $('authSub').textContent = signup ? 'Register to license and manage cad2d.' : 'Access your cad2d license and devices.';
+            $('authBtn').textContent = signup ? 'Create account' : 'Sign in';
+            $('password').autocomplete = signup ? 'new-password' : 'current-password';
+            $('toggleText').textContent = signup ? 'Already have an account?' : 'Don’t have an account?';
+            $('toggleBtn').textContent = signup ? 'Sign in' : 'Create one';
+        }
+
+        async function submitAuth() {
+            const email = $('email').value.trim();
+            const password = $('password').value;
+            if (!email || !password) { setMsg('Enter your email and password.', 'err'); return; }
+            $('authBtn').disabled = true;
+            const original = $('authBtn').textContent;
+            $('authBtn').textContent = mode === 'signup' ? 'Creating…' : 'Signing in…';
+            try {
+                if (mode === 'signup') {
+                    const { data, error } = await sb.auth.signUp({ email, password });
+                    if (error) throw error;
+                    if (!data.session) { setMsg('Account created. Check your email to confirm, then sign in.', 'okmsg'); mode = 'signin'; applyMode(); }
+                    // if a session came back (email confirmation off), onAuthStateChange re-renders
+                } else {
+                    const { error } = await sb.auth.signInWithPassword({ email, password });
+                    if (error) throw error;
+                }
+            } catch (e) {
+                setMsg(e && e.message ? e.message : 'Something went wrong. Please try again.', 'err');
+            } finally {
+                $('authBtn').disabled = false; $('authBtn').textContent = original;
+            }
+        }
+
+        async function doSignOut() { await sb.auth.signOut(); }
+
+        async function renderAccount(session) {
+            show('acctCard');
+            $('acctEmail').textContent = session.user.email || '';
+            $('licBadge').textContent = '…'; $('licBadge').className = 'badge';
+            $('licLine').textContent = 'Checking your license…';
+            $('devicesSection').style.display = 'none';
+            let info;
+            try {
+                info = await fetch('/api/account/me', { headers: { Authorization: 'Bearer ' + session.access_token } }).then(r => r.json());
+            } catch { $('licLine').textContent = 'Couldn’t load your license. Please refresh.'; return; }
+
+            if (info.licensed) {
+                $('licBadge').textContent = 'Active'; $('licBadge').className = 'badge on';
+                $('licLine').textContent = 'You have a cad2d license for up to ' + info.seats + ' device' + (info.seats === 1 ? '' : 's') + '.';
+                renderDevices(session, info);
+            } else {
+                $('licBadge').textContent = 'None'; $('licBadge').className = 'badge off';
+                $('licLine').innerHTML = 'This account doesn’t have a cad2d license yet. ' +
+                    '<a href="contact.html" style="color:#ffd700;">Contact us</a> to purchase one.';
+            }
+        }
+
+        function renderDevices(session, info) {
+            $('devicesSection').style.display = 'block';
+            $('seatCount').textContent = info.devices.length + ' of ' + info.seats + ' in use';
+            const list = $('deviceList');
+            list.innerHTML = '';
+            if (info.devices.length === 0) {
+                list.innerHTML = '<p class="muted" style="margin-top:0.6rem;">No devices activated yet. Sign in from inside cad2d to activate this computer.</p>';
+                return;
+            }
+            for (const d of info.devices) {
+                const el = document.createElement('div');
+                el.className = 'device';
+                const until = new Date(d.expiry * 1000).toLocaleDateString();
+                el.innerHTML = '<div><code>Device ' + escapeHtml(d.machine) + '</code>' +
+                    '<small>Lease valid until ' + until + '</small></div>';
+                const btn = document.createElement('button');
+                btn.textContent = 'Remove';
+                btn.onclick = () => removeDevice(session, d.machine, btn);
+                el.appendChild(btn);
+                list.appendChild(el);
+            }
+        }
+
+        async function removeDevice(session, machine, btn) {
+            btn.disabled = true; btn.textContent = 'Removing…';
+            try {
+                await fetch('/api/account/deactivate', {
+                    method: 'POST',
+                    headers: { 'Authorization': 'Bearer ' + session.access_token, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ machine }),
+                });
+                renderAccount(session);   // refresh
+            } catch {
+                btn.disabled = false; btn.textContent = 'Remove';
+            }
+        }
+
+        function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+        boot();
+    </script>
+</body>
+</html>
