@@ -188,6 +188,30 @@ async function supabaseAuth(grant, body) {
 const passwordGrant = (email, password) => supabaseAuth('password', { email, password });
 const refreshGrant  = (refresh_token)   => supabaseAuth('refresh_token', { refresh_token });
 
+/** Resolve a Supabase access token (JWT) to its user. Used by the browser
+ *  account page, which authenticates client-side and sends the bearer token.
+ *  Returns { userId, email } or null. */
+async function resolveUser(bearer) {
+  if (!bearer) return null;
+  const anon = reqEnv('SUPABASE_ANON_KEY');
+  const r = await fetch(sbBase() + '/auth/v1/user', {
+    headers: { 'apikey': anon, 'Authorization': 'Bearer ' + bearer },
+  });
+  if (!r.ok) return null;
+  const j = await r.json();
+  if (!j || !j.id) return null;
+  return { userId: j.id, email: j.email || '' };
+}
+
+/** The account's currently-held device seats (non-lapsed activations). */
+async function listDevices(userId) {
+  const rows = await sbGet('license_activations?license_id=' + eq(userId)
+    + '&select=machine,lease_expiry,updated_at');
+  const cutoff = nowSec() - OFFLINE_GRACE_DAYS * 86400;
+  return rows.filter(r => Number(r.lease_expiry) >= cutoff)
+    .map(r => ({ machine: r.machine, expiry: Number(r.lease_expiry), updated_at: r.updated_at }));
+}
+
 /** The account's entitlement for cad2d, or null if none / inactive. */
 async function getEntitlement(userId) {
   const rows = await sbGet('entitlements?user_id=' + eq(userId)
@@ -238,5 +262,6 @@ module.exports = {
   b64url, b64urlToBuf, verifyKey, leasePayload, signLease,
   isRevoked, grantSeat, releaseSeat, seatUsage, setRevoked,
   passwordGrant, refreshGrant, getEntitlement, activateAccount,
+  resolveUser, listDevices,
   readForm, sendText,
 };
