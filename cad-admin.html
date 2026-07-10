@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ADMIN 2D CAD — License Keys</title>
+    <meta name="robots" content="noindex, nofollow">
+    <meta name="theme-color" content="#1a1a2e">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <style>
+        * { box-sizing: border-box; }
+        body { margin: 0; background: #12121e; color: #eee; font-family: 'Segoe UI', Tahoma, sans-serif; }
+        .wrap { max-width: 640px; margin: 0 auto; padding: 2.5rem 1.25rem 4rem; }
+        h1 { color: #ffd700; font-size: 1.5rem; margin: 0 0 0.25rem; letter-spacing: 0.5px; }
+        .sub { color: rgba(255,255,255,0.5); font-size: 0.9rem; margin: 0 0 1.75rem; }
+        .card { background: #1a1a2e; border: 1px solid rgba(255,215,0,0.22); border-radius: 16px;
+                padding: 1.5rem; margin-bottom: 1.25rem; }
+        .card h2 { color: #ffd700; font-size: 1.05rem; margin: 0 0 1rem; }
+        label { display: block; color: rgba(255,255,255,0.7); font-size: 0.82rem; margin: 0.8rem 0 0.35rem; }
+        input { width: 100%; padding: 0.7rem 0.9rem; background: rgba(255,255,255,0.07);
+                border: 1px solid rgba(255,255,255,0.15); border-radius: 9px; color: #fff; font-size: 0.95rem; outline: none; }
+        input:focus { border-color: #ffd700; }
+        button { margin-top: 1rem; padding: 0.75rem 1.3rem; background: linear-gradient(135deg,#ffd700,#ffaa00);
+                 color: #1a1a2e; border: none; border-radius: 9px; font-weight: 700; font-size: 0.92rem; cursor: pointer; }
+        button.ghost { background: transparent; color: #ffd700; border: 1px solid rgba(255,215,0,0.4); }
+        button:disabled { opacity: 0.6; cursor: default; }
+        .row { display: flex; gap: 0.6rem; flex-wrap: wrap; }
+        .out { margin-top: 1rem; font-size: 0.9rem; min-height: 1.2rem; }
+        .out.err { color: #ff6b6b; } .out.ok { color: #5cd67a; }
+        .keybox { font-family: monospace; background: #0e0e18; border: 1px solid rgba(255,255,255,0.15);
+                  border-radius: 9px; padding: 0.8rem; margin-top: 0.7rem; word-break: break-all; color: #ffd700; }
+        .muted { color: rgba(255,255,255,0.45); font-size: 0.8rem; }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <h1>ADMIN 2D CAD</h1>
+        <p class="sub">Issue and manage cad2d license keys. Keep this page and your admin token private.</p>
+
+        <div class="card">
+            <h2>Admin token</h2>
+            <input id="token" type="password" placeholder="Your CAD2D_ADMIN_TOKEN" autocomplete="off">
+            <label style="display:inline-flex;align-items:center;gap:0.4rem;margin-top:0.7rem;">
+                <input type="checkbox" id="remember" style="width:auto;" checked> Remember for this browser session
+            </label>
+        </div>
+
+        <div class="card">
+            <h2>Issue a new key</h2>
+            <label for="email">Customer email (the key is emailed here)</label>
+            <input id="email" type="email" placeholder="customer@example.com">
+            <label for="seats">Devices (seats)</label>
+            <input id="seats" type="number" min="1" value="1">
+            <label for="note">Note (invoice / name — your record)</label>
+            <input id="note" type="text" placeholder="INV-2026-001">
+            <button id="genBtn" onclick="genKey()">Generate key</button>
+            <div class="out" id="genOut"></div>
+            <div id="keyResult"></div>
+        </div>
+
+        <div class="card">
+            <h2>Manage a key</h2>
+            <label for="mkey">Key</label>
+            <input id="mkey" type="text" placeholder="paste an existing key">
+            <div class="row">
+                <button class="ghost" onclick="checkKey()">Check status</button>
+                <button class="ghost" onclick="setRevoke(true)">Revoke</button>
+                <button class="ghost" onclick="setRevoke(false)">Restore</button>
+            </div>
+            <div class="out" id="mOut"></div>
+        </div>
+    </div>
+
+    <script>
+        const $ = (id) => document.getElementById(id);
+        // restore token for the session
+        if (sessionStorage.getItem('cad2d_admin')) $('token').value = sessionStorage.getItem('cad2d_admin');
+        function tok() {
+            const t = $('token').value.trim();
+            if ($('remember').checked) sessionStorage.setItem('cad2d_admin', t);
+            return t;
+        }
+        function form(obj) {
+            return Object.entries(obj).map(([k, v]) => encodeURIComponent(k) + '=' + encodeURIComponent(v)).join('&');
+        }
+        async function post(path, obj) {
+            const r = await fetch(path, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                body: form(obj),
+            });
+            return { status: r.status, text: await r.text() };
+        }
+
+        async function genKey() {
+            const t = tok();
+            if (!t) return setOut('genOut', 'Enter your admin token first.', 'err');
+            $('genBtn').disabled = true; setOut('genOut', 'Generating…', '');
+            $('keyResult').innerHTML = '';
+            try {
+                const r = await post('/api/admin/issue-key', {
+                    token: t, email: $('email').value.trim(), seats: $('seats').value || '1', note: $('note').value.trim(),
+                });
+                if (r.status === 401) return setOut('genOut', 'Admin token rejected.', 'err');
+                const j = JSON.parse(r.text);
+                if (!j.ok) return setOut('genOut', j.error || 'Failed.', 'err');
+                setOut('genOut', 'Key created' + (j.emailed ? ' and emailed to the customer.' : ' (email not sent — no email or mailer).'), 'ok');
+                $('keyResult').innerHTML = '<div class="keybox" id="kb">' + escapeHtml(j.key) + '</div>' +
+                    '<button class="ghost" onclick="copyKey()">Copy key</button>';
+            } catch (e) {
+                setOut('genOut', 'Error: ' + e.message, 'err');
+            } finally { $('genBtn').disabled = false; }
+        }
+        function copyKey() { navigator.clipboard.writeText($('kb').textContent); }
+
+        async function checkKey() {
+            const key = $('mkey').value.trim();
+            if (!key) return setOut('mOut', 'Paste a key.', 'err');
+            const r = await post('/api/license/status', { key });
+            const line = r.text.split('\n');
+            if (line[0].trim() !== 'OK') return setOut('mOut', 'Key not found.', 'err');
+            setOut('mOut', 'Seats in use: ' + (line[1] || '').trim(), 'ok');
+        }
+        async function setRevoke(revoke) {
+            const t = tok(); const key = $('mkey').value.trim();
+            if (!t || !key) return setOut('mOut', 'Enter admin token and a key.', 'err');
+            const r = await post('/api/license/revoke', { token: t, key, action: revoke ? 'revoke' : 'unrevoke' });
+            const code = r.text.split('\n')[0].trim();
+            if (code === 'FORBIDDEN') return setOut('mOut', 'Admin token rejected.', 'err');
+            if (code !== 'OK') return setOut('mOut', 'Key not found.', 'err');
+            setOut('mOut', revoke ? 'Key revoked.' : 'Key restored.', 'ok');
+        }
+
+        function setOut(id, msg, kind) { const e = $(id); e.textContent = msg; e.className = 'out' + (kind ? ' ' + kind : ''); }
+        function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    </script>
+</body>
+</html>
